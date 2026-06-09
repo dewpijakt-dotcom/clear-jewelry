@@ -1,0 +1,139 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ---------- TOKENS ---------- */
+:root {
+  --white: #FFFFFF;
+  --ivory: #FAF8F4;
+  --black: #0C0B0A;
+  --charcoal: #1A1815;
+  --gold: #C2A14D;
+  --gold-light: #D8BE7E;
+  --gold-deep: #9C7E33;
+
+  /* hairline rule color used everywhere */
+  --rule: rgba(156, 126, 51, 0.32);
+  --rule-soft: rgba(26, 24, 21, 0.10);
+  --rule-invert: rgba(216, 190, 126, 0.30);
+
+  /* easing */
+  --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+/* ---------- BASE ---------- */
+html, body {
+  background: var(--ivory);
+  color: var(--charcoal);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  font-family: var(--font-jost), Jost, Inter, system-ui, sans-serif;
+  font-weight: 300;
+  letter-spacing: 0.005em;
+}
+
+::selection { background: var(--gold); color: var(--white); }
+
+/* ---------- TYPOGRAPHY HELPERS ---------- */
+.display { font-family: var(--font-cormorant), 'Cormorant Garamond', serif; font-weight: 300; letter-spacing: -0.01em; }
+.display-italic { font-family: var(--font-cormorant), 'Cormorant Garamond', serif; font-style: italic; font-weight: 300; }
+
+.eyebrow {
+  font-family: var(--font-jost), Jost, sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.28em;
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--gold-deep);
+}
+
+/* ---------- HAIRLINE RULES ---------- */
+.gold-rule {
+  display: block;
+  height: 1px;
+  width: 60px;
+  background: var(--gold);
+  border: none;
+}
+.gold-rule.wide { width: 120px; }
+.gold-rule.full { width: 100%; opacity: 0.4; }
+
+/* ---------- BUTTONS ---------- */
+.btn {
+  display: inline-flex; align-items: center; gap: 12px;
+  padding: 16px 30px;
+  font-family: var(--font-jost), Jost, sans-serif;
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  border: 1px solid var(--gold);
+  color: var(--charcoal);
+  background: transparent;
+  transition: background 0.6s var(--ease), color 0.6s var(--ease), border-color 0.6s var(--ease);
+}
+.btn:hover { background: var(--charcoal); color: var(--ivory); border-color: var(--charcoal); }
+.btn.btn-light { color: var(--ivory); }
+.btn.btn-light:hover { background: var(--ivory); color: var(--charcoal); border-color: var(--ivory); }
+.btn.btn-solid { background: var(--charcoal); color: var(--ivory); border-color: var(--charcoal); }
+.btn.btn-solid:hover { background: transparent; color: var(--charcoal); }
+
+.btn-arrow {
+  display: inline-block;
+  transition: transform 0.5s var(--ease);
+}
+.btn:hover .btn-arrow { transform: translateX(6px); }
+
+/* ---------- INPUTS ---------- */
+.field {
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--rule);
+  padding: 14px 0;
+  width: 100%;
+  font-family: var(--font-jost), Jost, sans-serif;
+  font-size: 14px;
+  color: var(--charcoal);
+  letter-spacing: 0.02em;
+  transition: border-color 0.4s var(--ease);
+}
+.field:focus { outline: none; border-bottom-color: var(--gold); }
+.field-label {
+  font-family: var(--font-jost), Jost, sans-serif;
+  font-size: 10.5px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--gold-deep);
+  margin-bottom: 4px;
+  display: block;
+}
+
+/* ---------- REVEAL (Framer Motion takes most of this; CSS fallback only) ---------- */
+.reveal { opacity: 1; transform: none; }
+
+/* ---------- ACCESSIBILITY ---------- */
+:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 4px;
+}
+
+a, button { transition: opacity 0.4s var(--ease); }
+
+/* ---------- LIGHTBOX BACKDROP ---------- */
+.lightbox-backdrop {
+  background: rgba(12, 11, 10, 0.92);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+/* ---------- REDUCED MOTION ---------- */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
+}
