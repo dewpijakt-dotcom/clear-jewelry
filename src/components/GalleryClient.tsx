@@ -145,12 +145,10 @@ export default function GalleryClient({ pieces, categories }: GalleryClientProps
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.45, ease: [0.22, 0.61, 0.36, 1] }}
-              className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4 lg:gap-5"
+              className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4 lg:gap-5 [grid-auto-flow:dense]"
             >
               {rest.map((item, i) => {
                 const original = i + 2; // 1-indexed, +1 for salon piece
-                // Pull-quote breaker every 9 tiles (skip first row)
-                const isBreaker = i > 0 && i % 9 === 0;
                 const aspect = item.aspect ?? 'square';
                 return (
                   <PieceCard
@@ -158,7 +156,6 @@ export default function GalleryClient({ pieces, categories }: GalleryClientProps
                     item={item}
                     lotNumber={pad(original)}
                     aspect={aspect}
-                    isBreaker={isBreaker}
                     onClick={() => setActiveIndex(i + 1)}
                   />
                 );
@@ -191,23 +188,18 @@ function PieceCard({
   item,
   lotNumber,
   aspect,
-  isBreaker,
   onClick,
 }: {
   item: GalleryItem;
   lotNumber: string;
   aspect: 'portrait' | 'square' | 'wide';
-  isBreaker: boolean;
   onClick: () => void;
 }) {
   const [hover, setHover] = useState(false);
-  const aspectClass =
-    aspect === 'portrait' ? 'aspect-[4/5]'
-    : aspect === 'wide'   ? 'aspect-[5/4]'
-    : 'aspect-square';
+  const aspectClass = 'aspect-square';
 
   return (
-    <div className={clsx('group flex flex-col', isBreaker && 'lg:col-span-2 lg:row-span-1')}>
+    <div className="group flex flex-col">
       <button
         type="button"
         onClick={onClick}
