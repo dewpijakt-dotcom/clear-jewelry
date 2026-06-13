@@ -4,6 +4,7 @@ import { existsSync } from 'fs';
 import { join } from 'path';
 import { BRAND } from '@/lib/brand';
 import { GALLERY, homePreview } from '@/lib/gallery-manifest';
+import { getHomepage } from '@/lib/sanityAdapter';
 import Reveal from '@/components/Reveal';
 import HeroPlaceholder from '@/components/HeroPlaceholder';
 import Wordmark from '@/components/Wordmark';
@@ -13,15 +14,17 @@ import GalleryShowcaseClient from '@/components/GalleryShowcaseClient';
  * HOME — full-bleed hero, signature pieces showcase, brand story teaser,
  * trust signals strip, closing CTA card. Calm, gallery rhythm.
  */
-export default function HomePage() {
+export default async function HomePage() {
   // Use a real hero image if one has been dropped in; otherwise the placeholder.
-  const heroSrc = '/images/hero/hero-main.jpg';
+  const cms = await getHomepage();
+  const heroSrc = cms.hero.src;
+  const heroAlt = cms.hero.alt;
   const heroExists = existsSync(join(process.cwd(), 'public', 'images', 'hero', 'hero-main.jpg'));
 
   // Show 6 signature pieces on the homepage (the rest live on /gallery).
   // Home gallery wall — auto-grows from the manifest. Adding a `hero: true`
   // entry in src/lib/gallery-manifest.ts makes it appear here automatically.
-  const signature = homePreview(12);
+  const signature = cms.featured;
 
   return (
     <>
@@ -30,7 +33,7 @@ export default function HomePage() {
         {heroExists ? (
           <Image
             src={heroSrc}
-            alt="A CLEAR Jewelry signature piece"
+            alt={heroAlt}
             fill
             sizes="100vw"
             priority
@@ -54,7 +57,7 @@ export default function HomePage() {
               className="eyebrow text-gold-light mb-8"
               style={{ textShadow: '0 1px 14px rgba(0,0,0,0.65)' }}
             >
-              Bangkok · Since {BRAND.establishedYear}
+              {cms.heroEyebrow}
             </p>
           </Reveal>
           <Reveal y={56} duration={1.6} delay={0.15}>
@@ -62,8 +65,8 @@ export default function HomePage() {
               className="display font-light text-[clamp(48px,10vw,160px)] leading-[0.95] tracking-[-0.012em]"
               style={{ textShadow: '0 2px 24px rgba(0,0,0,0.55)' }}
             >
-              Gemstone art
-              <span className="block display-italic text-gold-light">since 1993.</span>
+              {cms.heroTitle}
+              <span className="block display-italic text-gold-light">{cms.heroItalic}</span>
             </h1>
           </Reveal>
           <Reveal y={28} duration={1.2} delay={0.5}>
@@ -71,8 +74,7 @@ export default function HomePage() {
               className="mt-8 lg:mt-10 max-w-xl mx-auto font-sans text-[13.5px] lg:text-[14px] tracking-[0.04em] text-ivory leading-[1.75]"
               style={{ textShadow: '0 1px 12px rgba(0,0,0,0.55)' }}
             >
-              An independent Thai high-jewellery house. Unheated Burmese rubies,
-              royal blue sapphires, fancy diamonds. Hand-set, signed CLEAR 1993.
+              {cms.heroLede}
             </p>
           </Reveal>
           <Reveal y={20} duration={1} delay={0.75}>
@@ -84,7 +86,7 @@ export default function HomePage() {
                   className="font-sans text-[10.5px] uppercase tracking-[0.48em] text-gold-light whitespace-nowrap"
                   style={{ textShadow: '0 1px 10px rgba(0,0,0,0.7)' }}
                 >
-                  By Private Appointment
+                  {cms.ctaPlateEyebrow}
                 </span>
                 <span className="hidden sm:block h-px w-12 lg:w-16 bg-gold-light/70" />
               </div>
@@ -98,14 +100,14 @@ export default function HomePage() {
                     boxShadow: '0 0 0 1px rgba(216,190,126,0.18), 0 0 48px rgba(216,190,126,0.0)',
                   }}
                 >
-                  <span className="relative z-10">Book an Appointment</span>
+                  <span className="relative z-10">{cms.ctaPrimaryLabel}</span>
                   <span className="relative z-10 transition-transform duration-500 group-hover/cta:translate-x-1">→</span>
                 </Link>
                 <Link
                   href="/gallery"
                   className="font-sans text-[12.5px] uppercase tracking-[0.42em] text-ivory hover:text-gold-light transition-colors duration-500 underline underline-offset-[10px] decoration-gold-light/80 decoration-[1px] pt-2 sm:pt-0"
                 >
-                  View the Gallery
+                  {cms.ctaSecondaryLabel}
                 </Link>
               </div>
 
