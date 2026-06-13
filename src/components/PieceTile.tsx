@@ -43,7 +43,7 @@ export default function PieceTile({ item, onClick, priority = false }: PieceTile
     >
       {item.src ? (
         <Image
-          src={`/images/gallery/${item.src}`}
+          src={(item.src && item.src.startsWith("http")) ? item.src : ("/images/gallery/" + item.src)}
           alt={item.alt}
           fill
           sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"

@@ -35,7 +35,7 @@ export default function GalleryShowcaseClient({ items }: { items: GalleryItem[] 
             >
               {item.src && (
                 <Image
-                  src={`/images/gallery/${item.src}`}
+                  src={(item.src && item.src.startsWith("http")) ? item.src : ("/images/gallery/" + item.src)}
                   alt={item.alt}
                   fill
                   sizes="(max-width: 768px) 50vw, (max-width: 1280px) 33vw, 25vw"

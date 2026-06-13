@@ -61,7 +61,7 @@ export default function Lightbox({ item, onClose, onPrev, onNext }: LightboxProp
             <div className="relative aspect-square w-full overflow-hidden bg-charcoal">
               {item.src && (
                 <Image
-                  src={`/images/gallery/${item.src}`}
+                  src={(item.src && item.src.startsWith("http")) ? item.src : ("/images/gallery/" + item.src)}
                   alt={item.alt}
                   fill
                   sizes="(max-width: 1280px) 100vw, 60vw"
