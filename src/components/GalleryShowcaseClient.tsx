@@ -9,15 +9,9 @@ import Lightbox from './Lightbox';
 /**
  * Home-page gallery preview — a dense uniform-square wall.
  *
- * Inspiration: Graff's "Explore By Gems" rooms and HW's product grids —
- * a wall of strong frames at consistent rhythm, density doing the
- * editorial work. No "hero tile that breaks the grid" — every piece is
- * weighed equally; the typography above the wall sets the eyebrow.
- *
- *  – 4 columns × 3 rows at desktop  (12 tiles)
- *  – 3 columns at tablet
- *  – 2 columns at mobile
- *  – Tight 2px gap, hover veil with caption, lightbox on click
+ *   – auto-grows from the manifest (no fixed tile count in this component)
+ *   – 4 columns × N rows at desktop, 3 at tablet, 2 at mobile
+ *   – tight 1–3px gap, hover veil with editorial description, lightbox on click
  */
 export default function GalleryShowcaseClient({ items }: { items: GalleryItem[] }) {
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
@@ -28,20 +22,21 @@ export default function GalleryShowcaseClient({ items }: { items: GalleryItem[] 
       <div className="mt-14 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-[3px] md:gap-1">
         {items.map((item, i) => {
           const isHover = hoverIndex === i;
+          const displayName = item.name ?? item.description;
           return (
             <button
-              key={i}
+              key={item.id}
               type="button"
               onClick={() => setActiveIndex(i)}
               onMouseEnter={() => setHoverIndex(i)}
               onMouseLeave={() => setHoverIndex(null)}
               className="group relative block w-full aspect-square overflow-hidden bg-charcoal text-left"
-              aria-label={item.name}
+              aria-label={item.alt}
             >
               {item.src && (
                 <Image
                   src={`/images/gallery/${item.src}`}
-                  alt={item.name}
+                  alt={item.alt}
                   fill
                   sizes="(max-width: 768px) 50vw, (max-width: 1280px) 33vw, 25vw"
                   className={clsx(
@@ -54,7 +49,7 @@ export default function GalleryShowcaseClient({ items }: { items: GalleryItem[] 
               {/* hover veil */}
               <div
                 className={clsx(
-                  'absolute inset-0 bg-gradient-to-t from-black/75 via-black/15 to-transparent',
+                  'absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent',
                   'opacity-0 group-hover:opacity-100 transition-opacity duration-700',
                   'pointer-events-none',
                 )}
@@ -69,12 +64,19 @@ export default function GalleryShowcaseClient({ items }: { items: GalleryItem[] 
                   'pointer-events-none',
                 )}
               >
-                <p className="font-sans text-[10px] uppercase tracking-[0.32em] text-gold-light">
-                  {item.categories[0]}
-                </p>
+                {item.categories && item.categories.length > 0 && (
+                  <p className="font-sans text-[10px] uppercase tracking-[0.32em] text-gold-light">
+                    {item.categories[0]}
+                  </p>
+                )}
                 <h3 className="display text-ivory text-lg lg:text-xl mt-1 leading-snug">
-                  {item.name}
+                  {displayName}
                 </h3>
+                {item.name && item.description && (
+                  <p className="font-sans italic text-[12px] text-ivory/85 mt-2 leading-snug line-clamp-3">
+                    {item.description}
+                  </p>
+                )}
               </div>
             </button>
           );
