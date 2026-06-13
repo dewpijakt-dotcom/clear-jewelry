@@ -34,39 +34,59 @@ export default function HomePage() {
             fill
             sizes="100vw"
             priority
-            className="object-cover"
+            className="object-cover object-[50%_28%] md:object-center"
           />
         ) : (
           <HeroPlaceholder />
         )}
-        {/* dark wash for legibility */}
-        <div className="absolute inset-0 bg-charcoal/35" />
+        {/* tonal scrim — top + bottom darkened for legibility, middle stays bright */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background:
+              'linear-gradient(180deg, rgba(10,9,8,0.62) 0%, rgba(10,9,8,0.18) 22%, rgba(10,9,8,0.10) 50%, rgba(10,9,8,0.48) 78%, rgba(10,9,8,0.78) 100%)',
+          }}
+        />
 
         <div className="relative z-10 text-ivory text-center px-6">
           <Reveal y={36} duration={1.4}>
-            <p className="eyebrow text-gold-light mb-8">Bangkok · Since {BRAND.establishedYear}</p>
+            <p
+              className="eyebrow text-gold-light mb-8"
+              style={{ textShadow: '0 1px 14px rgba(0,0,0,0.65)' }}
+            >
+              Bangkok · Since {BRAND.establishedYear}
+            </p>
           </Reveal>
           <Reveal y={56} duration={1.6} delay={0.15}>
-            <h1 className="display font-light text-[clamp(56px,10vw,160px)] leading-[0.95] tracking-[-0.012em]">
+            <h1
+              className="display font-light text-[clamp(48px,10vw,160px)] leading-[0.95] tracking-[-0.012em]"
+              style={{ textShadow: '0 2px 24px rgba(0,0,0,0.55)' }}
+            >
               Gemstone art
               <span className="block display-italic text-gold-light">since 1993.</span>
             </h1>
           </Reveal>
           <Reveal y={28} duration={1.2} delay={0.5}>
-            <p className="mt-10 max-w-xl mx-auto font-sans text-[14px] tracking-[0.04em] text-ivory/85 leading-relaxed">
+            <p
+              className="mt-8 lg:mt-10 max-w-xl mx-auto font-sans text-[13.5px] lg:text-[14px] tracking-[0.04em] text-ivory leading-[1.75]"
+              style={{ textShadow: '0 1px 12px rgba(0,0,0,0.55)' }}
+            >
               An independent Thai high-jewellery house. Unheated Burmese rubies,
               royal blue sapphires, fancy diamonds. Hand-set, signed CLEAR 1993.
             </p>
           </Reveal>
           <Reveal y={20} duration={1} delay={0.75}>
-            <div className="mt-16 inline-block">
+            <div className="mt-12 lg:mt-16 inline-block">
               {/* hairline gold rule + eyebrow — high-jewellery brochure plate */}
-              <div className="flex items-center justify-center gap-5 mb-7">
-                <span className="block h-px w-12 lg:w-16 bg-gold-light/70" />
-                <span className="font-sans text-[10.5px] uppercase tracking-[0.48em] text-gold-light whitespace-nowrap">
+              <div className="relative flex items-center justify-center gap-4 lg:gap-5 mb-7 px-6 py-2 rounded-full sm:rounded-none sm:px-0 sm:py-0 bg-charcoal/55 sm:bg-transparent backdrop-blur-sm sm:backdrop-blur-0">
+                <span className="hidden sm:block h-px w-12 lg:w-16 bg-gold-light/70" />
+                <span
+                  className="font-sans text-[10.5px] uppercase tracking-[0.48em] text-gold-light whitespace-nowrap"
+                  style={{ textShadow: '0 1px 10px rgba(0,0,0,0.7)' }}
+                >
                   By Private Appointment
                 </span>
-                <span className="block h-px w-12 lg:w-16 bg-gold-light/70" />
+                <span className="hidden sm:block h-px w-12 lg:w-16 bg-gold-light/70" />
               </div>
 
               {/* CTA row */}
@@ -97,8 +117,11 @@ export default function HomePage() {
           </Reveal>
         </div>
 
-        {/* scroll cue */}
-        <div className="absolute bottom-10 left-1/2 -translate-x-1/2 text-ivory/70 text-[10px] tracking-[0.32em] uppercase">
+        {/* scroll cue — hidden on mobile (collides with photo's embedded CLEAR wordmark) */}
+        <div
+          className="hidden md:block absolute bottom-10 left-1/2 -translate-x-1/2 text-ivory/85 text-[10px] tracking-[0.32em] uppercase"
+          style={{ textShadow: '0 1px 8px rgba(0,0,0,0.6)' }}
+        >
           Scroll
         </div>
       </section>
