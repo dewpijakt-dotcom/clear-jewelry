@@ -2,12 +2,14 @@
   "name": "clear-jewelry",
   "version": "1.0.0",
   "private": true,
-  "description": "CLEAR JEWELRY — Bangkok. High-jewellery house since 1993.",
+  "description": "CLEAR JEWELRY \u2014 Bangkok. High-jewellery house since 1993.",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "sanity:deploy": "sanity deploy",
+    "sanity:migrate": "node ../sanity-work/migrate.js"
   },
   "dependencies": {
     "next": "14.2.5",
@@ -15,7 +17,13 @@
     "react-dom": "18.3.1",
     "framer-motion": "11.3.19",
     "lenis": "1.1.6",
-    "clsx": "2.1.1"
+    "clsx": "2.1.1",
+    "@sanity/client": "^6.21.3",
+    "@sanity/image-url": "^1.0.2",
+    "@sanity/vision": "^3.50.0",
+    "next-sanity": "^9.4.7",
+    "sanity": "^3.50.0",
+    "styled-components": "^6.1.11"
   },
   "devDependencies": {
     "@types/node": "20.14.10",
@@ -26,6 +34,7 @@
     "eslint-config-next": "14.2.5",
     "postcss": "8.4.39",
     "tailwindcss": "3.4.6",
-    "typescript": "5.5.3"
+    "typescript": "5.5.3",
+    "@types/styled-components": "^5.1.34"
   }
 }
