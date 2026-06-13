@@ -19,7 +19,25 @@ export default function HomePage() {
   const heroExists = existsSync(join(process.cwd(), 'public', 'images', 'hero', 'hero-main.jpg'));
 
   // Show 6 signature pieces on the homepage (the rest live on /gallery).
-  const signature = GALLERY.slice(0, 6);
+  // Home gallery wall — 12 strongest pieces, skipping the heart riviere
+  // (already the hero) and the sapphire choker (Gallery salon centrepiece).
+  const HOME_PREVIEW_SRCS = [
+    'editorial-ruby-parure-black.jpg',
+    'editorial-sapphire-suite-white.jpg',
+    'royal-blue-sapphire-three-stone.jpg',
+    'sapphire-ruby-trinity-rings.jpg',
+    'ruby-bypass-yellow-diamond-ear.jpg',
+    'diamond-floral-choker-neck.jpg',
+    'sapphire-floral-suite-diagonal-black.jpg',
+    'editorial-sapphire-suite-close.jpg',
+    'solitaire-pear-bypass-rings-face.jpg',
+    'spinel-pear-diamond-bypass-velvet.jpg',
+    'diamond-tennis-bracelet-pear.jpg',
+    'ring-pink-marquise-pave-band.jpg',
+  ];
+  const signature = HOME_PREVIEW_SRCS
+    .map((src) => GALLERY.find((g) => g.src === src))
+    .filter((g): g is NonNullable<typeof g> => Boolean(g));
 
   return (
     <>
