@@ -75,16 +75,40 @@ export default function HomePage() {
             </p>
           </Reveal>
           <Reveal y={20} duration={1} delay={0.75}>
-            <div className="mt-12 flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Link href="/book" className="btn btn-light">
-                Book an Appointment <span className="btn-arrow">→</span>
-              </Link>
-              <Link
-                href="/gallery"
-                className="font-sans text-[12px] uppercase tracking-[0.28em] text-ivory/80 hover:text-gold-light transition-colors duration-500 underline underline-offset-8 decoration-gold/60 decoration-[0.5px] pt-4 sm:pt-0"
-              >
-                View Gallery
-              </Link>
+            <div className="mt-16 inline-block">
+              {/* hairline gold rule + eyebrow — high-jewellery brochure plate */}
+              <div className="flex items-center justify-center gap-5 mb-7">
+                <span className="block h-px w-12 lg:w-16 bg-gold-light/70" />
+                <span className="font-sans text-[10.5px] uppercase tracking-[0.48em] text-gold-light whitespace-nowrap">
+                  By Private Appointment
+                </span>
+                <span className="block h-px w-12 lg:w-16 bg-gold-light/70" />
+              </div>
+
+              {/* CTA row */}
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-6 sm:gap-10">
+                <Link
+                  href="/book"
+                  className="group/cta relative inline-flex items-center gap-3 px-12 py-[18px] border border-gold-light/90 text-ivory uppercase tracking-[0.34em] text-[12px] font-medium hover:bg-ivory hover:text-charcoal hover:border-ivory transition-all duration-700 ease-elegant overflow-hidden"
+                  style={{
+                    boxShadow: '0 0 0 1px rgba(216,190,126,0.18), 0 0 48px rgba(216,190,126,0.0)',
+                  }}
+                >
+                  <span className="relative z-10">Book an Appointment</span>
+                  <span className="relative z-10 transition-transform duration-500 group-hover/cta:translate-x-1">→</span>
+                </Link>
+                <Link
+                  href="/gallery"
+                  className="font-sans text-[12.5px] uppercase tracking-[0.42em] text-ivory hover:text-gold-light transition-colors duration-500 underline underline-offset-[10px] decoration-gold-light/80 decoration-[1px] pt-2 sm:pt-0"
+                >
+                  View the Gallery
+                </Link>
+              </div>
+
+              {/* hairline gold rule below */}
+              <div className="mt-7 flex justify-center">
+                <span className="block h-px w-40 bg-gold-light/40" />
+              </div>
             </div>
           </Reveal>
         </div>
