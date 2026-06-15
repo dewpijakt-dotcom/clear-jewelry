@@ -268,6 +268,11 @@ export const COPY: Record<string, Entry> = {
   'cls.cta.book':    { en: 'Book a private viewing', th: 'นัดชมเป็นการส่วนตัว', zh: '预约私下鉴赏' },
   'cls.cta.contact': { en: 'See all channels', th: 'ดูช่องทางทั้งหมด', zh: '查看所有联络方式' },
 
+  /* ───── LIGHTBOX (gallery detail modal) ───── */
+  'lb.close':           { en: 'Close gallery', th: 'ปิดแกลเลอรี', zh: '关闭画廊' },
+  'lb.prev':            { en: 'Previous piece', th: 'ผลงานก่อนหน้า', zh: '上一件作品' },
+  'lb.next':            { en: 'Next piece', th: 'ผลงานถัดไป', zh: '下一件作品' },
+
   /* ───── MISC ───── */
   'misc.bangkok.since': { en: 'Bangkok · Since 1993', th: 'กรุงเทพฯ · ตั้งแต่ปี 1993', zh: '曼谷 · 始于 1993' },
   'misc.reply':         { en: 'Reply within a day · LINE @clearjewelry', th: 'ตอบกลับภายในหนึ่งวัน · LINE @clearjewelry', zh: '一日内回复 · LINE @clearjewelry' },
