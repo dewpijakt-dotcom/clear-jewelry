@@ -3,27 +3,22 @@ import Image from 'next/image';
 import { existsSync } from 'fs';
 import { join } from 'path';
 import { BRAND } from '@/lib/brand';
-import { GALLERY, homePreview } from '@/lib/gallery-manifest';
 import { getHomepage } from '@/lib/sanityAdapter';
 import Reveal from '@/components/Reveal';
 import HeroPlaceholder from '@/components/HeroPlaceholder';
 import Wordmark from '@/components/Wordmark';
 import GalleryShowcaseClient from '@/components/GalleryShowcaseClient';
+import T from '@/components/T';
 
 /**
  * HOME — full-bleed hero, signature pieces showcase, brand story teaser,
  * trust signals strip, closing CTA card. Calm, gallery rhythm.
  */
 export default async function HomePage() {
-  // Use a real hero image if one has been dropped in; otherwise the placeholder.
   const cms = await getHomepage();
   const heroSrc = cms.hero.src;
   const heroAlt = cms.hero.alt;
   const heroExists = existsSync(join(process.cwd(), 'public', 'images', 'hero', 'hero-main.jpg'));
-
-  // Show 6 signature pieces on the homepage (the rest live on /gallery).
-  // Home gallery wall — auto-grows from the manifest. Adding a `hero: true`
-  // entry in src/lib/gallery-manifest.ts makes it appear here automatically.
   const signature = cms.featured;
 
   return (
@@ -42,7 +37,6 @@ export default async function HomePage() {
         ) : (
           <HeroPlaceholder />
         )}
-        {/* tonal scrim — top + bottom darkened for legibility, middle stays bright */}
         <div
           className="absolute inset-0 pointer-events-none"
           style={{
@@ -79,7 +73,6 @@ export default async function HomePage() {
           </Reveal>
           <Reveal y={20} duration={1} delay={0.75}>
             <div className="mt-12 lg:mt-16 inline-block">
-              {/* hairline gold rule + eyebrow — high-jewellery brochure plate */}
               <div className="relative flex items-center justify-center gap-4 lg:gap-5 mb-7 px-6 py-2 rounded-full sm:rounded-none sm:px-0 sm:py-0 bg-charcoal/55 sm:bg-transparent backdrop-blur-sm sm:backdrop-blur-0">
                 <span className="hidden sm:block h-px w-12 lg:w-16 bg-gold-light/70" />
                 <span
@@ -91,7 +84,6 @@ export default async function HomePage() {
                 <span className="hidden sm:block h-px w-12 lg:w-16 bg-gold-light/70" />
               </div>
 
-              {/* CTA row */}
               <div className="flex flex-col sm:flex-row items-center justify-center gap-6 sm:gap-10">
                 <Link
                   href="/book"
@@ -111,7 +103,6 @@ export default async function HomePage() {
                 </Link>
               </div>
 
-              {/* hairline gold rule below */}
               <div className="mt-7 flex justify-center">
                 <span className="block h-px w-40 bg-gold-light/40" />
               </div>
@@ -119,12 +110,11 @@ export default async function HomePage() {
           </Reveal>
         </div>
 
-        {/* scroll cue — hidden on mobile (collides with photo's embedded CLEAR wordmark) */}
         <div
           className="hidden md:block absolute bottom-10 left-1/2 -translate-x-1/2 text-ivory/85 text-[10px] tracking-[0.32em] uppercase"
           style={{ textShadow: '0 1px 8px rgba(0,0,0,0.6)' }}
         >
-          Scroll
+          <T k="home.scroll" />
         </div>
       </section>
 
@@ -148,14 +138,13 @@ export default async function HomePage() {
       <section className="bg-ivory py-32 lg:py-40">
         <div className="mx-auto max-w-[1480px] px-6 lg:px-10">
           <Reveal>
-            <p className="eyebrow text-gold-deep">Signature</p>
+            <p className="eyebrow text-gold-deep"><T k="home.sig.eyebrow" /></p>
             <h2 className="display text-[clamp(40px,6vw,84px)] leading-[1.02] mt-4 max-w-3xl">
-              The pieces we are
-              <span className="display-italic text-gold"> known for.</span>
+              <T k="home.sig.title.l1" />
+              <span className="display-italic text-gold"> <T k="home.sig.title.l2" /></span>
             </h2>
             <p className="font-sans text-[14.5px] tracking-[0.02em] text-charcoal/75 max-w-xl mt-8 leading-relaxed">
-              Every signature stone is GIA-certified, every setting hand-finished.
-              Each piece is a one-of-one composition.
+              <T k="home.sig.body" />
             </p>
             <hr className="gold-rule mt-10" />
           </Reveal>
@@ -165,7 +154,7 @@ export default async function HomePage() {
           <Reveal delay={0.2}>
             <div className="mt-16 text-center">
               <Link href="/gallery" className="btn">
-                View the full gallery <span className="btn-arrow">→</span>
+                <T k="home.sig.cta" /> <span className="btn-arrow">→</span>
               </Link>
             </div>
           </Reveal>
@@ -176,27 +165,22 @@ export default async function HomePage() {
       <section className="bg-charcoal text-ivory py-32 lg:py-40">
         <div className="mx-auto max-w-[1480px] px-6 lg:px-10 grid lg:grid-cols-[1fr_1.1fr] gap-16 lg:gap-24 items-center">
           <Reveal>
-            <p className="eyebrow text-gold-light">Our story</p>
+            <p className="eyebrow text-gold-light"><T k="home.story.eyebrow" /></p>
             <h2 className="display text-[clamp(40px,6vw,84px)] leading-[1.02] mt-4">
-              Thirty years of
-              <span className="display-italic text-gold-light"> rare stones.</span>
+              <T k="home.story.title.l1" />
+              <span className="display-italic text-gold-light"> <T k="home.story.title.l2" /></span>
             </h2>
           </Reveal>
           <Reveal delay={0.15}>
             <p className="font-sans text-[15px] tracking-[0.02em] text-ivory/85 leading-[1.85]">
-              CLEAR Jewelry was founded in Bangkok in 1993 to do one thing
-              quietly and well: source the rarest coloured stones in the world,
-              and set them by hand. We work primarily with unheated Burmese
-              rubies, royal blue Ceylon sapphires, fancy &amp; black diamonds,
-              and the occasional Paraiba. Our atelier is small. Our pieces are
-              one-of-one. Our relationships, in many cases, are second-generation.
+              <T k="home.story.body" />
             </p>
             <hr className="gold-rule mt-8" />
             <Link
               href="/about"
               className="mt-10 inline-flex items-center gap-3 font-sans text-[12px] uppercase tracking-[0.28em] text-gold-light hover:text-ivory transition-colors duration-500"
             >
-              Read the heritage <span className="btn-arrow">→</span>
+              <T k="home.story.cta" /> <span className="btn-arrow">→</span>
             </Link>
           </Reveal>
         </div>
@@ -210,21 +194,20 @@ export default async function HomePage() {
           </Reveal>
           <Reveal delay={0.15}>
             <h2 className="display text-[clamp(36px,5vw,68px)] leading-[1.05] mt-10">
-              Visit the atelier at
-              <span className="display-italic text-gold"> Gaysorn Centre.</span>
+              <T k="home.close.title.l1" />
+              <span className="display-italic text-gold"> <T k="home.close.title.l2" /></span>
             </h2>
             <p className="font-sans text-[14.5px] tracking-[0.02em] text-charcoal/75 max-w-xl mx-auto mt-8 leading-relaxed">
-              Private viewings by appointment. Bring an idea, an heirloom, or a stone you love.
-              We will design the rest.
+              <T k="home.close.body" />
             </p>
           </Reveal>
           <Reveal delay={0.3}>
             <div className="mt-12 flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link href="/book" className="btn btn-solid">
-                Book an Appointment <span className="btn-arrow">→</span>
+                <T k="home.close.cta.book" /> <span className="btn-arrow">→</span>
               </Link>
               <Link href="/contact" className="btn">
-                See all contact channels
+                <T k="home.close.cta.channels" />
               </Link>
             </div>
             <p className="mt-10 font-sans text-[11px] tracking-[0.28em] uppercase text-gold-deep">
