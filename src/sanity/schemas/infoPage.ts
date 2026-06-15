@@ -5,8 +5,8 @@ export default defineType({
   title: 'Information page',
   type: 'document',
   fields: [
-    defineField({ name: 'title',       title: 'Page title',       type: 'string' }),
-    defineField({ name: 'description', title: 'Meta description', type: 'text', rows: 2 }),
+    defineField({ name: 'title',       title: 'Page title',       type: 'localizedString' }),
+    defineField({ name: 'description', title: 'Meta description', type: 'localizedText' }),
     defineField({
       name: 'sections',
       title: 'Sections',
@@ -15,16 +15,16 @@ export default defineType({
       of: [{
         type: 'object',
         fields: [
-          defineField({ name: 'eyebrow', title: 'Eyebrow', type: 'string' }),
-          defineField({ name: 'title',   title: 'Title',   type: 'string', validation: (R) => R.required() }),
+          defineField({ name: 'eyebrow', title: 'Eyebrow', type: 'localizedString' }),
+          defineField({ name: 'title',   title: 'Title',   type: 'localizedString', validation: (R) => R.required() }),
           defineField({
             name: 'body',
             title: 'Body paragraphs',
             type: 'array',
-            of: [{ type: 'text', rows: 4 }],
+            of: [{ type: 'localizedText' }],
           }),
         ],
-        preview: { select: { title: 'title', subtitle: 'eyebrow' } },
+        preview: { select: { title: 'title.en', subtitle: 'eyebrow.en' } },
       }],
     }),
   ],

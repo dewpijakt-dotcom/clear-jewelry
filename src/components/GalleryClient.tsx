@@ -5,12 +5,14 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import clsx from 'clsx';
 import Lightbox from './Lightbox';
-import type { GalleryItem } from '@/lib/gallery-manifest';
+import { useLocale } from './LanguageProvider';
+import { flattenItem, pickLocalized, Locale, Localized } from '@/lib/i18n';
+import type { LocalizedGalleryItem } from '@/lib/sanityAdapter';
 
-type Category = { id: string; title: string; slug: string };
+type Category = { id: string; title: Localized; slug: string };
 
 interface GalleryClientProps {
-  pieces: GalleryItem[];
+  pieces: LocalizedGalleryItem[];
   categories: Category[];
 }
 
@@ -18,19 +20,23 @@ const pad = (n: number) => String(n).padStart(2, '0');
 
 /**
  * Refined editorial gallery — salon hero piece, mixed-aspect mosaic,
- * gold hairline frame on hover, soft lift, lot-number annotations,
- * pull-quote breakers every 9 tiles. Sanity-fed (graceful fallback).
+ * gold hairline frame on hover, soft lift, lot-number annotations.
+ * Names + descriptions flip locale via useLocale().
  */
 export default function GalleryClient({ pieces, categories }: GalleryClientProps) {
   const [filter, setFilter] = useState<string>('all');
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
+  const { locale } = useLocale();
 
-  const filtered = useMemo<GalleryItem[]>(() => {
+  const filtered = useMemo<LocalizedGalleryItem[]>(() => {
     if (filter === 'all') return pieces;
-    return pieces.filter((p) => (p.categories ?? []).some((c) => String(c) === filter));
+    return pieces.filter((p) => (p.categories ?? []).some((c) => c === filter));
   }, [pieces, filter]);
 
-  const tabs: Category[] = [{ id: 'all', title: 'All', slug: 'all' }, ...categories];
+  const tabs: Category[] = [
+    { id: 'all', title: { en: 'All', th: 'ทั้งหมด', zh: '全部' }, slug: 'all' },
+    ...categories,
+  ];
   const salon = filtered[0];
   const rest = filtered.slice(1);
 
@@ -58,7 +64,7 @@ export default function GalleryClient({ pieces, categories }: GalleryClientProps
                     active ? 'text-charcoal' : 'text-charcoal/55 hover:text-charcoal',
                   )}
                 >
-                  {tab.title}
+                  {pickLocalized(tab.title, locale)}
                   {active && (
                     <motion.span
                       layoutId="gallery-tab-underline"
@@ -74,55 +80,57 @@ export default function GalleryClient({ pieces, categories }: GalleryClientProps
       </section>
 
       {/* SALON CENTREPIECE — the first piece, large editorial frame */}
-      {salon && (
-        <section className="bg-ivory pt-16 lg:pt-24 pb-12">
-          <div className="mx-auto max-w-[1480px] px-6 lg:px-10">
-            <div className="grid lg:grid-cols-[1.4fr_1fr] gap-10 lg:gap-20 items-center">
-              <button
-                type="button"
-                onClick={() => setActiveIndex(0)}
-                className="group relative block w-full aspect-square overflow-hidden bg-charcoal"
-                aria-label={salon.alt}
-              >
-                <RemoteOrLocalImage item={salon} priority sizes="(max-width: 1024px) 100vw, 56vw" />
-                {/* gold corner brackets */}
-                <span className="absolute pointer-events-none transition-opacity duration-700 opacity-0 group-hover:opacity-100" style={{ top: 18, left: 18, width: 28, height: 28, borderTop: '1px solid var(--gold-light)', borderLeft: '1px solid var(--gold-light)' }} />
-                <span className="absolute pointer-events-none transition-opacity duration-700 opacity-0 group-hover:opacity-100" style={{ top: 18, right: 18, width: 28, height: 28, borderTop: '1px solid var(--gold-light)', borderRight: '1px solid var(--gold-light)' }} />
-                <span className="absolute pointer-events-none transition-opacity duration-700 opacity-0 group-hover:opacity-100" style={{ bottom: 18, left: 18, width: 28, height: 28, borderBottom: '1px solid var(--gold-light)', borderLeft: '1px solid var(--gold-light)' }} />
-                <span className="absolute pointer-events-none transition-opacity duration-700 opacity-0 group-hover:opacity-100" style={{ bottom: 18, right: 18, width: 28, height: 28, borderBottom: '1px solid var(--gold-light)', borderRight: '1px solid var(--gold-light)' }} />
-              </button>
-
-              <div>
-                <p className="font-sans text-[10.5px] uppercase tracking-[0.48em] text-gold-deep">
-                  Lot {pad(1)} &nbsp;·&nbsp; The opening piece
-                </p>
-                <h2
-                  className="display leading-[1.02] mt-5 text-charcoal"
-                  style={{ fontSize: 'clamp(34px, 4.8vw, 64px)' }}
-                >
-                  {salon.name ?? salon.description}
-                </h2>
-                {salon.description && salon.name && (
-                  <p className="font-sans italic text-[15px] text-charcoal/75 mt-6 leading-[1.85] max-w-[44ch]">
-                    {salon.description}
-                  </p>
-                )}
-                <hr className="border-0 h-px bg-gold-light/50 w-24 mt-8" />
-                <p className="mt-6 font-sans text-[11px] uppercase tracking-[0.32em] text-gold-deep">
-                  Signed CLEAR 1993 &nbsp;·&nbsp; Bangkok
-                </p>
+      {salon && (() => {
+        const salonFlat = flattenItem(salon, locale);
+        return (
+          <section className="bg-ivory pt-16 lg:pt-24 pb-12">
+            <div className="mx-auto max-w-[1480px] px-6 lg:px-10">
+              <div className="grid lg:grid-cols-[1.4fr_1fr] gap-10 lg:gap-20 items-center">
                 <button
                   type="button"
                   onClick={() => setActiveIndex(0)}
-                  className="mt-10 inline-flex items-center gap-3 font-sans text-[11.5px] uppercase tracking-[0.34em] text-charcoal hover:text-gold-deep transition-colors duration-500 border-b border-charcoal/40 pb-1.5"
+                  className="group relative block w-full aspect-square overflow-hidden bg-charcoal"
+                  aria-label={salonFlat.alt}
                 >
-                  View detail <span aria-hidden>→</span>
+                  <RemoteOrLocalImage src={salon.src} alt={salonFlat.alt} priority sizes="(max-width: 1024px) 100vw, 56vw" />
+                  <span className="absolute pointer-events-none transition-opacity duration-700 opacity-0 group-hover:opacity-100" style={{ top: 18, left: 18, width: 28, height: 28, borderTop: '1px solid var(--gold-light)', borderLeft: '1px solid var(--gold-light)' }} />
+                  <span className="absolute pointer-events-none transition-opacity duration-700 opacity-0 group-hover:opacity-100" style={{ top: 18, right: 18, width: 28, height: 28, borderTop: '1px solid var(--gold-light)', borderRight: '1px solid var(--gold-light)' }} />
+                  <span className="absolute pointer-events-none transition-opacity duration-700 opacity-0 group-hover:opacity-100" style={{ bottom: 18, left: 18, width: 28, height: 28, borderBottom: '1px solid var(--gold-light)', borderLeft: '1px solid var(--gold-light)' }} />
+                  <span className="absolute pointer-events-none transition-opacity duration-700 opacity-0 group-hover:opacity-100" style={{ bottom: 18, right: 18, width: 28, height: 28, borderBottom: '1px solid var(--gold-light)', borderRight: '1px solid var(--gold-light)' }} />
                 </button>
+
+                <div>
+                  <p className="font-sans text-[10.5px] uppercase tracking-[0.48em] text-gold-deep">
+                    Lot {pad(1)} &nbsp;·&nbsp; The opening piece
+                  </p>
+                  <h2
+                    className="display leading-[1.02] mt-5 text-charcoal"
+                    style={{ fontSize: 'clamp(34px, 4.8vw, 64px)' }}
+                  >
+                    {salonFlat.name || salonFlat.description}
+                  </h2>
+                  {salonFlat.description && salonFlat.name && (
+                    <p className="font-sans italic text-[15px] text-charcoal/75 mt-6 leading-[1.85] max-w-[44ch]">
+                      {salonFlat.description}
+                    </p>
+                  )}
+                  <hr className="border-0 h-px bg-gold-light/50 w-24 mt-8" />
+                  <p className="mt-6 font-sans text-[11px] uppercase tracking-[0.32em] text-gold-deep">
+                    Signed CLEAR 1993 &nbsp;·&nbsp; Bangkok
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => setActiveIndex(0)}
+                    className="mt-10 inline-flex items-center gap-3 font-sans text-[11.5px] uppercase tracking-[0.34em] text-charcoal hover:text-gold-deep transition-colors duration-500 border-b border-charcoal/40 pb-1.5"
+                  >
+                    View detail <span aria-hidden>→</span>
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
-        </section>
-      )}
+          </section>
+        );
+      })()}
 
       {/* Editorial divider */}
       {salon && (
@@ -135,7 +143,7 @@ export default function GalleryClient({ pieces, categories }: GalleryClientProps
         </div>
       )}
 
-      {/* MOSAIC GRID — mixed aspect (mostly square, accent portrait), generous gaps */}
+      {/* MOSAIC GRID */}
       <section className="bg-ivory pb-24 lg:pb-32 pt-8">
         <div className="mx-auto max-w-[1480px] px-6 lg:px-10">
           <AnimatePresence mode="wait">
@@ -148,12 +156,13 @@ export default function GalleryClient({ pieces, categories }: GalleryClientProps
               className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4 lg:gap-5 [grid-auto-flow:dense]"
             >
               {rest.map((item, i) => {
-                const original = i + 2; // 1-indexed, +1 for salon piece
+                const original = i + 2;
                 const aspect = item.aspect ?? 'square';
                 return (
                   <PieceCard
                     key={item.id ?? i}
                     item={item}
+                    locale={locale}
                     lotNumber={pad(original)}
                     aspect={aspect}
                     onClick={() => setActiveIndex(i + 1)}
@@ -182,21 +191,25 @@ export default function GalleryClient({ pieces, categories }: GalleryClientProps
 }
 
 /* ─────────────────────────────────────────────────────────────────
- *  Tile — gold hairline frame on hover, soft lift, lot caption
+ *  Tile
  * ───────────────────────────────────────────────────────────────── */
 function PieceCard({
   item,
+  locale,
   lotNumber,
   aspect,
   onClick,
 }: {
-  item: GalleryItem;
+  item: LocalizedGalleryItem;
+  locale: Locale;
   lotNumber: string;
   aspect: 'portrait' | 'square' | 'wide';
   onClick: () => void;
 }) {
   const [hover, setHover] = useState(false);
   const aspectClass = 'aspect-square';
+  const flat = flattenItem(item, locale);
+  const display = flat.name || flat.description;
 
   return (
     <div className="group flex flex-col">
@@ -215,11 +228,10 @@ function PieceCard({
           boxShadow: hover ? '0 18px 38px -22px rgba(21, 19, 15, 0.45)' : '0 0 0 rgba(0,0,0,0)',
           transition: 'transform 700ms cubic-bezier(0.22, 0.61, 0.36, 1), box-shadow 700ms cubic-bezier(0.22, 0.61, 0.36, 1)',
         }}
-        aria-label={item.alt}
+        aria-label={flat.alt}
       >
-        <RemoteOrLocalImage item={item} sizes="(max-width: 768px) 50vw, (max-width: 1280px) 33vw, 25vw" />
+        <RemoteOrLocalImage src={item.src} alt={flat.alt} sizes="(max-width: 768px) 50vw, (max-width: 1280px) 33vw, 25vw" />
 
-        {/* gold hairline museum-mat frame on hover */}
         <div
           className={clsx(
             'absolute pointer-events-none transition-all duration-700 ease-elegant',
@@ -228,7 +240,6 @@ function PieceCard({
           style={{ border: '1px solid rgba(216, 190, 126, 0.7)' }}
         />
 
-        {/* gentle vertical-only veil for caption pool */}
         <div
           className={clsx(
             'absolute inset-0 pointer-events-none transition-opacity duration-700',
@@ -239,7 +250,6 @@ function PieceCard({
           }}
         />
 
-        {/* hover caption */}
         <div
           className={clsx(
             'absolute bottom-0 left-0 right-0 p-5 lg:p-6',
@@ -251,15 +261,14 @@ function PieceCard({
             Lot {lotNumber}
           </p>
           <h3 className="display italic text-ivory text-lg lg:text-xl mt-1.5 leading-snug">
-            {item.name ?? item.description}
+            {display}
           </h3>
         </div>
       </button>
 
-      {/* permanent caption below tile — Sotheby's catalogue rhythm */}
       <div className="mt-3 flex items-baseline justify-between gap-3">
         <p className="font-sans italic text-[12.5px] text-charcoal/75 leading-snug line-clamp-2 max-w-[28ch]">
-          {item.name ?? item.description}
+          {display}
         </p>
         <p className="font-sans text-[9.5px] uppercase tracking-[0.42em] text-gold-deep/80 tabular-nums shrink-0">
           Lot {lotNumber}
@@ -271,20 +280,22 @@ function PieceCard({
 
 /* Image that handles both Sanity CDN URLs and local /images/gallery/ filenames */
 function RemoteOrLocalImage({
-  item,
+  src,
+  alt,
   priority,
   sizes,
 }: {
-  item: GalleryItem;
+  src: string | undefined;
+  alt: string;
   priority?: boolean;
   sizes: string;
 }) {
-  if (!item.src) return null;
-  const url = item.src.startsWith('http') ? item.src : `/images/gallery/${item.src}`;
+  if (!src) return null;
+  const url = src.startsWith('http') ? src : `/images/gallery/${src}`;
   return (
     <Image
       src={url}
-      alt={item.alt}
+      alt={alt}
       fill
       sizes={sizes}
       priority={priority}

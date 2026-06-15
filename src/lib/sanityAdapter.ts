@@ -1,18 +1,27 @@
 import { sanityClient, sanityImageUrl } from './sanity';
-import { GalleryItem, GALLERY as MANIFEST, sortedGallery, homePreview as manifestHomePreview } from './gallery-manifest';
+import { GalleryItem, sortedGallery, homePreview as manifestHomePreview } from './gallery-manifest';
 import { HOMEPAGE_QUERY, GALLERY_QUERY, SITE_SETTINGS_QUERY, ABOUT_QUERY, INFO_QUERY, CONTACT_QUERY } from './sanityQueries';
+import { Localized } from './i18n';
 
-/* ─── Types returned from Sanity (loose) ─────────────────────────── */
+/**
+ * Adapter that turns Sanity GROQ results into shapes pages can render.
+ *
+ * Localized fields come out as `{ en, th, zh }` (or the raw value if
+ * the document was never migrated). All call sites should render via
+ * `pickLocalized()` (server) or `useL()` (client) so empty fields fall
+ * back to EN gracefully.
+ */
+
 type SanityPiece = {
   _id: string;
-  name?: string;
-  alt?: string;
-  description?: string;
+  name?: Localized;
+  alt?: Localized;
+  description?: Localized;
   image?: any;
   aspect?: 'portrait' | 'square' | 'wide';
   hero?: boolean;
   order?: number;
-  categories?: { _id: string; title: string; slug?: string }[];
+  categories?: { _id: string; title?: Localized; slug?: string }[];
 };
 
 const REVALIDATE = 60;
@@ -25,118 +34,183 @@ async function fetchSafe<T>(query: string): Promise<T | null> {
   }
 }
 
-/* ─── Convert SanityPiece → GalleryItem (manifest-compatible) ────── */
-function toItem(p: SanityPiece): GalleryItem {
+/** Coerce a Sanity field into our Localized shape, accepting both old
+ *  (plain string) and new (object) shapes. */
+function loc(v: any): Localized {
+  if (v == null) return '';
+  if (typeof v === 'string') return v;
+  return { en: v.en ?? '', th: v.th ?? '', zh: v.zh ?? '' };
+}
+
+function toItem(p: SanityPiece): LocalizedGalleryItem {
   const url = sanityImageUrl(p.image, 1600) ?? '';
   return {
     id: p._id,
-    src: url,            // absolute https URL — components detect with /^https/
-    alt: p.alt ?? '',
-    description: p.description ?? '',
-    name: p.name,
+    src: url,
+    alt: loc(p.alt),
+    description: loc(p.description),
+    name: loc(p.name),
     aspect: p.aspect ?? 'square',
     hero: p.hero,
     order: p.order,
-    categories: p.categories?.map((c) => (c.slug ?? c.title.toLowerCase()) as any),
+    categories: (p.categories ?? []).map((c) => (c.slug ?? '').toLowerCase()).filter(Boolean),
   };
 }
 
-/* ─── Public API used by pages ──────────────────────────────────── */
-export async function getHomepage() {
+/* ─── Public types ───────────────────────────────────────────────── */
+
+export interface LocalizedGalleryItem {
+  id: string;
+  src: string;
+  alt: Localized;
+  name: Localized;
+  description: Localized;
+  aspect: 'portrait' | 'square' | 'wide';
+  hero?: boolean;
+  order?: number;
+  /** Category slugs the item belongs to. */
+  categories: string[];
+}
+
+export interface HomepageData {
+  hero: { src: string; srcMobile?: string | null; alt: Localized };
+  heroEyebrow: Localized;
+  heroTitle: Localized;
+  heroItalic: Localized;
+  heroLede: Localized;
+  ctaPrimaryLabel: Localized;
+  ctaPrimaryHref: string;
+  ctaSecondaryLabel: Localized;
+  ctaSecondaryHref: string;
+  ctaPlateEyebrow: Localized;
+  signatureEyebrow: Localized;
+  signatureTitle: Localized;
+  signatureBody: Localized;
+  storyEyebrow: Localized;
+  storyTitle: Localized;
+  storyBody: Localized;
+  storyImage?: string | null;
+  storyImageAlt: Localized;
+  closingTitle: Localized;
+  closingBody: Localized;
+  featured: LocalizedGalleryItem[];
+}
+
+/* ─── Public API ─────────────────────────────────────────────────── */
+
+export async function getHomepage(): Promise<HomepageData> {
   type R = {
     homepage: any | null;
     featured: SanityPiece[] | null;
     allHero: SanityPiece[] | null;
   };
   const data = await fetchSafe<R>(HOMEPAGE_QUERY);
-  if (!data) {
-    // Fallback: derive a "homepage" shape from manifest + BRAND
+
+  if (!data || !data.homepage) {
+    // Fallback when Sanity is unreachable — wrap manifest into localized shape.
     return {
       hero: { src: '/images/hero/hero-main.jpg', alt: 'A CLEAR Jewelry signature piece.' },
-      heroEyebrow: 'Bangkok · Since 1993',
-      heroTitle: 'Gemstone art',
-      heroItalic: 'since 1993.',
-      heroLede: 'An independent Thai high-jewellery house. Unheated Burmese rubies, royal blue sapphires, fancy diamonds. Hand-set, signed CLEAR 1993.',
-      ctaPrimaryLabel: 'Book an Appointment',
+      heroEyebrow: { en: 'Bangkok · Since 1993', th: 'กรุงเทพฯ · ตั้งแต่ปี 1993', zh: '曼谷 · 始于 1993' },
+      heroTitle: { en: 'Gemstone art', th: 'ศิลปะอัญมณี', zh: '宝石艺术' },
+      heroItalic: { en: 'since 1993.', th: 'ตั้งแต่ปี 1993', zh: '自 1993 年。' },
+      heroLede: { en: 'An independent Thai high-jewellery house. Unheated Burmese rubies, royal blue sapphires, fancy diamonds. Hand-set, signed CLEAR 1993.', th: '', zh: '' },
+      ctaPrimaryLabel: { en: 'Book an Appointment', th: 'นัดหมายเข้าชม', zh: '预约鉴赏' },
       ctaPrimaryHref: '/book',
-      ctaSecondaryLabel: 'View the Gallery',
+      ctaSecondaryLabel: { en: 'View the Gallery', th: 'ดูแกลเลอรี', zh: '浏览作品集' },
       ctaSecondaryHref: '/gallery',
-      ctaPlateEyebrow: 'By Private Appointment',
-      signatureEyebrow: 'Signature',
-      signatureTitle: 'The pieces we are known for.',
-      signatureBody: 'Every signature stone is GIA-certified, every setting hand-finished. Each piece is a one-of-one composition.',
-      storyEyebrow: 'Our story',
-      storyTitle: 'Thirty years of rare stones.',
-      storyBody: 'CLEAR Jewelry was founded in Bangkok in 1993 to do one thing quietly and well: source the rarest coloured stones in the world, set them by hand, and only ever sign work we would wear ourselves.',
-      featured: manifestHomePreview(12),
+      ctaPlateEyebrow: { en: 'By Private Appointment', th: 'นัดล่วงหน้าเป็นการส่วนตัว', zh: '凭预约鉴赏' },
+      signatureEyebrow: { en: 'Signature', th: 'ลายเซ็น', zh: '签名之作' },
+      signatureTitle: { en: 'The pieces we are known for.', th: 'ผลงานที่ลายเซ็นของเราเป็นที่จดจำ', zh: '我们以此为世所知。' },
+      signatureBody: { en: 'Every signature stone is GIA-certified, every setting hand-finished. Each piece is a one-of-one composition.', th: '', zh: '' },
+      storyEyebrow: { en: 'Our story', th: 'เรื่องราวของเรา', zh: '我们的故事' },
+      storyTitle: { en: 'Thirty years of rare stones.', th: 'สามสิบปีแห่งอัญมณีหายาก', zh: '三十年的稀世宝石。' },
+      storyBody: { en: 'CLEAR Jewelry was founded in Bangkok in 1993...', th: '', zh: '' },
+      storyImage: null,
+      storyImageAlt: '',
+      closingTitle: { en: 'Visit the atelier at Gaysorn Centre.', th: '', zh: '' },
+      closingBody: { en: 'Private viewings by appointment.', th: '', zh: '' },
+      featured: manifestHomePreview(12).map(legacyItemToLocalized),
     };
   }
-  // Build featured list: explicit picks first, then backfill from hero-flagged
+
   const explicit = (data.featured ?? []).map(toItem);
   const heroes   = (data.allHero ?? []).map(toItem);
   const seen = new Set(explicit.map((g) => g.id));
   const fill = heroes.filter((g) => !seen.has(g.id));
   const featured = [...explicit, ...fill].slice(0, 12);
 
-  const heroUrl = sanityImageUrl(data.homepage?.heroImage, 2400);
+  const heroUrl       = sanityImageUrl(data.homepage?.heroImage, 2400);
   const heroMobileUrl = sanityImageUrl(data.homepage?.heroImageMobile, 1200);
 
   return {
     hero: {
       src: heroUrl ?? '/images/hero/hero-main.jpg',
       srcMobile: heroMobileUrl ?? null,
-      alt: data.homepage?.heroImageAlt ?? 'A CLEAR Jewelry signature piece.',
+      alt: loc(data.homepage?.heroImageAlt) || 'A CLEAR Jewelry signature piece.',
     },
-    heroEyebrow: data.homepage?.heroEyebrow ?? 'Bangkok · Since 1993',
-    heroTitle:   data.homepage?.heroTitle ?? 'Gemstone art',
-    heroItalic:  data.homepage?.heroItalic ?? 'since 1993.',
-    heroLede:    data.homepage?.heroLede ?? '',
-    ctaPrimaryLabel:   data.homepage?.ctaPrimaryLabel ?? 'Book an Appointment',
+    heroEyebrow:       loc(data.homepage?.heroEyebrow),
+    heroTitle:         loc(data.homepage?.heroTitle),
+    heroItalic:        loc(data.homepage?.heroItalic),
+    heroLede:          loc(data.homepage?.heroLede),
+    ctaPrimaryLabel:   loc(data.homepage?.ctaPrimaryLabel),
     ctaPrimaryHref:    data.homepage?.ctaPrimaryHref ?? '/book',
-    ctaSecondaryLabel: data.homepage?.ctaSecondaryLabel ?? 'View the Gallery',
+    ctaSecondaryLabel: loc(data.homepage?.ctaSecondaryLabel),
     ctaSecondaryHref:  data.homepage?.ctaSecondaryHref ?? '/gallery',
-    ctaPlateEyebrow:   data.homepage?.ctaPlateEyebrow ?? 'By Private Appointment',
-    signatureEyebrow: data.homepage?.signatureEyebrow ?? 'Signature',
-    signatureTitle:   data.homepage?.signatureTitle ?? 'The pieces we are known for.',
-    signatureBody:    data.homepage?.signatureBody ?? '',
-    storyEyebrow:     data.homepage?.storyEyebrow ?? 'Our story',
-    storyTitle:       data.homepage?.storyTitle ?? '',
-    storyBody:        data.homepage?.storyBody ?? '',
-    storyImage:       sanityImageUrl(data.homepage?.storyImage, 1600),
-    storyImageAlt:    data.homepage?.storyImageAlt ?? '',
-    closingTitle:     data.homepage?.closingTitle ?? '',
-    closingBody:      data.homepage?.closingBody ?? '',
+    ctaPlateEyebrow:   loc(data.homepage?.ctaPlateEyebrow),
+    signatureEyebrow:  loc(data.homepage?.signatureEyebrow),
+    signatureTitle:    loc(data.homepage?.signatureTitle),
+    signatureBody:     loc(data.homepage?.signatureBody),
+    storyEyebrow:      loc(data.homepage?.storyEyebrow),
+    storyTitle:        loc(data.homepage?.storyTitle),
+    storyBody:         loc(data.homepage?.storyBody),
+    storyImage:        sanityImageUrl(data.homepage?.storyImage, 1600),
+    storyImageAlt:     loc(data.homepage?.storyImageAlt),
+    closingTitle:      loc(data.homepage?.closingTitle),
+    closingBody:       loc(data.homepage?.closingBody),
     featured,
   };
 }
 
-export async function getFullGallery(): Promise<{ pieces: GalleryItem[]; categories: { id: string; title: string; slug: string }[] }> {
-  type R = { pieces: SanityPiece[] | null; categories: { _id: string; title: string; slug: string }[] | null };
+/** Convert a plain (legacy) GalleryItem into a LocalizedGalleryItem. */
+function legacyItemToLocalized(g: GalleryItem): LocalizedGalleryItem {
+  return {
+    id: g.id,
+    src: g.src,
+    alt: g.alt ?? '',
+    name: g.name ?? '',
+    description: g.description ?? '',
+    aspect: g.aspect ?? 'square',
+    hero: g.hero,
+    order: g.order,
+    categories: (g.categories ?? []).map((c) => String(c)),
+  };
+}
+
+export async function getFullGallery(): Promise<{ pieces: LocalizedGalleryItem[]; categories: { id: string; title: Localized; slug: string }[] }> {
+  type R = { pieces: SanityPiece[] | null; categories: { _id: string; title?: Localized; slug: string }[] | null };
   const data = await fetchSafe<R>(GALLERY_QUERY);
   if (!data || !data.pieces || !data.pieces.length) {
     return {
-      pieces: sortedGallery(),
+      pieces: sortedGallery().map(legacyItemToLocalized),
       categories: [
-        { id: 'all', title: 'All', slug: 'all' },
-        { id: 'ring', title: 'Rings', slug: 'ring' },
-        { id: 'necklace', title: 'Necklaces', slug: 'necklace' },
-        { id: 'earring', title: 'Earrings', slug: 'earring' },
-        { id: 'ruby', title: 'Rubies', slug: 'ruby' },
-        { id: 'sapphire', title: 'Sapphires', slug: 'sapphire' },
-        { id: 'diamond', title: 'Diamonds', slug: 'diamond' },
-        { id: 'set', title: 'Sets', slug: 'set' },
+        { id: 'all',      title: { en: 'All',        th: 'ทั้งหมด',   zh: '全部' }, slug: 'all' },
+        { id: 'ring',     title: { en: 'Rings',      th: 'แหวน',      zh: '戒指' }, slug: 'ring' },
+        { id: 'necklace', title: { en: 'Necklaces',  th: 'สร้อยคอ',   zh: '项链' }, slug: 'necklace' },
+        { id: 'earring',  title: { en: 'Earrings',   th: 'ต่างหู',     zh: '耳饰' }, slug: 'earring' },
+        { id: 'ruby',     title: { en: 'Rubies',     th: 'ทับทิม',     zh: '红宝石' }, slug: 'ruby' },
+        { id: 'sapphire', title: { en: 'Sapphires',  th: 'ไพลิน',      zh: '蓝宝石' }, slug: 'sapphire' },
+        { id: 'diamond',  title: { en: 'Diamonds',   th: 'เพชร',       zh: '钻石' }, slug: 'diamond' },
+        { id: 'set',      title: { en: 'Sets',       th: 'เซ็ต',        zh: '套装' }, slug: 'set' },
       ],
     };
   }
   return {
     pieces: data.pieces.map(toItem),
-    categories: (data.categories ?? []).map((c) => ({ id: c._id, title: c.title, slug: c.slug })),
+    categories: (data.categories ?? []).map((c) => ({ id: c._id, title: loc(c.title), slug: c.slug })),
   };
 }
 
-export async function getSiteSettings() {
-  return fetchSafe<any>(SITE_SETTINGS_QUERY);
-}
-export async function getAboutPage()   { return fetchSafe<any>(ABOUT_QUERY); }
-export async function getInfoPage()    { return fetchSafe<any>(INFO_QUERY); }
-export async function getContactPage() { return fetchSafe<any>(CONTACT_QUERY); }
+export async function getSiteSettings() { return fetchSafe<any>(SITE_SETTINGS_QUERY); }
+export async function getAboutPage()    { return fetchSafe<any>(ABOUT_QUERY); }
+export async function getInfoPage()     { return fetchSafe<any>(INFO_QUERY); }
+export async function getContactPage()  { return fetchSafe<any>(CONTACT_QUERY); }

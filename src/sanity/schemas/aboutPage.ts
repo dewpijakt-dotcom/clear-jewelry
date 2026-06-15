@@ -5,10 +5,10 @@ export default defineType({
   title: 'About page',
   type: 'document',
   fields: [
-    defineField({ name: 'maisonTitle', title: 'Maison — title', type: 'string' }),
-    defineField({ name: 'maisonBody',  title: 'Maison — body',  type: 'text', rows: 6 }),
-    defineField({ name: 'philosophyTitle', title: 'Philosophy — title', type: 'string' }),
-    defineField({ name: 'philosophyBody',  title: 'Philosophy — body',  type: 'text', rows: 6 }),
+    defineField({ name: 'maisonTitle', title: 'Maison — title', type: 'localizedString' }),
+    defineField({ name: 'maisonBody',  title: 'Maison — body',  type: 'localizedText' }),
+    defineField({ name: 'philosophyTitle', title: 'Philosophy — title', type: 'localizedString' }),
+    defineField({ name: 'philosophyBody',  title: 'Philosophy — body',  type: 'localizedText' }),
     defineField({
       name: 'bespokeSteps',
       title: 'Bespoke process — steps',
@@ -18,10 +18,10 @@ export default defineType({
         type: 'object',
         fields: [
           defineField({ name: 'number', title: 'Step number', type: 'string' }),
-          defineField({ name: 'title',  title: 'Step title',  type: 'string' }),
-          defineField({ name: 'body',   title: 'Step body',   type: 'text', rows: 3 }),
+          defineField({ name: 'title',  title: 'Step title',  type: 'localizedString' }),
+          defineField({ name: 'body',   title: 'Step body',   type: 'localizedText' }),
         ],
-        preview: { select: { title: 'title', subtitle: 'number' } },
+        preview: { select: { title: 'title.en', subtitle: 'number' } },
       }],
     }),
     defineField({
@@ -31,7 +31,7 @@ export default defineType({
       description: 'Optional. Leave empty for type-only design.',
       options: { hotspot: true },
     }),
-    defineField({ name: 'portraitImageAlt', title: 'Portrait — alt text', type: 'string' }),
+    defineField({ name: 'portraitImageAlt', title: 'Portrait — alt text', type: 'localizedString' }),
   ],
   preview: { prepare: () => ({ title: 'About page' }) },
 });

@@ -234,3 +234,26 @@ export function pickLocalized(value: Localized | null | undefined, locale: Local
   if (typeof value === 'string') return value;
   return value[locale] ?? value.en ?? value.th ?? value.zh ?? '';
 }
+
+/**
+ * Flat helper used by gallery components: convert a LocalizedGalleryItem-like
+ * record into a plain { name, alt, description } string view for the given
+ * locale. Lives here so it can be imported anywhere without circular deps.
+ */
+export interface LocalizedItemView {
+  name?: Localized;
+  alt?: Localized;
+  description?: Localized;
+}
+export interface FlatItemView {
+  name: string;
+  alt: string;
+  description: string;
+}
+export function flattenItem(item: LocalizedItemView, locale: Locale): FlatItemView {
+  return {
+    name: pickLocalized(item.name, locale),
+    alt: pickLocalized(item.alt, locale),
+    description: pickLocalized(item.description, locale),
+  };
+}

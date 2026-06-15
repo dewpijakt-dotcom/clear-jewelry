@@ -8,7 +8,7 @@ export default defineType({
     defineField({
       name: 'title',
       title: 'Category name',
-      type: 'string',
+      type: 'localizedString',
       description: 'Shown as a tab on the Gallery page. e.g. "Rings", "Necklaces", "Sapphires", "Bridal".',
       validation: (R) => R.required(),
     }),
@@ -16,8 +16,11 @@ export default defineType({
       name: 'slug',
       title: 'URL slug',
       type: 'slug',
-      description: 'Auto-generated from the title. Used in the URL when filtering.',
-      options: { source: 'title', maxLength: 60 },
+      description: 'Auto-generated from the English title. Used in the URL when filtering.',
+      options: {
+        source: (doc: any) => doc?.title?.en ?? '',
+        maxLength: 60,
+      },
       validation: (R) => R.required(),
     }),
     defineField({
@@ -29,8 +32,7 @@ export default defineType({
     defineField({
       name: 'description',
       title: 'Category intro copy (optional)',
-      type: 'text',
-      rows: 3,
+      type: 'localizedText',
       description: 'Optional sentence shown above the tiles when this category is selected.',
     }),
   ],

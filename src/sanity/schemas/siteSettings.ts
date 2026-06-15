@@ -8,10 +8,10 @@ export default defineType({
     defineField({ name: 'brandName',         title: 'Brand name',           type: 'string' }),
     defineField({ name: 'wordmark',          title: 'Wordmark (main)',      type: 'string', description: 'Big letters of the logo. Usually "CLEAR".' }),
     defineField({ name: 'wordmarkSubtitle',  title: 'Wordmark subtitle',    type: 'string', description: 'Small line under the wordmark. Usually "JEWELRY".' }),
-    defineField({ name: 'tagline',           title: 'Tagline',              type: 'string' }),
+    defineField({ name: 'tagline',           title: 'Tagline',              type: 'localizedString' }),
     defineField({ name: 'establishedYear',   title: 'Established year',     type: 'number' }),
 
-    /* Contact ----------------------------------------------------- */
+    /* Contact — phone/handles stay as plain strings (they aren't translated). */
     defineField({ name: 'phoneDisplay',     title: 'Phone (display)',     type: 'string' }),
     defineField({ name: 'phoneTel',         title: 'Phone (dial-able)',   type: 'string', description: 'In international format, e.g. +66813116666.' }),
     defineField({ name: 'lineHandle',       title: 'LINE handle',         type: 'string' }),
@@ -22,11 +22,11 @@ export default defineType({
       name: 'addressLines',
       title: 'Address (lines)',
       type: 'array',
-      of: [{ type: 'string' }],
+      of: [{ type: 'localizedString' }],
     }),
-    defineField({ name: 'addressOneLine', title: 'Address (one line)', type: 'string' }),
-    defineField({ name: 'hours',          title: 'Opening hours',      type: 'string' }),
-    defineField({ name: 'transitNote',    title: 'Transit note',       type: 'string' }),
+    defineField({ name: 'addressOneLine', title: 'Address (one line)', type: 'localizedString' }),
+    defineField({ name: 'hours',          title: 'Opening hours',      type: 'localizedString' }),
+    defineField({ name: 'transitNote',    title: 'Transit note',       type: 'localizedString' }),
     defineField({ name: 'googleMapEmbedUrl', title: 'Google Maps embed URL', type: 'url' }),
 
     /* Trust signals ---------------------------------------------- */
@@ -38,10 +38,10 @@ export default defineType({
       of: [{
         type: 'object',
         fields: [
-          defineField({ name: 'label',  title: 'Label',  type: 'string' }),
-          defineField({ name: 'detail', title: 'Detail', type: 'string' }),
+          defineField({ name: 'label',  title: 'Label',  type: 'localizedString' }),
+          defineField({ name: 'detail', title: 'Detail', type: 'localizedString' }),
         ],
-        preview: { select: { title: 'label', subtitle: 'detail' } },
+        preview: { select: { title: 'label.en', subtitle: 'detail.en' } },
       }],
     }),
 
@@ -63,14 +63,14 @@ export default defineType({
         type: 'object',
         fields: [
           defineField({ name: 'href',  title: 'URL',   type: 'string' }),
-          defineField({ name: 'label', title: 'Label', type: 'string' }),
+          defineField({ name: 'label', title: 'Label', type: 'localizedString' }),
         ],
-        preview: { select: { title: 'label', subtitle: 'href' } },
+        preview: { select: { title: 'label.en', subtitle: 'href' } },
       }],
     }),
 
     /* Footer ------------------------------------------------------ */
-    defineField({ name: 'footerNote', title: 'Footer note', type: 'text', rows: 2 }),
+    defineField({ name: 'footerNote', title: 'Footer note', type: 'localizedText' }),
   ],
   preview: { prepare: () => ({ title: 'Site settings' }) },
 });

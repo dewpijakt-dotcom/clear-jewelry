@@ -4,22 +4,29 @@ import { existsSync } from 'fs';
 import { join } from 'path';
 import { BRAND } from '@/lib/brand';
 import { getHomepage } from '@/lib/sanityAdapter';
+import { pickLocalized } from '@/lib/i18n';
 import Reveal from '@/components/Reveal';
 import HeroPlaceholder from '@/components/HeroPlaceholder';
 import Wordmark from '@/components/Wordmark';
 import GalleryShowcaseClient from '@/components/GalleryShowcaseClient';
 import T from '@/components/T';
+import L from '@/components/L';
 
 /**
  * HOME — full-bleed hero, signature pieces showcase, brand story teaser,
- * trust signals strip, closing CTA card. Calm, gallery rhythm.
+ * trust signals strip, closing CTA card. Hardcoded chrome via <T>;
+ * Sanity-fed text via <L> so EN/TH/ZH all flip with the toggle.
  */
 export default async function HomePage() {
   const cms = await getHomepage();
   const heroSrc = cms.hero.src;
-  const heroAlt = cms.hero.alt;
+  // Server-side EN initial render for image alt — clients re-render in their locale.
+  const heroAltEn = pickLocalized(cms.hero.alt, 'en') || 'A CLEAR Jewelry signature piece.';
   const heroExists = existsSync(join(process.cwd(), 'public', 'images', 'hero', 'hero-main.jpg'));
   const signature = cms.featured;
+  // Primary CTA href stays as URL (not localized)
+  const ctaPrimaryHref = cms.ctaPrimaryHref || '/book';
+  const ctaSecondaryHref = cms.ctaSecondaryHref || '/gallery';
 
   return (
     <>
@@ -28,7 +35,7 @@ export default async function HomePage() {
         {heroExists ? (
           <Image
             src={heroSrc}
-            alt={heroAlt}
+            alt={heroAltEn}
             fill
             sizes="100vw"
             priority
@@ -51,7 +58,7 @@ export default async function HomePage() {
               className="eyebrow text-gold-light mb-8"
               style={{ textShadow: '0 1px 14px rgba(0,0,0,0.65)' }}
             >
-              {cms.heroEyebrow}
+              <L value={cms.heroEyebrow} />
             </p>
           </Reveal>
           <Reveal y={56} duration={1.6} delay={0.15}>
@@ -59,8 +66,8 @@ export default async function HomePage() {
               className="display font-light text-[clamp(48px,10vw,160px)] leading-[0.95] tracking-[-0.012em]"
               style={{ textShadow: '0 2px 24px rgba(0,0,0,0.55)' }}
             >
-              {cms.heroTitle}
-              <span className="block display-italic text-gold-light">{cms.heroItalic}</span>
+              <L value={cms.heroTitle} />
+              <span className="block display-italic text-gold-light"><L value={cms.heroItalic} /></span>
             </h1>
           </Reveal>
           <Reveal y={28} duration={1.2} delay={0.5}>
@@ -68,7 +75,7 @@ export default async function HomePage() {
               className="mt-8 lg:mt-10 max-w-xl mx-auto font-sans text-[13.5px] lg:text-[14px] tracking-[0.04em] text-ivory leading-[1.75]"
               style={{ textShadow: '0 1px 12px rgba(0,0,0,0.55)' }}
             >
-              {cms.heroLede}
+              <L value={cms.heroLede} />
             </p>
           </Reveal>
           <Reveal y={20} duration={1} delay={0.75}>
@@ -79,27 +86,27 @@ export default async function HomePage() {
                   className="font-sans text-[10.5px] uppercase tracking-[0.48em] text-gold-light whitespace-nowrap"
                   style={{ textShadow: '0 1px 10px rgba(0,0,0,0.7)' }}
                 >
-                  {cms.ctaPlateEyebrow}
+                  <L value={cms.ctaPlateEyebrow} />
                 </span>
                 <span className="hidden sm:block h-px w-12 lg:w-16 bg-gold-light/70" />
               </div>
 
               <div className="flex flex-col sm:flex-row items-center justify-center gap-6 sm:gap-10">
                 <Link
-                  href="/book"
+                  href={ctaPrimaryHref}
                   className="group/cta relative inline-flex items-center gap-3 px-12 py-[18px] border border-gold-light/90 text-ivory uppercase tracking-[0.34em] text-[12px] font-medium hover:bg-ivory hover:text-charcoal hover:border-ivory transition-all duration-700 ease-elegant overflow-hidden"
                   style={{
                     boxShadow: '0 0 0 1px rgba(216,190,126,0.18), 0 0 48px rgba(216,190,126,0.0)',
                   }}
                 >
-                  <span className="relative z-10">{cms.ctaPrimaryLabel}</span>
+                  <span className="relative z-10"><L value={cms.ctaPrimaryLabel} /></span>
                   <span className="relative z-10 transition-transform duration-500 group-hover/cta:translate-x-1">→</span>
                 </Link>
                 <Link
-                  href="/gallery"
+                  href={ctaSecondaryHref}
                   className="font-sans text-[12.5px] uppercase tracking-[0.42em] text-ivory hover:text-gold-light transition-colors duration-500 underline underline-offset-[10px] decoration-gold-light/80 decoration-[1px] pt-2 sm:pt-0"
                 >
-                  {cms.ctaSecondaryLabel}
+                  <L value={cms.ctaSecondaryLabel} />
                 </Link>
               </div>
 
@@ -138,13 +145,19 @@ export default async function HomePage() {
       <section className="bg-ivory py-32 lg:py-40">
         <div className="mx-auto max-w-[1480px] px-6 lg:px-10">
           <Reveal>
-            <p className="eyebrow text-gold-deep"><T k="home.sig.eyebrow" /></p>
+            <p className="eyebrow text-gold-deep"><L value={cms.signatureEyebrow} fallback=""/></p>
             <h2 className="display text-[clamp(40px,6vw,84px)] leading-[1.02] mt-4 max-w-3xl">
-              <T k="home.sig.title.l1" />
-              <span className="display-italic text-gold"> <T k="home.sig.title.l2" /></span>
+              <L value={cms.signatureTitle} fallback="" />
+              {!pickLocalized(cms.signatureTitle, 'en') && (
+                <>
+                  <T k="home.sig.title.l1" />
+                  <span className="display-italic text-gold"> <T k="home.sig.title.l2" /></span>
+                </>
+              )}
             </h2>
             <p className="font-sans text-[14.5px] tracking-[0.02em] text-charcoal/75 max-w-xl mt-8 leading-relaxed">
-              <T k="home.sig.body" />
+              <L value={cms.signatureBody} fallback="" />
+              {!pickLocalized(cms.signatureBody, 'en') && <T k="home.sig.body" />}
             </p>
             <hr className="gold-rule mt-10" />
           </Reveal>
@@ -165,15 +178,21 @@ export default async function HomePage() {
       <section className="bg-charcoal text-ivory py-32 lg:py-40">
         <div className="mx-auto max-w-[1480px] px-6 lg:px-10 grid lg:grid-cols-[1fr_1.1fr] gap-16 lg:gap-24 items-center">
           <Reveal>
-            <p className="eyebrow text-gold-light"><T k="home.story.eyebrow" /></p>
+            <p className="eyebrow text-gold-light"><L value={cms.storyEyebrow} fallback="" /></p>
             <h2 className="display text-[clamp(40px,6vw,84px)] leading-[1.02] mt-4">
-              <T k="home.story.title.l1" />
-              <span className="display-italic text-gold-light"> <T k="home.story.title.l2" /></span>
+              <L value={cms.storyTitle} fallback="" />
+              {!pickLocalized(cms.storyTitle, 'en') && (
+                <>
+                  <T k="home.story.title.l1" />
+                  <span className="display-italic text-gold-light"> <T k="home.story.title.l2" /></span>
+                </>
+              )}
             </h2>
           </Reveal>
           <Reveal delay={0.15}>
             <p className="font-sans text-[15px] tracking-[0.02em] text-ivory/85 leading-[1.85]">
-              <T k="home.story.body" />
+              <L value={cms.storyBody} fallback="" />
+              {!pickLocalized(cms.storyBody, 'en') && <T k="home.story.body" />}
             </p>
             <hr className="gold-rule mt-8" />
             <Link
@@ -194,11 +213,17 @@ export default async function HomePage() {
           </Reveal>
           <Reveal delay={0.15}>
             <h2 className="display text-[clamp(36px,5vw,68px)] leading-[1.05] mt-10">
-              <T k="home.close.title.l1" />
-              <span className="display-italic text-gold"> <T k="home.close.title.l2" /></span>
+              <L value={cms.closingTitle} fallback="" />
+              {!pickLocalized(cms.closingTitle, 'en') && (
+                <>
+                  <T k="home.close.title.l1" />
+                  <span className="display-italic text-gold"> <T k="home.close.title.l2" /></span>
+                </>
+              )}
             </h2>
             <p className="font-sans text-[14.5px] tracking-[0.02em] text-charcoal/75 max-w-xl mx-auto mt-8 leading-relaxed">
-              <T k="home.close.body" />
+              <L value={cms.closingBody} fallback="" />
+              {!pickLocalized(cms.closingBody, 'en') && <T k="home.close.body" />}
             </p>
           </Reveal>
           <Reveal delay={0.3}>

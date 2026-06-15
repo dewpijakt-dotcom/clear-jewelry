@@ -5,8 +5,8 @@ export default defineType({
   title: 'Contact page',
   type: 'document',
   fields: [
-    defineField({ name: 'headline', title: 'Page headline', type: 'string' }),
-    defineField({ name: 'subhead',  title: 'Subhead', type: 'text', rows: 2 }),
+    defineField({ name: 'headline', title: 'Page headline', type: 'localizedString' }),
+    defineField({ name: 'subhead',  title: 'Subhead', type: 'localizedText' }),
     defineField({
       name: 'channels',
       title: 'Contact channels',
@@ -15,12 +15,12 @@ export default defineType({
       of: [{
         type: 'object',
         fields: [
-          defineField({ name: 'label',     title: 'Label',     type: 'string' }),
+          defineField({ name: 'label',     title: 'Label',     type: 'localizedString' }),
           defineField({ name: 'value',     title: 'Value',     type: 'string' }),
           defineField({ name: 'href',      title: 'Link URL (optional)', type: 'string' }),
-          defineField({ name: 'secondary', title: 'Secondary line (optional)', type: 'string' }),
+          defineField({ name: 'secondary', title: 'Secondary line (optional)', type: 'localizedString' }),
         ],
-        preview: { select: { title: 'label', subtitle: 'value' } },
+        preview: { select: { title: 'label.en', subtitle: 'value' } },
       }],
     }),
     defineField({

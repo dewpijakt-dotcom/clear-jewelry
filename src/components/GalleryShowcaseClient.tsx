@@ -3,26 +3,29 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import clsx from 'clsx';
-import { GalleryItem } from '@/lib/gallery-manifest';
 import Lightbox from './Lightbox';
+import { useLocale } from './LanguageProvider';
+import { flattenItem } from '@/lib/i18n';
+import type { LocalizedGalleryItem } from '@/lib/sanityAdapter';
 
 /**
  * Home-page gallery preview — a dense uniform-square wall.
- *
- *   – auto-grows from the manifest (no fixed tile count in this component)
- *   – 4 columns × N rows at desktop, 3 at tablet, 2 at mobile
- *   – tight 1–3px gap, hover veil with editorial description, lightbox on click
+ * Sanity-fed via LocalizedGalleryItem: { name, alt, description } are
+ * Localized objects. Resolved to plain strings via useLocale() so the
+ * captions flip when the user toggles EN/TH/ZH.
  */
-export default function GalleryShowcaseClient({ items }: { items: GalleryItem[] }) {
+export default function GalleryShowcaseClient({ items }: { items: LocalizedGalleryItem[] }) {
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const [hoverIndex, setHoverIndex] = useState<number | null>(null);
+  const { locale } = useLocale();
 
   return (
     <>
       <div className="mt-14 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-[3px] md:gap-1">
         {items.map((item, i) => {
+          const flat = flattenItem(item, locale);
           const isHover = hoverIndex === i;
-          const displayName = item.name ?? item.description;
+          const displayName = flat.name || flat.description;
           return (
             <button
               key={item.id}
@@ -31,12 +34,12 @@ export default function GalleryShowcaseClient({ items }: { items: GalleryItem[] 
               onMouseEnter={() => setHoverIndex(i)}
               onMouseLeave={() => setHoverIndex(null)}
               className="group relative block w-full aspect-square overflow-hidden bg-charcoal text-left"
-              aria-label={item.alt}
+              aria-label={flat.alt}
             >
               {item.src && (
                 <Image
                   src={(item.src && item.src.startsWith("http")) ? item.src : ("/images/gallery/" + item.src)}
-                  alt={item.alt}
+                  alt={flat.alt}
                   fill
                   sizes="(max-width: 768px) 50vw, (max-width: 1280px) 33vw, 25vw"
                   className={clsx(
@@ -72,9 +75,9 @@ export default function GalleryShowcaseClient({ items }: { items: GalleryItem[] 
                 <h3 className="display text-ivory text-lg lg:text-xl mt-1 leading-snug">
                   {displayName}
                 </h3>
-                {item.name && item.description && (
+                {flat.name && flat.description && (
                   <p className="font-sans italic text-[12px] text-ivory/85 mt-2 leading-snug line-clamp-3">
-                    {item.description}
+                    {flat.description}
                   </p>
                 )}
               </div>

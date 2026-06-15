@@ -1,3 +1,4 @@
+import { localizedString, localizedText } from './_localized';
 import galleryPiece from './galleryPiece';
 import category from './category';
 import homepageGallery from './homepageGallery';
@@ -8,6 +9,9 @@ import contactPage from './contactPage';
 import siteSettings from './siteSettings';
 
 export const schemaTypes = [
+  /* Helpers — must come before any field that uses them. */
+  localizedString,
+  localizedText,
   /* Singletons */
   siteSettings,
   homepage,

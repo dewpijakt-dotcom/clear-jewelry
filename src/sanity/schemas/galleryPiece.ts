@@ -16,23 +16,22 @@ export default defineType({
     defineField({
       name: 'alt',
       title: 'Alt text',
-      type: 'string',
+      type: 'localizedString',
       description: 'What does the picture show? Used by screen readers. Required.',
-      validation: (R) => R.required().min(8),
+      validation: (R) => R.required(),
     }),
     defineField({
       name: 'name',
       title: 'Display name',
-      type: 'string',
+      type: 'localizedString',
       description: 'Short piece name shown as the heading on hover and in the lightbox. e.g. "Royal Sapphire Floral Choker".',
       validation: (R) => R.required(),
     }),
     defineField({
       name: 'description',
       title: 'Description',
-      type: 'text',
-      rows: 2,
-      description: 'Editorial caption shown under the piece name. Lead with the stone, then the setting. e.g. "Twenty oval royal blue sapphires set as star-flowers, framed by pear and round brilliant diamonds. Platinum."',
+      type: 'localizedText',
+      description: 'Editorial caption shown under the piece name. Lead with the stone, then the setting.',
     }),
     defineField({
       name: 'categories',
@@ -72,9 +71,9 @@ export default defineType({
   ],
   orderings: [
     { title: 'Manual order', name: 'manualOrder', by: [{ field: 'order', direction: 'asc' }] },
-    { title: 'Name A→Z',     name: 'nameAsc',     by: [{ field: 'name',  direction: 'asc' }] },
+    { title: 'Name A→Z',     name: 'nameAsc',     by: [{ field: 'name.en',  direction: 'asc' }] },
   ],
   preview: {
-    select: { title: 'name', subtitle: 'description', media: 'image' },
+    select: { title: 'name.en', subtitle: 'description.en', media: 'image' },
   },
 });

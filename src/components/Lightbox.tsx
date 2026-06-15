@@ -3,20 +3,24 @@
 import { useEffect, useCallback } from 'react';
 import Image from 'next/image';
 import { AnimatePresence, motion } from 'framer-motion';
-import { GalleryItem } from '@/lib/gallery-manifest';
+import { useLocale } from './LanguageProvider';
+import { flattenItem } from '@/lib/i18n';
+import type { LocalizedGalleryItem } from '@/lib/sanityAdapter';
 
 interface LightboxProps {
-  item: GalleryItem | null;
+  item: LocalizedGalleryItem | null;
   onClose: () => void;
   onPrev?: () => void;
   onNext?: () => void;
 }
 
 /**
- * Modal lightbox shown when a tile is clicked. Reads from the GalleryItem
- * manifest shape — name + description + alt.
+ * Modal lightbox shown when a tile is clicked. Reads from
+ * LocalizedGalleryItem and resolves name/alt/description through
+ * the current locale.
  */
 export default function Lightbox({ item, onClose, onPrev, onNext }: LightboxProps) {
+  const { locale } = useLocale();
   const onKey = useCallback(
     (e: KeyboardEvent) => {
       if (!item) return;
@@ -32,101 +36,91 @@ export default function Lightbox({ item, onClose, onPrev, onNext }: LightboxProp
     return () => window.removeEventListener('keydown', onKey);
   }, [onKey]);
 
-  const displayName = item?.name ?? item?.description ?? '';
-  const showSeparate = Boolean(item?.name && item?.description);
+  const flat = item ? flattenItem(item, locale) : null;
+  const displayName = flat ? (flat.name || flat.description) : '';
+  const showSeparate = Boolean(flat?.name && flat?.description);
 
   return (
     <AnimatePresence>
-      {item && (
+      {item && flat && (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.45, ease: [0.22, 0.61, 0.36, 1] }}
-          className="fixed inset-0 z-50 bg-black/92 backdrop-blur-sm flex items-center justify-center p-4 md:p-12"
+          transition={{ duration: 0.4 }}
+          className="fixed inset-0 z-[80] bg-charcoal/95 backdrop-blur flex items-center justify-center p-6 lg:p-12"
           onClick={onClose}
-          aria-modal="true"
-          role="dialog"
-          aria-label={item.alt}
         >
+          <button
+            type="button"
+            aria-label="Close"
+            onClick={onClose}
+            className="absolute top-6 right-6 text-ivory text-[11px] uppercase tracking-[0.28em] p-2 hover:text-gold-light transition-colors"
+          >
+            Close ✕
+          </button>
+
           <motion.div
-            initial={{ opacity: 0, y: 24 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 24 }}
-            transition={{ duration: 0.65, ease: [0.22, 0.61, 0.36, 1] }}
-            className="relative max-w-6xl w-full grid lg:grid-cols-[1.3fr_1fr] gap-10 lg:gap-16 items-center"
+            initial={{ scale: 0.98, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.98, opacity: 0 }}
+            transition={{ duration: 0.4 }}
+            className="relative max-w-[1100px] w-full grid lg:grid-cols-[1.4fr_1fr] gap-8 items-center"
             onClick={(e) => e.stopPropagation()}
           >
-            {/* image */}
-            <div className="relative aspect-square w-full overflow-hidden bg-charcoal">
+            <div className="relative aspect-[4/5] lg:aspect-[3/4] bg-charcoal overflow-hidden">
               {item.src && (
                 <Image
-                  src={(item.src && item.src.startsWith("http")) ? item.src : ("/images/gallery/" + item.src)}
-                  alt={item.alt}
+                  src={item.src.startsWith('http') ? item.src : `/images/gallery/${item.src}`}
+                  alt={flat.alt}
                   fill
-                  sizes="(max-width: 1280px) 100vw, 60vw"
-                  priority
-                  className="object-cover"
+                  sizes="(max-width: 1024px) 100vw, 60vw"
+                  className="object-contain"
                 />
               )}
             </div>
 
-            {/* caption */}
             <div className="text-ivory">
-              {item.categories && item.categories.length > 0 && (
-                <p className="font-sans text-[10.5px] uppercase tracking-[0.42em] text-gold-light">
-                  {item.categories.join(' · ')}
-                </p>
-              )}
-              <h2
-                className="display leading-[1.05] mt-4"
-                style={{ fontSize: 'clamp(28px, 3.6vw, 48px)' }}
-              >
+              <p className="font-sans text-[10.5px] uppercase tracking-[0.42em] text-gold-light">
+                CLEAR 1993
+              </p>
+              <h2 className="display text-3xl lg:text-4xl leading-snug mt-3">
                 {displayName}
               </h2>
               {showSeparate && (
-                <p className="font-sans italic text-[15.5px] text-ivory/85 mt-6 leading-[1.7] max-w-[42ch]">
-                  {item.description}
+                <p className="font-sans italic text-[14.5px] text-ivory/85 mt-5 leading-relaxed">
+                  {flat.description}
                 </p>
               )}
-              <hr className="mt-8 border-0 h-px bg-gold-light/40 w-24" />
-              <p className="mt-6 font-sans text-[11px] uppercase tracking-[0.32em] text-gold-light/80">
-                Signed CLEAR 1993 · Bangkok
-              </p>
+              <hr className="border-0 h-px bg-gold-light/40 w-20 mt-7" />
+              {item.categories && item.categories.length > 0 && (
+                <p className="mt-6 font-sans text-[11px] uppercase tracking-[0.32em] text-gold-deep">
+                  {item.categories.join(' · ')}
+                </p>
+              )}
             </div>
+          </motion.div>
 
-            {/* close button */}
+          {onPrev && (
             <button
               type="button"
-              onClick={onClose}
-              aria-label="Close"
-              className="absolute -top-2 -right-2 lg:-top-6 lg:-right-6 w-10 h-10 flex items-center justify-center text-ivory hover:text-gold-light transition-colors duration-300 text-2xl leading-none"
+              onClick={(e) => { e.stopPropagation(); onPrev(); }}
+              aria-label="Previous"
+              className="absolute left-4 lg:left-8 top-1/2 -translate-y-1/2 text-ivory hover:text-gold-light text-3xl p-3"
             >
-              ×
+              ←
             </button>
-
-            {/* prev/next */}
-            {onPrev && (
-              <button
-                type="button"
-                onClick={onPrev}
-                aria-label="Previous"
-                className="hidden md:flex absolute left-[-3rem] top-1/2 -translate-y-1/2 w-10 h-10 items-center justify-center text-ivory/70 hover:text-gold-light transition-colors duration-300 text-2xl"
-              >
-                ‹
-              </button>
-            )}
-            {onNext && (
-              <button
-                type="button"
-                onClick={onNext}
-                aria-label="Next"
-                className="hidden md:flex absolute right-[-3rem] top-1/2 -translate-y-1/2 w-10 h-10 items-center justify-center text-ivory/70 hover:text-gold-light transition-colors duration-300 text-2xl"
-              >
-                ›
-              </button>
-            )}
-          </motion.div>
+          )}
+          {onNext && (
+            <button
+              type="button"
+              onClick={(e) => { e.stopPropagation(); onNext(); }}
+              aria-label="Next"
+              className="absolute right-4 lg:right-8 top-1/2 -translate-y-1/2 text-ivory hover:text-gold-light text-3xl p-3"
+            >
+              →
+            </button>
+          )}
         </motion.div>
       )}
     </AnimatePresence>

@@ -1,21 +1,5 @@
 import { defineField, defineType } from 'sanity';
 
-const imageWithAlt = (name: string, title: string, description: string) => [
-  defineField({
-    name,
-    title,
-    type: 'image',
-    description,
-    options: { hotspot: true },
-  }),
-  defineField({
-    name: `${name}Alt`,
-    title: `${title} — alt text`,
-    type: 'string',
-    description: 'For screen readers. Required when the image is set.',
-  }),
-];
-
 export default defineType({
   name: 'homepage',
   title: 'Homepage',
@@ -39,37 +23,36 @@ export default defineType({
     defineField({
       name: 'heroImageAlt',
       title: 'Hero image — alt text',
-      type: 'string',
+      type: 'localizedString',
     }),
     defineField({
       name: 'heroEyebrow',
       title: 'Hero eyebrow',
-      type: 'string',
+      type: 'localizedString',
       description: 'Small caps line above the headline. e.g. "Bangkok · Since 1993".',
     }),
     defineField({
       name: 'heroTitle',
       title: 'Hero headline',
-      type: 'string',
+      type: 'localizedString',
       description: 'Main display title. e.g. "Gemstone art".',
     }),
     defineField({
       name: 'heroItalic',
       title: 'Hero italic line',
-      type: 'string',
+      type: 'localizedString',
       description: 'Italic gold line below the headline. e.g. "since 1993.".',
     }),
     defineField({
       name: 'heroLede',
       title: 'Hero description',
-      type: 'text',
-      rows: 3,
+      type: 'localizedText',
       description: 'Short paragraph beneath the headline.',
     }),
     defineField({
       name: 'ctaPrimaryLabel',
       title: 'Primary CTA label',
-      type: 'string',
+      type: 'localizedString',
       description: 'e.g. "Book an Appointment".',
     }),
     defineField({
@@ -81,7 +64,7 @@ export default defineType({
     defineField({
       name: 'ctaSecondaryLabel',
       title: 'Secondary CTA label',
-      type: 'string',
+      type: 'localizedString',
       description: 'e.g. "View the Gallery".',
     }),
     defineField({
@@ -93,7 +76,7 @@ export default defineType({
     defineField({
       name: 'ctaPlateEyebrow',
       title: 'CTA plate eyebrow',
-      type: 'string',
+      type: 'localizedString',
       description: 'The small-caps line between the gold rules above the CTA buttons. e.g. "By Private Appointment".',
     }),
 
@@ -101,39 +84,34 @@ export default defineType({
     defineField({
       name: 'signatureEyebrow',
       title: 'Signature section — eyebrow',
-      type: 'string',
-      description: 'e.g. "Signature".',
+      type: 'localizedString',
     }),
     defineField({
       name: 'signatureTitle',
       title: 'Signature section — title',
-      type: 'string',
-      description: 'e.g. "The pieces we are known for.".',
+      type: 'localizedString',
     }),
     defineField({
       name: 'signatureBody',
       title: 'Signature section — body',
-      type: 'text',
-      rows: 3,
+      type: 'localizedText',
     }),
 
     /* STORY SECTION ================================================ */
     defineField({
       name: 'storyEyebrow',
       title: 'Story section — eyebrow',
-      type: 'string',
-      description: 'e.g. "Our story".',
+      type: 'localizedString',
     }),
     defineField({
       name: 'storyTitle',
       title: 'Story section — title',
-      type: 'string',
+      type: 'localizedString',
     }),
     defineField({
       name: 'storyBody',
       title: 'Story section — body',
-      type: 'text',
-      rows: 6,
+      type: 'localizedText',
     }),
     defineField({
       name: 'storyImage',
@@ -145,20 +123,19 @@ export default defineType({
     defineField({
       name: 'storyImageAlt',
       title: 'Story image — alt text',
-      type: 'string',
+      type: 'localizedString',
     }),
 
     /* CLOSING ATELIER CTA ========================================== */
     defineField({
       name: 'closingTitle',
       title: 'Closing CTA — title',
-      type: 'string',
+      type: 'localizedString',
     }),
     defineField({
       name: 'closingBody',
       title: 'Closing CTA — body',
-      type: 'text',
-      rows: 3,
+      type: 'localizedText',
     }),
   ],
   preview: {
