@@ -94,9 +94,9 @@ const JEWELRY_STORE_JSONLD = {
   alternateName: 'CLEAR Jewelry',
   description:
     'Independent Thai high-jewellery house since 1993. Unheated Burmese rubies, royal blue sapphires, fancy diamonds. Hand-set, GIA-certified, signed CLEAR 1993.',
-  url: 'https://clear-jewellery.vercel.app',
-  logo: 'https://clear-jewellery.vercel.app/logo.png',
-  image: 'https://clear-jewellery.vercel.app/images/hero/hero-main.jpg',
+  url: 'https://clear-jewelry.vercel.app',
+  logo: 'https://clear-jewelry.vercel.app/logo.png',
+  image: 'https://clear-jewelry.vercel.app/images/hero/hero-main.jpg',
   telephone: BRAND.phoneTel,
   foundingDate: String(BRAND.establishedYear),
   priceRange: '฿฿฿฿',
