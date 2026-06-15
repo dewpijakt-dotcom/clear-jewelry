@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import Image from 'next/image';
 import Reveal from '@/components/Reveal';
 import Wordmark from '@/components/Wordmark';
 import T from '@/components/T';
@@ -43,12 +44,20 @@ export default function AboutPage() {
       {/* Editorial split — image (placeholder) + body */}
       <section className="bg-ivory pb-32 lg:pb-40">
         <div className="mx-auto max-w-[1480px] px-6 lg:px-10 grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+          {/* TODO: swap to a dedicated About / atelier portrait once the
+              client provides one. Using a hero-grade gallery photo for
+              now so the slot never shows the old black plate. */}
           <Reveal>
-            <div className="relative aspect-[4/5] bg-charcoal overflow-hidden">
+            <div className="relative aspect-[4/5] overflow-hidden">
+              <Image
+                src="/images/gallery/editorial-sapphire-suite-white.jpg"
+                alt="A signature royal blue sapphire suite from the CLEAR atelier — composed and shot for editorial."
+                fill
+                sizes="(max-width: 1024px) 100vw, 50vw"
+                className="object-cover"
+                priority
+              />
               <div className="absolute inset-8 border border-[var(--rule-invert)] pointer-events-none" />
-              <div className="absolute inset-0 flex items-center justify-center">
-                <Wordmark size="xl" variant="light" className="opacity-50" />
-              </div>
             </div>
           </Reveal>
 

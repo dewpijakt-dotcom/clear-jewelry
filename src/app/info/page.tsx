@@ -264,7 +264,7 @@ export default function InfoPage() {
               {t('tag.day')} · {t('transit')}
             </p>
             <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
-              <MagneticButton href={BRAND.lineUrl} target="_blank" rel="noreferrer" className="btn btn-light">
+              <MagneticButton href="/book" className="btn btn-light">
                 {t('cls.cta.book')} <span className="btn-arrow">→</span>
               </MagneticButton>
               <Link

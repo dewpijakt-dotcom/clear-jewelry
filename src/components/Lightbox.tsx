@@ -88,13 +88,13 @@ export default function Lightbox({ item, onClose, onPrev, onNext }: LightboxProp
                 {displayName}
               </h2>
               {showSeparate && (
-                <p className="font-sans italic text-[14.5px] text-ivory/85 mt-5 leading-relaxed">
+                <p className="font-sans italic text-[15.5px] text-ivory/95 mt-5 leading-relaxed">
                   {flat.description}
                 </p>
               )}
               <hr className="border-0 h-px bg-gold-light/40 w-20 mt-7" />
               {item.categories && item.categories.length > 0 && (
-                <p className="mt-6 font-sans text-[11px] uppercase tracking-[0.32em] text-gold-deep">
+                <p className="mt-6 font-sans text-[11px] uppercase tracking-[0.32em] text-gold-light">
                   {item.categories.join(' · ')}
                 </p>
               )}

@@ -197,10 +197,72 @@ export const COPY: Record<string, Entry> = {
   'gal.stat.appt':    { en: 'By appointment', th: 'นัดล่วงหน้า', zh: '凭预约' },
   'gal.stat.bangkok': { en: 'Bangkok', th: 'กรุงเทพฯ', zh: '曼谷' },
 
-  /* ───── BOOK / LINE HANDOFF ───── */
-  'book.opening':    { en: 'Opening LINE.', th: 'กำลังเปิด LINE', zh: '正在打开 LINE。' },
-  'book.body.l1':    { en: 'Your conversation is opening in LINE. If it does not, you can', th: 'การสนทนากำลังเปิดใน LINE หากไม่เปิด คุณสามารถ', zh: '正在 LINE 中打开对话。如未自动打开，您可' },
-  'book.body.tap':   { en: 'tap here', th: 'แตะที่นี่', zh: '点此' },
+  /* ───── BOOK / APPOINTMENT FORM ───── */
+  'book.eyebrow':       { en: 'Private appointment', th: 'นัดหมายส่วนตัว', zh: '私下预约' },
+  'book.title.l1':      { en: 'Reserve your visit', th: 'นัดเข้าชมที่แอตเทอลิเย่', zh: '预约莅临工坊' },
+  'book.title.l2':      { en: 'to the atelier.', th: 'ของเรา', zh: '。' },
+  'book.intro': {
+    en: 'Choose a date and a one-hour slot. We will hold the time for you on LINE — please make sure you have added our LINE Official before submitting.',
+    th: 'เลือกวันและช่วงเวลาหนึ่งชั่วโมง เราจะสำรองเวลาไว้ให้ผ่าน LINE — กรุณาเพิ่มเพื่อน LINE Official ของเราก่อนส่งฟอร์ม ครับ',
+    zh: '请选择日期与一小时时段。我们将通过 LINE 为您保留时间 — 提交前请先加入我们的 LINE 官方账号。',
+  },
+  'book.name.label':    { en: 'Name', th: 'ชื่อ', zh: '姓名' },
+  'book.name.ph':       { en: 'How may we address you?', th: 'เราจะเรียกคุณว่าอะไรดีครับ', zh: '我们如何称呼您？' },
+  'book.phone.label':   { en: 'Phone', th: 'หมายเลขโทรศัพท์', zh: '电话号码' },
+  'book.phone.ph':      { en: '+66 or local format', th: '+66 หรือเบอร์ไทย', zh: '+66 或本地号码' },
+  'book.line.label':    { en: 'Your LINE ID', th: 'ไอดี LINE ของคุณ', zh: '您的 LINE ID' },
+  'book.line.ph':       { en: 'So we can confirm the time with you', th: 'เพื่อให้เรายืนยันเวลากับคุณได้', zh: '以便我们与您确认时间' },
+  'book.email.label':   { en: 'Email (optional)', th: 'อีเมล (ไม่บังคับ)', zh: '电子邮件（可选）' },
+  'book.email.ph':      { en: 'For the reservation receipt', th: 'สำหรับใบยืนยันการนัดหมาย', zh: '用于预约确认' },
+  'book.date.label':    { en: 'Preferred date', th: 'วันที่ต้องการ', zh: '理想日期' },
+  'book.time.label':    { en: 'Preferred time', th: 'ช่วงเวลาที่สะดวก', zh: '理想时段' },
+  'book.time.note':     { en: 'One-hour slots. Last appointment begins at 15:00.', th: 'แต่ละช่วงหนึ่งชั่วโมง รอบสุดท้ายเริ่ม 15:00 น.', zh: '每节一小时。最后一节 15:00 开始。' },
+  'book.message.label': { en: 'How can we help you?', th: 'เราช่วยอะไรคุณได้บ้าง', zh: '我们如何为您效劳？' },
+  'book.message.ph': {
+    en: 'A stone you have in mind, an heirloom to redesign, a piece you saw on Instagram — anything we should know before we meet.',
+    th: 'อัญมณีที่อยู่ในใจ ของในครอบครัวที่อยากออกแบบใหม่ หรือผลงานที่เห็นใน Instagram — เล่าให้เราฟังก่อนนัดได้เลย ครับ',
+    zh: '心仪的宝石、欲重新设计的家传珍品、或在 Instagram 看到的作品 — 见面前的任何细节都欢迎告知。',
+  },
+  'book.line.required.title': {
+    en: 'Please add our LINE Official first',
+    th: 'กรุณาเพิ่มเพื่อน LINE Official ของเราก่อน',
+    zh: '请先添加我们的 LINE 官方账号',
+  },
+  'book.line.required.body': {
+    en: 'Without our LINE @clearjewelry on your contacts, our system cannot confirm the booking. Add us, then submit — your details will be copied so you can paste them into the chat.',
+    th: 'หากยังไม่มี LINE @clearjewelry ในรายชื่อเพื่อน ระบบจะยืนยันการนัดหมายไม่ได้ กรุณาเพิ่มเพื่อนก่อน แล้วกดส่ง รายละเอียดจะถูกคัดลอกให้พร้อมวางในแชต ครับ',
+    zh: '若您的好友列表中尚无 LINE @clearjewelry，系统将无法确认预约。请先加入好友，再提交 — 您的详情会自动复制，便于在聊天中粘贴。',
+  },
+  'book.add.line':      { en: 'Add us on LINE', th: 'เพิ่มเพื่อน LINE', zh: '在 LINE 加为好友' },
+  'book.qr.caption':    { en: 'Scan to add @clearjewelry', th: 'สแกนเพื่อเพิ่ม @clearjewelry', zh: '扫码添加 @clearjewelry' },
+  'book.submit':        { en: 'Reserve & copy my details', th: 'จองนัดและคัดลอกข้อมูล', zh: '预约并复制我的信息' },
+  'book.copy.btn':      { en: 'Copy my details', th: 'คัดลอกข้อมูลของฉัน', zh: '复制我的信息' },
+  'book.copy.confirm': {
+    en: 'Your details have been copied — please paste them in LINE after adding us.',
+    th: 'คัดลอกข้อมูลของคุณเรียบร้อยแล้ว — เพิ่มเพื่อน LINE แล้วนำไปวางในแชตได้เลย ครับ',
+    zh: '您的信息已复制 — 请在加入 LINE 后于聊天中粘贴。',
+  },
+  'book.copy.error': {
+    en: 'Could not auto-copy — please copy the text manually before sending in LINE.',
+    th: 'คัดลอกอัตโนมัติไม่สำเร็จ — กรุณาคัดลอกข้อความด้วยตนเองก่อนส่งใน LINE',
+    zh: '自动复制失败 — 请在 LINE 发送前手动复制。',
+  },
+  'book.required':      { en: 'Required', th: 'จำเป็น', zh: '必填' },
+  'book.consent': {
+    en: 'By submitting, you agree we may contact you via LINE / phone to confirm the reservation.',
+    th: 'การส่งฟอร์มถือว่าคุณยินยอมให้เราติดต่อกลับทาง LINE หรือโทรศัพท์เพื่อยืนยันการนัดหมาย ครับ',
+    zh: '提交即表示您同意我们通过 LINE 或电话与您确认预约。',
+  },
+  'book.summary.heading': {
+    en: 'Appointment request — Clear Jewelry',
+    th: 'คำขอนัดหมาย — Clear Jewelry',
+    zh: '预约申请 — Clear Jewelry',
+  },
+  'book.body.opening':  { en: 'Opening LINE.', th: 'กำลังเปิด LINE', zh: '正在打开 LINE。' },
+  'book.body.l1':       { en: 'Your conversation is opening in LINE. If it does not, you can', th: 'การสนทนากำลังเปิดใน LINE หากไม่เปิด คุณสามารถ', zh: '正在 LINE 中打开对话。如未自动打开，您可' },
+  'book.body.tap':      { en: 'tap here', th: 'แตะที่นี่', zh: '点此' },
+  /* Kept for back-compat with the legacy BookHandoff component */
+  'book.opening':       { en: 'Opening LINE.', th: 'กำลังเปิด LINE', zh: '正在打开 LINE。' },
 
   /* ───── CLOSING / SHARED CTAs ───── */
   'cls.cta.book':    { en: 'Book a private viewing', th: 'นัดชมเป็นการส่วนตัว', zh: '预约私下鉴赏' },

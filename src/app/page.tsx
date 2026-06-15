@@ -93,13 +93,13 @@ export default async function HomePage() {
 
               <div className="flex flex-col sm:flex-row items-center justify-center gap-6 sm:gap-10">
                 <Link
-                  href={ctaPrimaryHref}
-                  className="group/cta relative inline-flex items-center gap-3 px-12 py-[18px] border border-gold-light/90 text-ivory uppercase tracking-[0.34em] text-[12px] font-medium hover:bg-ivory hover:text-charcoal hover:border-ivory transition-all duration-700 ease-elegant overflow-hidden"
+                  href="/book"
+                  className="group/cta relative inline-flex items-center gap-3 px-12 py-[20px] bg-gold text-charcoal uppercase tracking-[0.34em] text-[12.5px] font-medium hover:bg-ivory transition-all duration-700 ease-elegant overflow-hidden"
                   style={{
-                    boxShadow: '0 0 0 1px rgba(216,190,126,0.18), 0 0 48px rgba(216,190,126,0.0)',
+                    boxShadow: '0 22px 50px -22px rgba(0,0,0,0.55), 0 0 0 1px rgba(255,255,255,0.6)',
                   }}
                 >
-                  <span className="relative z-10"><L value={cms.ctaPrimaryLabel} /></span>
+                  <span className="relative z-10"><L value={cms.ctaPrimaryLabel} fallback="Book an Appointment" /></span>
                   <span className="relative z-10 transition-transform duration-500 group-hover/cta:translate-x-1">→</span>
                 </Link>
                 <Link
@@ -209,7 +209,7 @@ export default async function HomePage() {
       <section className="bg-ivory py-32 lg:py-40">
         <div className="mx-auto max-w-[1180px] px-6 lg:px-10 text-center">
           <Reveal>
-            <Wordmark size="lg" />
+            <Wordmark size="xl" />
           </Reveal>
           <Reveal delay={0.15}>
             <h2 className="display text-[clamp(36px,5vw,68px)] leading-[1.05] mt-10">

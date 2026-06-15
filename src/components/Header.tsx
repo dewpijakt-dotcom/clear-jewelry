@@ -13,7 +13,8 @@ import { useT } from './LanguageProvider';
  * Sticky minimal header.
  *  - Transparent over the hero (homepage).
  *  - Ivory + hairline gold border once scrolled or on inner pages.
- *  - Book CTA links DIRECTLY to LINE (@clearjewelry) — no form.
+ *  - BOOK CTA links directly to /book (the in-house booking form). The
+ *    form itself opens a LINE handoff for the actual reservation.
  *  - Three-language toggle on the right of the nav.
  */
 export default function Header() {
@@ -55,13 +56,14 @@ export default function Header() {
             : undefined
         }
       >
-        <div className="mx-auto max-w-[1480px] px-6 lg:px-10 h-[82px] flex items-center justify-between">
+        {/* Header is now 96px (was 82px) to accommodate the larger logo */}
+        <div className="mx-auto max-w-[1480px] px-6 lg:px-10 h-[96px] flex items-center justify-between">
           <Link
             href="/"
             aria-label={BRAND.name}
-            className="flex items-center gap-3 transition-opacity hover:opacity-70"
+            className="flex items-center gap-3 transition-opacity hover:opacity-80"
           >
-            <Wordmark size="sm" variant={solid ? 'dark' : 'light'} />
+            <Wordmark size="md" variant={solid ? 'dark' : 'light'} />
           </Link>
 
           {/* Desktop nav */}
@@ -78,7 +80,6 @@ export default function Header() {
                   )}
                 >
                   {t(link.labelKey)}
-                  {/* hairline gold underline that draws in */}
                   <span
                     className={clsx(
                       'absolute left-0 right-0 -bottom-0.5 h-px bg-gold origin-left transition-transform duration-700 ease-bezel',
@@ -89,19 +90,29 @@ export default function Header() {
               );
             })}
             <LanguageToggle variant={solid ? 'dark' : 'light'} className="ml-2" />
-            <a
-              href={BRAND.lineUrl}
-              target="_blank"
-              rel="noreferrer"
+            {/*
+              BOOK CTA — premium primary action. Solid-fill, gold border,
+              uppercase tracked. Consistent with the home hero CTA so the
+              "book" affordance is unmistakable wherever it appears.
+              Routes to /book (the in-house form), not LINE directly.
+            */}
+            <Link
+              href="/book"
               className={clsx(
-                'font-sans text-[11.5px] uppercase tracking-[0.24em] px-5 py-3 border transition-all duration-500 ease-elegant',
+                'cta-book group relative inline-flex items-center gap-2.5 font-sans text-[11.5px] uppercase tracking-[0.32em] px-7 py-3.5 transition-all duration-500 ease-elegant',
                 solid
-                  ? 'border-charcoal text-charcoal hover:bg-charcoal hover:text-ivory'
-                  : 'border-ivory text-ivory hover:bg-ivory hover:text-charcoal',
+                  ? 'bg-charcoal text-ivory border border-charcoal hover:bg-gold hover:border-gold hover:text-charcoal'
+                  : 'bg-ivory text-charcoal border border-ivory hover:bg-gold hover:border-gold hover:text-charcoal',
               )}
+              style={{
+                boxShadow: solid
+                  ? '0 6px 18px -10px rgba(148,116,51,0.55)'
+                  : '0 6px 18px -10px rgba(255,255,255,0.5), 0 0 0 1px rgba(216,190,126,0.45)',
+              }}
             >
-              {t('nav.book')}
-            </a>
+              <span>{t('nav.book')}</span>
+              <span className="transition-transform duration-500 group-hover:translate-x-1">→</span>
+            </Link>
           </nav>
 
           {/* Mobile burger */}
@@ -138,8 +149,8 @@ export default function Header() {
       >
         <div className="absolute inset-0 bg-charcoal" />
         <div className="relative h-full flex flex-col text-ivory">
-          <div className="px-6 h-[82px] flex items-center justify-between">
-            <Wordmark size="sm" variant="light" />
+          <div className="px-6 h-[96px] flex items-center justify-between">
+            <Wordmark size="md" variant="light" />
             <button
               type="button"
               aria-label="Close menu"
@@ -162,14 +173,15 @@ export default function Header() {
                 {t(link.labelKey)}
               </Link>
             ))}
-            <a
-              href={BRAND.lineUrl}
-              target="_blank"
-              rel="noreferrer"
-              className="mt-6 border border-gold text-gold-light px-7 py-3.5 font-sans text-[11px] uppercase tracking-[0.28em]"
+            {/* Mobile BOOK CTA — full-width primary, same styling vocabulary */}
+            <Link
+              href="/book"
+              onClick={() => setMobileOpen(false)}
+              className="mt-6 inline-flex items-center justify-center gap-2.5 bg-gold text-charcoal px-9 py-4 font-sans text-[12px] uppercase tracking-[0.32em] hover:bg-ivory transition-colors duration-500"
+              style={{ boxShadow: '0 10px 24px -10px rgba(216,190,126,0.6)' }}
             >
-              {t('nav.book')}
-            </a>
+              {t('nav.book')} →
+            </Link>
             <LanguageToggle variant="light" className="mt-6" />
           </nav>
 

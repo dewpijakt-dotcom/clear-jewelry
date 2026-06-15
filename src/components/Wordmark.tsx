@@ -10,18 +10,18 @@ interface WordmarkProps {
 }
 
 /**
- * Logotype wordmark — small marquise diamond glyph on the left, with a
- * typographic stack on the right: "CLEAR" in display serif over "JEWELRY ·
- * EST. 1993" in fine-tracked sans.
+ * Logotype wordmark — marquise diamond glyph + "CLEAR" serif over
+ * "JEWELRY · EST. 1993" fine-tracked sans.
  *
- * Replaces the marble PNG roundel, which was unreadable at small sizes.
- * Pure SVG + type — crisp at any pixel density.
+ * Sizes bumped 2025-06: the header logo was too small to read on retina.
+ * The `light` variant now ships a soft drop-shadow so the wordmark stays
+ * legible over photographic hero backgrounds.
  */
 const SIZES = {
-  sm: { glyph: 22, clear: 18, sub: 8.5,  spacing: 0.34, gap: 10 },
-  md: { glyph: 30, clear: 24, sub: 9.5,  spacing: 0.38, gap: 12 },
-  lg: { glyph: 56, clear: 44, sub: 13,   spacing: 0.42, gap: 18 },
-  xl: { glyph: 120, clear: 96, sub: 22,  spacing: 0.5,  gap: 28 },
+  sm: { glyph: 30, clear: 24, sub: 10,   spacing: 0.36, gap: 12 },
+  md: { glyph: 42, clear: 32, sub: 11.5, spacing: 0.40, gap: 14 },
+  lg: { glyph: 64, clear: 52, sub: 14,   spacing: 0.44, gap: 20 },
+  xl: { glyph: 128, clear: 104, sub: 24, spacing: 0.5,  gap: 30 },
 } as const;
 
 export default function Wordmark({
@@ -33,10 +33,17 @@ export default function Wordmark({
   const s = SIZES[size];
   const ink = variant === 'light' ? 'text-ivory' : 'text-charcoal';
   const subTone =
-    variant === 'light' ? 'text-gold-light/85' : 'text-gold-deep';
+    variant === 'light' ? 'text-gold-light/90' : 'text-gold-deep';
   const stroke = variant === 'light' ? '#E2C681' : '#947433';
   const facet = variant === 'light' ? 'rgba(226,198,129,0.55)' : 'rgba(148,116,51,0.55)';
   const dot = variant === 'light' ? '#EBD9A8' : '#C2A14D';
+  // On a photographic hero the ivory wordmark needs a soft halo so it
+  // doesn't dissolve into bright highlights. Charcoal variant sits on
+  // ivory paper so no shadow needed.
+  const textShadow =
+    variant === 'light' ? '0 1px 14px rgba(0,0,0,0.55), 0 0 28px rgba(0,0,0,0.35)' : undefined;
+  const glyphFilter =
+    variant === 'light' ? 'drop-shadow(0 1px 4px rgba(0,0,0,0.45))' : undefined;
 
   return (
     <span className={clsx('inline-flex items-center', className)} style={{ gap: s.gap }}>
@@ -46,16 +53,14 @@ export default function Wordmark({
         width={s.glyph}
         height={s.glyph * 1.18}
         aria-hidden
-        style={{ flex: '0 0 auto' }}
+        style={{ flex: '0 0 auto', filter: glyphFilter }}
       >
-        {/* outline */}
         <path
           d="M 0 -140 C 60 -110 96 -60 108 0 C 96 60 60 110 0 140 C -60 110 -96 60 -108 0 C -96 -60 -60 -110 0 -140 Z"
           fill="none"
           stroke={stroke}
           strokeWidth={1.6}
         />
-        {/* internal facets */}
         <g fill="none" stroke={facet} strokeWidth={0.9}>
           <path d="M 0 -140 L -65 -28" />
           <path d="M 0 -140 L 0 -22" />
@@ -70,7 +75,6 @@ export default function Wordmark({
           <path d="M -65 -28 L 0 -22 L 65 -28" />
           <path d="M -65 28 L 0 22 L 65 28" />
         </g>
-        {/* centre highlight */}
         <circle r="3" fill={dot} opacity={0.85} />
       </svg>
 
@@ -83,6 +87,7 @@ export default function Wordmark({
               letterSpacing: '0.24em',
               fontWeight: 500,
               lineHeight: 1,
+              textShadow,
             }}
           >
             {BRAND.wordmark}
@@ -94,6 +99,7 @@ export default function Wordmark({
               letterSpacing: `${s.spacing}em`,
               fontWeight: 400,
               lineHeight: 1,
+              textShadow,
             }}
           >
             {BRAND.wordmarkSubtitle} · Est. {BRAND.establishedYear}
