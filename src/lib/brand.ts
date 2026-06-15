@@ -43,10 +43,12 @@ export const BRAND = {
   ],
 };
 
-export const NAV_LINKS = [
-  { href: '/', label: 'Home' },
-  { href: '/gallery', label: 'Gallery' },
-  { href: '/about', label: 'About' },
-  { href: '/info', label: 'Information' },
-  { href: '/contact', label: 'Contact' },
+import type { CopyKey } from './i18n';
+
+export const NAV_LINKS: { href: string; labelKey: CopyKey }[] = [
+  { href: '/',         labelKey: 'nav.home' },
+  { href: '/gallery',  labelKey: 'nav.gallery' },
+  { href: '/about',    labelKey: 'nav.about' },
+  { href: '/info',     labelKey: 'nav.info' },
+  { href: '/contact',  labelKey: 'nav.contact' },
 ];
