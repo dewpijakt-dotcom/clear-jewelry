@@ -7,20 +7,22 @@ interface LanguageContextValue {
   locale: Locale;
   setLocale: (l: Locale) => void;
   t: (key: CopyKey) => string;
-  /** Pick the right string from a Sanity field that may be plain string or { en, th, zh }. */
   l: (value: Localized | null | undefined) => string;
 }
 
 const LanguageContext = createContext<LanguageContextValue | null>(null);
 
-/** localStorage AND cookie key — kept simple, dot-namespaced. */
+/** Persists in BOTH localStorage AND a cookie keyed `clear.locale`. The
+ * cookie is what the root layout reads on the server so the first paint
+ * matches the user's preference (no FOUC) and `<html lang>` is correct
+ * for SEO and screen readers. */
 const STORAGE_KEY = 'clear.locale';
 const COOKIE_MAX_AGE = 60 * 60 * 24 * 365; // 1 year
 
 function readCookieLocale(): Locale | null {
   if (typeof document === 'undefined') return null;
-  const match = document.cookie.match(/(?:^|;\s*)clear\.locale=([^;]+)/);
-  const v = match?.[1];
+  const m = document.cookie.match(/(?:^|;\s*)clear\.locale=([^;]+)/);
+  const v = m?.[1];
   return v === 'en' || v === 'th' || v === 'zh' ? v : null;
 }
 
@@ -34,37 +36,35 @@ function readStorageLocale(): Locale | null {
   }
 }
 
-/**
- * Wraps the whole app. Persists the locale in BOTH localStorage (primary,
- * survives reload) and a cookie (so SSR could read it later if we move to
- * a server-rendered <html lang>). Also keeps the live `<html lang>`
- * attribute in sync so accessibility tools + screen readers pick up the
- * right language as the user toggles.
- */
-export function LanguageProvider({ children }: { children: ReactNode }) {
-  // First render is always DEFAULT_LOCALE so SSR & first client render match
-  // (no React hydration mismatch). The real saved locale is applied in the
-  // useEffect below, triggering one re-render after hydration.
-  const [locale, setLocaleState] = useState<Locale>(DEFAULT_LOCALE);
+export function LanguageProvider({
+  children,
+  initialLocale = DEFAULT_LOCALE,
+}: {
+  children: ReactNode;
+  /** Server-rendered locale (read from cookie). Keeps SSR and first client
+   * render in sync — no hydration mismatch. */
+  initialLocale?: Locale;
+}) {
+  const [locale, setLocaleState] = useState<Locale>(initialLocale);
 
+  // After hydration, reconcile with localStorage in case it differs from
+  // the cookie (e.g. user toggled in a previous session where the cookie
+  // didn't reach the SSR — rare but possible on stale CDN cache).
   useEffect(() => {
     const saved = readStorageLocale() ?? readCookieLocale();
-    if (saved && saved !== locale) {
-      setLocaleState(saved);
-    }
+    if (saved && saved !== locale) setLocaleState(saved);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Reflect locale on <html lang> + cookie + localStorage whenever it changes.
+  // On every locale change, update the live <html lang> attribute and
+  // persist to both localStorage and cookie so the choice survives reload.
   useEffect(() => {
     if (typeof document !== 'undefined') {
       document.documentElement.lang = locale;
     }
     try {
       window.localStorage?.setItem(STORAGE_KEY, locale);
-    } catch {
-      /* ignore */
-    }
+    } catch { /* ignore */ }
     if (typeof document !== 'undefined') {
       document.cookie = `${STORAGE_KEY}=${locale}; path=/; max-age=${COOKIE_MAX_AGE}; SameSite=Lax`;
     }
@@ -77,7 +77,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     setLocale,
     t: (key) => {
       const entry = COPY[key];
-      if (!entry) return key; // unknown key — render its name so it's obvious
+      if (!entry) return key;
       return entry[locale] ?? entry.en;
     },
     l: (value) => pickLocalized(value, locale),
@@ -88,19 +88,16 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   );
 }
 
-/** Full context access — locale, setter, t, l. */
 export function useLocale() {
   const ctx = useContext(LanguageContext);
   if (!ctx) throw new Error('useLocale must be used inside <LanguageProvider>');
   return ctx;
 }
 
-/** Convenience: just the translator. Safe outside the provider (returns key). */
 export function useT() {
   return useContext(LanguageContext)?.t ?? ((k: string) => k);
 }
 
-/** Convenience: just the Sanity-localised picker. Safe outside the provider. */
 export function useL() {
   return (
     useContext(LanguageContext)?.l ??
