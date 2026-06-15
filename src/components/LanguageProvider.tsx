@@ -51,8 +51,14 @@ export function LanguageProvider({
   // the cookie (e.g. user toggled in a previous session where the cookie
   // didn't reach the SSR — rare but possible on stale CDN cache).
   useEffect(() => {
-    const saved = readStorageLocale() ?? readCookieLocale();
-    if (saved && saved !== locale) setLocaleState(saved);
+    // ?lang=th overrides everything (used by hreflang variants).
+    let next: Locale | null = null;
+    try {
+      const p = new URLSearchParams(window.location.search).get('lang');
+      if (p === 'en' || p === 'th' || p === 'zh') next = p;
+    } catch { /* ignore */ }
+    if (!next) next = readStorageLocale() ?? readCookieLocale();
+    if (next && next !== locale) setLocaleState(next);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
