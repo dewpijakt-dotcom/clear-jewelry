@@ -266,9 +266,14 @@ body {
 }
 
 /* ============================== CUSTOM CURSOR ============================== */
+/* DEPRECATED — site now uses the native browser cursor.
+ * The cursor: none rules below previously hid the OS cursor so a custom
+ * dot+ring overlay (src/components/CustomCursor.tsx) could draw the cursor.
+ * The overlay has been unmounted from the root layout; these rules would
+ * leave the page with no visible cursor at all, so they're disabled. */
 @media (hover: hover) and (pointer: fine) {
-  body { cursor: none; }
-  a, button, [data-cursor="hover"], input, textarea { cursor: none; }
+  /* body { cursor: none; } */
+  /* a, button, [data-cursor="hover"], input, textarea { cursor: none; } */
 
   .cursor-dot,
   .cursor-ring {

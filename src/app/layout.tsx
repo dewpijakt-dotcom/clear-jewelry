@@ -6,7 +6,6 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import SmoothScroll from '@/components/SmoothScroll';
 import LoadingScreen from '@/components/LoadingScreen';
-import CustomCursor from '@/components/CustomCursor';
 import ScrollProgress from '@/components/ScrollProgress';
 import PageTransition from '@/components/PageTransition';
 import MaisonWatermark from '@/components/MaisonWatermark';
@@ -221,7 +220,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
         <LanguageProvider initialLocale={initialLocale}>
           <LoadingScreen />
-          <CustomCursor />
           <ScrollProgress />
           <AmbientTint />
           <MaisonWatermark />
