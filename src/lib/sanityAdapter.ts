@@ -175,7 +175,7 @@ export async function getHomepage(): Promise<HomepageData> {
 function legacyItemToLocalized(g: GalleryItem): LocalizedGalleryItem {
   return {
     id: g.id,
-    src: g.src,
+    src: g.src ?? '',
     alt: g.alt ?? '',
     name: g.name ?? '',
     description: g.description ?? '',
