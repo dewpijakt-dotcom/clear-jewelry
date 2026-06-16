@@ -172,3 +172,50 @@ Every short piece of text on the chrome — nav items, button labels, eyebrows, 
 If a translation is left blank, the live site falls back to the built-in default — the site can never break on an empty label. To restore a default, delete the value (or the whole row); the developer's hard-coded fallback takes over.
 
 > Tip: the order of rows in the list doesn't affect the site. Drag them around for your own convenience.
+
+---
+
+## Connecting the booking form (one-time setup)
+
+The /book form already submits successfully without this — entries are
+saved in our Vercel server logs even if nothing else is configured. But
+you probably want them in a Google Sheet and pinged to LINE. Here's how.
+
+### A · Google Sheets (you do this once)
+
+1. Open https://sheets.new and create a blank spreadsheet. Title it **Clear Jewelry — Bookings**.
+2. Click **Extensions → Apps Script**. A new editor tab opens.
+3. Delete the placeholder `Code.gs` content and paste the script from `scripts/google-apps-script.js` in this repo. Save (⌘S / Ctrl+S).
+4. Click **Deploy → New deployment**.
+   - Type: **Web app**
+   - Description: "Clear Jewelry bookings"
+   - Execute as: **Me** (your Google account)
+   - Who has access: **Anyone**
+   - Click **Deploy**.
+5. Authorise the script when prompted.
+6. Copy the **Web app URL** that appears at the end. Paste it to the developer — it goes into Vercel as `GOOGLE_SHEETS_WEBHOOK_URL`.
+
+That's it. New form submissions will append a row in the "Bookings" tab.
+
+### B · LINE Messaging API (developer needs from you)
+
+To push a notification to your phone when a new booking arrives, the
+developer needs two things from your LINE Developers Console:
+
+1. **Channel Access Token (long-lived)**
+   - Open https://developers.line.biz/console
+   - Select your provider → channel **`2010419323`**
+   - **Messaging API** tab → scroll to **Channel access token (long-lived)**
+   - Click **Issue** (or **Reissue** if one exists)
+   - Copy the long token (a string of ~170 characters)
+   - **Important:** this is different from the **Channel secret** (32 hex chars). The access token is what's needed; the secret is only used for webhook signature checks.
+
+2. **Your LINE user ID**
+   - Same console, same channel → **Basic settings** tab
+   - Scroll to the bottom → **Your user ID** (starts with `U` + 32 hex characters)
+   - Copy it
+
+Send those two values to the developer. They go into Vercel as
+`LINE_CHANNEL_ACCESS_TOKEN` and `LINE_OWNER_USER_ID`. Both stay secret;
+never paste them into chat, email, or commit them to GitHub.
+
