@@ -175,13 +175,11 @@ If a translation is left blank, the live site falls back to the built-in default
 
 ---
 
-## Connecting the booking form (one-time setup)
+## Connecting the booking form
 
-The /book form already submits successfully without this — entries are
-saved in our Vercel server logs even if nothing else is configured. But
-you probably want them in a Google Sheet and pinged to LINE. Here's how.
+The /book form already submits successfully without any setup — entries are saved to Vercel server logs even if nothing else is configured. To get bookings into a Google Sheet **and** a notification to your admin LINE Group, complete A + B below.
 
-### A · Google Sheets (you do this once)
+### A · Google Sheets (Sheet + Apps Script Web App)
 
 1. Open https://sheets.new and create a blank spreadsheet. Title it **Clear Jewelry — Bookings**.
 2. Click **Extensions → Apps Script**. A new editor tab opens.
@@ -193,47 +191,57 @@ you probably want them in a Google Sheet and pinged to LINE. Here's how.
    - Who has access: **Anyone**
    - Click **Deploy**.
 5. Authorise the script when prompted.
-6. Copy the **Web app URL** that appears at the end. Paste it to the developer — it goes into Vercel as `GOOGLE_SHEETS_WEBHOOK_URL`.
+6. Copy the **Web app URL**. Paste it to the developer — it goes into Vercel as `GOOGLE_SHEETS_WEBHOOK_URL`.
 
-That's it. New form submissions will append a row in the "Bookings" tab.
+### B · LINE Group notification (admin group)
 
-### B · LINE Messaging API (developer needs from you)
+The site pushes a card-style text message to your admin LINE Group every time a booking arrives. Setup is a one-time, three-step flow:
 
-To push a notification to your phone when a new booking arrives, the
-developer needs two things from your LINE Developers Console:
+#### B.1 — Issue the Channel Access Token
 
-1. **Channel Access Token (long-lived)**
-   - Open https://developers.line.biz/console
-   - Select your provider → channel **`2010419323`**
-   - **Messaging API** tab → scroll to **Channel access token (long-lived)**
-   - Click **Issue** (or **Reissue** if one exists)
-   - Copy the long token (a string of ~170 characters)
-   - **Important:** this is different from the **Channel secret** (32 hex chars). The access token is what's needed; the secret is only used for webhook signature checks.
+1. https://developers.line.biz/console
+2. Select your provider → channel **2010419323**
+3. **Messaging API** tab → scroll to **Channel access token (long-lived)** → click **Issue** (or **Reissue**)
+4. Copy the long token (~170 characters)
+5. Send it to the developer. It goes into Vercel as `LINE_CHANNEL_ACCESS_TOKEN`.
 
-2. **Your LINE user ID**
-   - Same console, same channel → **Basic settings** tab
-   - Scroll to the bottom → **Your user ID** (starts with `U` + 32 hex characters)
-   - Copy it
+Different from the **Channel Secret** (32 hex chars on the Basic Settings tab) — the secret is only used to validate webhook signatures (see B.3).
 
-Send those two values to the developer. They go into Vercel as
-`LINE_CHANNEL_ACCESS_TOKEN` and `LINE_OWNER_USER_ID`. Both stay secret;
-never paste them into chat, email, or commit them to GitHub.
+#### B.2 — Create the admin group and capture its Group ID
 
+1. On your phone, open LINE. Create a new group called **Clear Jewelry Bookings**. Invite your admins.
+2. Invite your LINE Official Account (the OA — search by `@clearjewelry`) into the group. The OA must be a member to receive pushes.
+3. In LINE Developers Console → channel 2010419323 → **Messaging API** tab → **Webhook URL** → paste:
+   `https://clear-jewelry.vercel.app/api/line-webhook`
+4. Toggle **Use webhook** ON, then click **Verify** (should succeed).
+5. Send any message in the group (e.g. "hi"). The webhook fires.
+6. Open Vercel → **Functions** → `/api/line-webhook` → look for a log line:
+   `[LINE-WEBHOOK] captured groupId=C…………………` (33 chars starting with `C`)
+7. Copy that groupId. It goes into Vercel as `LINE_GROUP_ID`.
+8. After capture, you can leave the webhook on (no harm) or toggle it off — we don't actively use it post-setup.
+
+#### B.3 — (Optional) set the Channel Secret for webhook hygiene
+
+Copy the **Channel secret** from Basic Settings (32 hex chars) and have the developer add it as `LINE_CHANNEL_SECRET`. The webhook will then verify every incoming event's signature. Without it the webhook still works but accepts any caller.
 
 ### C · Vercel env vars (developer does this once Kirby provides the values)
 
-After Kirby pastes the LINE access token, his user ID, and the Sheets web-app URL, set them in Vercel:
-
 1. https://vercel.com/kirbykung168-arts-projects/clear-jewelry → **Settings** → **Environment Variables**
-2. Add three variables, all environments (Production + Preview + Development):
+2. Add three (four with the optional secret), all environments:
 
-   | Name | Value source |
+   | Name | From |
    |---|---|
-   | `LINE_CHANNEL_ACCESS_TOKEN` | the long-lived token from LINE Developers Console |
-   | `LINE_OWNER_USER_ID` | the `U…` user ID from LINE Developers Console → Basic settings |
-   | `GOOGLE_SHEETS_WEBHOOK_URL` | the Apps Script web-app URL from the Sheet |
+   | `GOOGLE_SHEETS_WEBHOOK_URL` | Apps Script web-app URL (A.6) |
+   | `LINE_CHANNEL_ACCESS_TOKEN` | LINE Developers Console (B.1) |
+   | `LINE_GROUP_ID` | captured via webhook log (B.2.7) |
+   | `LINE_CHANNEL_SECRET` *(optional)* | LINE Basic Settings (B.3) |
 
-3. Trigger a redeploy (Deployments → click the latest → **Redeploy**) so the running functions pick up the new env values.
-4. Verify with `curl https://clear-jewelry.vercel.app/api/book/health` — all three should report `set` and `ready: true`.
+3. Trigger a redeploy: Deployments → click the latest → **Redeploy**.
+4. Verify with `curl https://clear-jewelry.vercel.app/api/book/health` — all three (or four) should report `set` and `ready: true`.
 
-That's it. From the next /book submission, the LINE OA pings your phone and the row appears in the Google Sheet within ~1 second.
+## How the booking flow works (post-setup)
+
+1. Visitor fills /book → submits → immediately sees the editorial confirmation block ("Thank you, [Name]…"). Their experience never depends on the backend.
+2. The site appends a row to your Google Sheet **and** pushes a card to the **Clear Jewelry Bookings** LINE Group within ~2 seconds. Either failure is non-fatal — Sheets is the canonical record, LINE is the live notification.
+3. Admins in the group see the notification with name, contact, date, time, and message.
+4. Reply directly via LINE/WhatsApp from there. Mark the row in the Sheet when handled.
