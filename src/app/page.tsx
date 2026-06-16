@@ -92,10 +92,10 @@ export default async function HomePage() {
                 <span className="hidden sm:block h-px w-12 lg:w-16 bg-gold-light/70" />
               </div>
 
-              <div className="flex flex-col sm:flex-row items-center justify-center gap-6 sm:gap-10">
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-5 sm:gap-10 w-full sm:w-auto">
                 <Link
                   href="/book"
-                  className="group/cta relative inline-flex items-center gap-3 px-12 py-[20px] bg-gold text-charcoal uppercase tracking-[0.34em] text-[12.5px] font-medium hover:bg-ivory transition-all duration-700 ease-elegant overflow-hidden"
+                  className="group/cta relative inline-flex items-center justify-center gap-3 w-full sm:w-auto px-8 sm:px-12 py-[18px] sm:py-[20px] bg-gold text-charcoal uppercase tracking-[0.34em] text-[12.5px] font-medium hover:bg-ivory transition-all duration-700 ease-elegant overflow-hidden"
                   style={{
                     boxShadow: '0 22px 50px -22px rgba(0,0,0,0.55), 0 0 0 1px rgba(255,255,255,0.6)',
                   }}

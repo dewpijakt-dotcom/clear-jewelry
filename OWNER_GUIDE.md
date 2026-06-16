@@ -153,3 +153,22 @@ and **Publish**. The change is live in ~60 seconds.
 > Tip: leave brand-specific words (CLEAR, 1993, the address "Gaysorn
 > Centre, 3rd Floor") in their original spelling. Numbers, phone, email
 > and URLs don't need translating.
+
+---
+
+## Editing UI labels (buttons, nav, footer copy)
+
+Every short piece of text on the chrome — nav items, button labels, eyebrows, footer copy, booking-form labels, lightbox controls, the loading screen — lives in a single Sanity document called **UI Labels**.
+
+1. In Studio, open **UI Labels**.
+2. You'll see a long list of rows, one per label. Each row shows:
+   - **Key** — internal identifier (don't change unless a developer asks you to).
+   - **Where this appears** — a one-line description so you can find the right one.
+   - **Translation** — the EN and TH values side-by-side.
+3. Search the list (top of the array editor in Sanity) by key (e.g. type "nav.home") or by description (e.g. "Top navigation").
+4. Edit the EN or TH value and **Publish**.
+5. Within ~60 seconds the live site picks up the new label.
+
+If a translation is left blank, the live site falls back to the built-in default — the site can never break on an empty label. To restore a default, delete the value (or the whole row); the developer's hard-coded fallback takes over.
+
+> Tip: the order of rows in the list doesn't affect the site. Drag them around for your own convenience.

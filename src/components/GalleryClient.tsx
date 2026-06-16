@@ -52,7 +52,7 @@ export default function GalleryClient({ pieces, categories }: GalleryClientProps
               {(filtered.length === 1 ? t('gal.count.work') : t('gal.count.works')).replace('{n}', String(filtered.length))}
             </span>
           </div>
-          <div className="flex items-center gap-2 min-w-max overflow-x-auto scrollbar-none -mx-1 px-1">
+          <div className="flex items-center gap-2 overflow-x-auto scrollbar-none -mx-6 px-6 lg:-mx-1 lg:px-1 snap-x snap-mandatory">
             {tabs.map((tab) => {
               const active = tab.slug === filter;
               return (
@@ -61,7 +61,7 @@ export default function GalleryClient({ pieces, categories }: GalleryClientProps
                   type="button"
                   onClick={() => { setFilter(tab.slug); setActiveIndex(null); }}
                   className={clsx(
-                    'relative px-5 lg:px-6 py-3 font-sans text-[11.5px] uppercase tracking-[0.38em] transition-colors duration-500',
+                    'relative px-4 lg:px-6 py-3 font-sans text-[11.5px] uppercase tracking-[0.38em] transition-colors duration-500 shrink-0 snap-start',
                     active ? 'text-charcoal' : 'text-charcoal/55 hover:text-charcoal',
                   )}
                 >

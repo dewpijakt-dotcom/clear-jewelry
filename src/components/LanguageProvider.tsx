@@ -3,6 +3,7 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { COPY, CopyKey, DEFAULT_LOCALE, Locale, Localized, pickLocalized } from '@/lib/i18n';
 
+
 interface LanguageContextValue {
   locale: Locale;
   setLocale: (l: Locale) => void;
@@ -39,11 +40,15 @@ function readStorageLocale(): Locale | null {
 export function LanguageProvider({
   children,
   initialLocale = DEFAULT_LOCALE,
+  labels,
 }: {
   children: ReactNode;
   /** Server-rendered locale (read from cookie). Keeps SSR and first client
    * render in sync — no hydration mismatch. */
   initialLocale?: Locale;
+  /** Sanity-fetched UI labels keyed by dot-key (nav.home, book.submit, …).
+   * Takes precedence over the in-source COPY dict for any key present. */
+  labels?: Record<string, Localized> | null;
 }) {
   const [locale, setLocaleState] = useState<Locale>(initialLocale);
 
@@ -82,6 +87,13 @@ export function LanguageProvider({
     locale,
     setLocale,
     t: (key) => {
+      // Sanity-edited UI label wins when present + non-empty.
+      if (labels && labels[key] != null) {
+        const v = pickLocalized(labels[key], locale);
+        if (v) return v;
+      }
+      // Fall back to the in-source dict — guarantees the site never breaks
+      // on a missing or empty Sanity label.
       const entry = COPY[key];
       if (!entry) return key;
       return entry[locale] ?? entry.en;

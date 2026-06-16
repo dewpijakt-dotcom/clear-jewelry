@@ -231,3 +231,24 @@ export async function getTrustSignals(): Promise<LocalizedTrustSignal[]> {
     detail: loc(t?.detail),
   }));
 }
+
+/**
+ * Fetch every editable UI label keyed by its dot-key (nav.home, book.submit,
+ * lb.close, …) as a flat map. Components read it via the LanguageProvider's
+ * built-in `t(key)` helper which falls back to the in-source COPY dict if a
+ * key is missing here.
+ *
+ * Returns null when the doc doesn't exist yet (first deploy) or when Sanity
+ * is unreachable — that's safe because t() falls back to COPY.
+ */
+export async function getUILabels(): Promise<Record<string, Localized> | null> {
+  const data = await fetchSafe<{ labels: any[] } | null>(
+    `*[_id == "uiLabels"][0]{ labels[]{ key, value } }`
+  );
+  if (!data?.labels) return null;
+  const out: Record<string, Localized> = {};
+  for (const row of data.labels) {
+    if (row?.key) out[row.key] = loc(row.value);
+  }
+  return out;
+}

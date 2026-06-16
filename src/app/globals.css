@@ -474,3 +474,18 @@ a, button { transition: opacity 0.4s var(--ease); }
   .spotlight-wedge, .cursor-dust { animation: none !important; }
   .cursor-dust { display: none !important; }
 }
+
+/* ============================== MOBILE SCROLL LOCK ============================== */
+/* Prevent horizontal scroll + iOS rubber-band over-scroll. The body bg also
+   matches the ivory paper so any incidental edge bleed reads as intentional
+   page texture, not a white flash. */
+html, body {
+  overflow-x: hidden;
+  overscroll-behavior: none;
+  -webkit-overscroll-behavior: none;
+  background-color: var(--ivory);
+}
+body {
+  /* iOS safe-area padding so content can never sit under the home indicator */
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}

@@ -11,6 +11,7 @@ import PageTransition from '@/components/PageTransition';
 import MaisonWatermark from '@/components/MaisonWatermark';
 import AmbientTint from '@/components/AmbientTint';
 import { LanguageProvider } from '@/components/LanguageProvider';
+import { getUILabels } from '@/lib/sanityAdapter';
 import T from '@/components/T';
 import { BRAND } from '@/lib/brand';
 import type { Locale } from '@/lib/i18n';
@@ -181,7 +182,10 @@ function readLocaleCookie(): Locale {
   }
 }
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  // Server-side fetch the Sanity-editable UI label dictionary.
+  // Returns null when the doc doesn't exist yet — t() falls back to COPY.
+  const uiLabels = await getUILabels();
   // Server-side initial locale from cookie — so first paint matches the
   // user's saved preference (no FOUC) and screen readers + SEO pick up
   // the right language attribute.
@@ -209,7 +213,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
       </head>
       <body className="bg-ivory text-charcoal antialiased">
-        <LanguageProvider initialLocale={initialLocale}>
+        <LanguageProvider initialLocale={initialLocale} labels={uiLabels}>
           {/* Skip-to-content link — keyboard users + screen readers. Inside the
               provider so the label localizes via the COPY dict. */}
           <a

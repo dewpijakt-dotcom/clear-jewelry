@@ -133,7 +133,7 @@ export default function BookingForm() {
         {/* LINE-add panel — sits above the form so users add the official
             account before they even start typing. */}
         <aside
-          className="mt-12 lg:mt-16 bg-charcoal text-ivory p-8 lg:p-10 grid lg:grid-cols-[1fr_auto] gap-8 items-center"
+          className="mt-12 lg:mt-16 bg-charcoal text-ivory p-6 lg:p-10 grid lg:grid-cols-[1fr_auto] gap-8 items-center text-center lg:text-left"
           style={{ boxShadow: '0 24px 60px -40px rgba(0,0,0,0.4)' }}
         >
           <div>
@@ -141,7 +141,7 @@ export default function BookingForm() {
             <p className="font-sans text-[14.5px] tracking-[0.02em] text-ivory/90 mt-3 leading-relaxed max-w-2xl">
               {t('book.line.required.body')}
             </p>
-            <div className="mt-6 flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+            <div className="mt-6 flex flex-col sm:flex-row gap-4 items-stretch sm:items-center justify-center lg:justify-start">
               <a
                 href={BRAND.lineUrl}
                 target="_blank"
@@ -163,7 +163,7 @@ export default function BookingForm() {
             type="button"
             onClick={() => setQrOpen(true)}
             aria-label={t('book.qr.caption')}
-            className="justify-self-start lg:justify-self-end shrink-0 bg-ivory p-3 hover:scale-[1.02] transition-transform duration-500"
+            className="justify-self-center lg:justify-self-end shrink-0 bg-ivory p-3 hover:scale-[1.02] transition-transform duration-500"
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={QR_SRC} alt="LINE @clearjewelry QR code" width={140} height={140} />
@@ -286,7 +286,7 @@ export default function BookingForm() {
             <div className="flex flex-col sm:flex-row gap-4 items-stretch justify-center">
               <button
                 type="submit"
-                className="cta-book-primary inline-flex items-center justify-center gap-3 bg-charcoal text-ivory px-10 py-[18px] font-sans text-[12px] uppercase tracking-[0.32em] hover:bg-gold hover:text-charcoal transition-all duration-500 ease-elegant"
+                className="cta-book-primary inline-flex items-center justify-center gap-3 bg-charcoal text-ivory w-full sm:w-auto px-8 sm:px-10 py-[18px] font-sans text-[12px] uppercase tracking-[0.32em] hover:bg-gold hover:text-charcoal transition-all duration-500 ease-elegant"
                 style={{ boxShadow: '0 18px 38px -22px rgba(0,0,0,0.55), 0 0 0 1px rgba(216,190,126,0.55)' }}
               >
                 {t('book.submit')} <span>→</span>
@@ -294,7 +294,7 @@ export default function BookingForm() {
               <button
                 type="button"
                 onClick={handleCopy}
-                className="inline-flex items-center justify-center gap-3 bg-transparent text-charcoal border border-charcoal px-9 py-[17px] font-sans text-[12px] uppercase tracking-[0.32em] hover:bg-charcoal hover:text-ivory transition-all duration-500 ease-elegant"
+                className="inline-flex items-center justify-center gap-3 bg-transparent text-charcoal border border-charcoal w-full sm:w-auto px-8 sm:px-9 py-[17px] font-sans text-[12px] uppercase tracking-[0.32em] hover:bg-charcoal hover:text-ivory transition-all duration-500 ease-elegant"
               >
                 {t('book.copy.btn')}
               </button>

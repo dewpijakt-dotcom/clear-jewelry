@@ -3,7 +3,7 @@ import { structureTool } from 'sanity/structure';
 import { visionTool } from '@sanity/vision';
 import { schemaTypes } from './src/sanity/schemas';
 
-const SINGLETONS = ['siteSettings', 'homepage', 'homepageGallery', 'aboutPage', 'infoPage', 'contactPage'];
+const SINGLETONS = ['siteSettings', 'uiLabels', 'homepage', 'homepageGallery', 'aboutPage', 'infoPage', 'contactPage'];
 
 export default defineConfig({
   name: 'clear-jewelry',
@@ -20,6 +20,8 @@ export default defineConfig({
             // Singletons — single-document panels
             S.listItem().title('Site settings').id('siteSettings')
               .child(S.document().schemaType('siteSettings').documentId('siteSettings')),
+            S.listItem().title('UI Labels').id('uiLabels')
+              .child(S.document().schemaType('uiLabels').documentId('uiLabels')),
             S.listItem().title('Homepage').id('homepage')
               .child(S.document().schemaType('homepage').documentId('homepage')),
             S.listItem().title('Homepage featured pieces').id('homepageGallery')

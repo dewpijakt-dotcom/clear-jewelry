@@ -7,6 +7,7 @@ import aboutPage from './aboutPage';
 import infoPage from './infoPage';
 import contactPage from './contactPage';
 import siteSettings from './siteSettings';
+import uiLabels from './uiLabels';
 
 export const schemaTypes = [
   /* Helpers — must come before any field that uses them. */
@@ -14,6 +15,7 @@ export const schemaTypes = [
   localizedText,
   /* Singletons */
   siteSettings,
+  uiLabels,
   homepage,
   homepageGallery,
   aboutPage,
