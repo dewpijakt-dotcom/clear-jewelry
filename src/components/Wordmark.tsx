@@ -6,6 +6,8 @@ interface WordmarkProps {
   variant?: 'dark' | 'light';
   /** If true, renders only the marquise glyph (no wordmark text). */
   iconOnly?: boolean;
+  /** If true, renders only the wordmark text (no glyph). */
+  noIcon?: boolean;
   className?: string;
 }
 
@@ -28,6 +30,7 @@ export default function Wordmark({
   size = 'md',
   variant = 'dark',
   iconOnly = false,
+  noIcon = false,
   className,
 }: WordmarkProps) {
   const s = SIZES[size];
@@ -47,8 +50,10 @@ export default function Wordmark({
 
   return (
     <span className={clsx('inline-flex items-center', className)} style={{ gap: s.gap }}>
-      {/* Marquise diamond glyph */}
-      <svg
+      {!noIcon && (
+        <>
+        {/* Marquise diamond glyph */}
+        <svg
         viewBox="-110 -150 220 300"
         width={s.glyph}
         height={s.glyph * 1.18}
@@ -76,7 +81,9 @@ export default function Wordmark({
           <path d="M -65 28 L 0 22 L 65 28" />
         </g>
         <circle r="3" fill={dot} opacity={0.85} />
-      </svg>
+        </svg>
+        </>
+      )}
 
       {!iconOnly && (
         <span className="flex flex-col leading-[1]" style={{ rowGap: Math.max(2, s.glyph * 0.12) }}>
