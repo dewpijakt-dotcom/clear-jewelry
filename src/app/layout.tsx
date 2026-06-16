@@ -11,6 +11,7 @@ import PageTransition from '@/components/PageTransition';
 import MaisonWatermark from '@/components/MaisonWatermark';
 import AmbientTint from '@/components/AmbientTint';
 import { LanguageProvider } from '@/components/LanguageProvider';
+import T from '@/components/T';
 import { BRAND } from '@/lib/brand';
 import type { Locale } from '@/lib/i18n';
 
@@ -210,15 +211,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
       </head>
       <body className="bg-ivory text-charcoal antialiased">
-        {/* Skip-to-content link — keyboard users + screen readers */}
-        <a
-          href="#main"
-          className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[200] focus:bg-charcoal focus:text-ivory focus:px-4 focus:py-3 focus:text-[11px] focus:tracking-[0.32em] focus:uppercase"
-        >
-          Skip to content
-        </a>
-
         <LanguageProvider initialLocale={initialLocale}>
+          {/* Skip-to-content link — keyboard users + screen readers. Inside the
+              provider so the label localizes via the COPY dict. */}
+          <a
+            href="#main"
+            className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[200] focus:bg-charcoal focus:text-ivory focus:px-4 focus:py-3 focus:text-[11px] focus:tracking-[0.32em] focus:uppercase"
+          >
+            <T k="a11y.skip" />
+          </a>
           <LoadingScreen />
           <ScrollProgress />
           <AmbientTint />

@@ -1,5 +1,7 @@
 'use client';
 
+import { useT } from './LanguageProvider';
+
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 
@@ -17,6 +19,7 @@ import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
  * Total: ~3.4s of ceremony + 0.95s dissolve. Reduced motion: skips.
  */
 export default function LoadingScreen() {
+  const t = useT();
   // Plays on every fresh page load. The owner prefers ceremony over speed
   // here — the gilt opening is part of the brand, not just a perf concession.
   const [show, setShow] = useState(true);
@@ -100,7 +103,7 @@ export default function LoadingScreen() {
             transition={{ duration: 0.8, delay: 0.4 }}
             className="absolute top-[7%] left-[7%] translate-y-3 font-sans uppercase text-[10px] tracking-[0.48em] text-gold-deep/80"
           >
-            Maison · Atelier
+            {t('maison.label')}
           </motion.span>
           <motion.span
             initial={{ opacity: 0 }}

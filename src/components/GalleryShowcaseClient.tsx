@@ -67,11 +67,9 @@ export default function GalleryShowcaseClient({ items }: { items: LocalizedGalle
                   'pointer-events-none',
                 )}
               >
-                {item.categories && item.categories.length > 0 && (
-                  <p className="font-sans text-[10px] uppercase tracking-[0.32em] text-gold-light">
-                    {item.categories[0]}
-                  </p>
-                )}
+                {/* Category badge intentionally omitted — categories on home items
+                    are slug strings ('rings', 'necklaces' …), which render unlocalised
+                    and styled-uppercase as ugly. The localised name shows on Gallery. */}
                 <h3 className="display text-ivory text-lg lg:text-xl mt-1 leading-snug">
                   {displayName}
                 </h3>

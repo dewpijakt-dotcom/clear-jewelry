@@ -268,6 +268,20 @@ export const COPY: Record<string, Entry> = {
   'cls.cta.book':    { en: 'Book a private viewing', th: 'นัดชมเป็นการส่วนตัว', zh: '预约私下鉴赏' },
   'cls.cta.contact': { en: 'See all channels', th: 'ดูช่องทางทั้งหมด', zh: '查看所有联络方式' },
 
+  /* ───── A11Y / GLOBAL CHROME ───── */
+  'a11y.skip':          { en: 'Skip to content', th: 'ข้ามไปที่เนื้อหา', zh: '跳至正文' },
+
+  /* ───── GALLERY page chrome ───── */
+  'gal.on_view':        { en: 'On View', th: 'จัดแสดง', zh: '正在展出' },
+  'gal.catalogue':      { en: 'The catalogue', th: 'แคตตาล็อก', zh: '作品目录' },
+  'gal.salon.lot':      { en: 'Lot', th: 'ล็อต', zh: '编号' },
+  'gal.salon.opening':  { en: 'The opening piece', th: 'ผลงานชิ้นเปิด', zh: '开篇之作' },
+  'gal.salon.signed':   { en: 'Signed CLEAR 1993 · Bangkok', th: 'ลงนาม CLEAR 1993 · กรุงเทพมหานคร', zh: '署名 CLEAR 1993 · 曼谷' },
+  'gal.count.works':    { en: '{n} works', th: 'ผลงาน {n} ชิ้น', zh: '{n} 件作品' },
+  'gal.count.work':     { en: '{n} work', th: 'ผลงาน {n} ชิ้น', zh: '{n} 件作品' },
+  'gal.empty':          { en: 'No pieces in this category yet — check back soon.', th: 'ยังไม่มีผลงานในหมวดนี้ — กลับมาเยี่ยมเราใหม่อีกครั้งเร็ว ๆ นี้ ครับ', zh: '此分类暂无作品 — 不久后请再来一观。' },
+  'gal.salon.view':     { en: 'View detail', th: 'ดูรายละเอียด', zh: '细赏' },
+
   /* ───── LIGHTBOX (gallery detail modal) ───── */
   'lb.close':           { en: 'Close gallery', th: 'ปิดแกลเลอรี', zh: '关闭画廊' },
   'lb.prev':            { en: 'Previous piece', th: 'ผลงานก่อนหน้า', zh: '上一件作品' },

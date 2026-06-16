@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import clsx from 'clsx';
 import Lightbox from './Lightbox';
-import { useLocale } from './LanguageProvider';
+import { useLocale, useT } from './LanguageProvider';
 import { flattenItem, pickLocalized, Locale, Localized } from '@/lib/i18n';
 import type { LocalizedGalleryItem } from '@/lib/sanityAdapter';
 
@@ -27,6 +27,7 @@ export default function GalleryClient({ pieces, categories }: GalleryClientProps
   const [filter, setFilter] = useState<string>('all');
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const { locale } = useLocale();
+  const t = useT();
 
   const filtered = useMemo<LocalizedGalleryItem[]>(() => {
     if (filter === 'all') return pieces;
@@ -46,9 +47,9 @@ export default function GalleryClient({ pieces, categories }: GalleryClientProps
       <section className="bg-ivory border-b border-[var(--rule-soft)] sticky top-[82px] z-30 backdrop-blur-md bg-ivory/90">
         <div className="mx-auto max-w-[1480px] px-6 lg:px-10 py-6">
           <div className="flex items-center justify-between gap-6 mb-4 text-[10.5px] uppercase tracking-[0.48em] text-gold-deep">
-            <span>On View</span>
+            <span>{t('gal.on_view')}</span>
             <span className="tabular-nums">
-              {filtered.length} {filtered.length === 1 ? 'work' : 'works'}
+              {(filtered.length === 1 ? t('gal.count.work') : t('gal.count.works')).replace('{n}', String(filtered.length))}
             </span>
           </div>
           <div className="flex items-center gap-2 min-w-max overflow-x-auto scrollbar-none -mx-1 px-1">
@@ -101,7 +102,7 @@ export default function GalleryClient({ pieces, categories }: GalleryClientProps
 
                 <div>
                   <p className="font-sans text-[10.5px] uppercase tracking-[0.48em] text-gold-deep">
-                    Lot {pad(1)} &nbsp;·&nbsp; The opening piece
+                    {t('gal.salon.lot')} {pad(1)}  ·  {t('gal.salon.opening')}
                   </p>
                   <h2
                     className="display leading-[1.02] mt-5 text-charcoal"
@@ -116,14 +117,14 @@ export default function GalleryClient({ pieces, categories }: GalleryClientProps
                   )}
                   <hr className="border-0 h-px bg-gold-light/50 w-24 mt-8" />
                   <p className="mt-6 font-sans text-[11px] uppercase tracking-[0.32em] text-gold-deep">
-                    Signed CLEAR 1993 &nbsp;·&nbsp; Bangkok
+                    {t('gal.salon.signed')}
                   </p>
                   <button
                     type="button"
                     onClick={() => setActiveIndex(0)}
                     className="mt-10 inline-flex items-center gap-3 font-sans text-[11.5px] uppercase tracking-[0.34em] text-charcoal hover:text-gold-deep transition-colors duration-500 border-b border-charcoal/40 pb-1.5"
                   >
-                    View detail <span aria-hidden>→</span>
+                    {t('gal.salon.view')} <span aria-hidden>→</span>
                   </button>
                 </div>
               </div>
@@ -137,7 +138,7 @@ export default function GalleryClient({ pieces, categories }: GalleryClientProps
         <div className="mx-auto max-w-[1480px] px-6 lg:px-10 mt-2 mb-2">
           <div className="flex items-center gap-6 text-[10px] uppercase tracking-[0.48em] text-gold-deep/70">
             <span className="block h-px flex-1 bg-gold-light/40" />
-            <span>The catalogue</span>
+            <span>{t('gal.catalogue')}</span>
             <span className="block h-px flex-1 bg-gold-light/40" />
           </div>
         </div>
@@ -174,7 +175,7 @@ export default function GalleryClient({ pieces, categories }: GalleryClientProps
 
           {filtered.length === 0 && (
             <p className="text-center font-sans italic text-[15px] text-charcoal/55 py-24">
-              No pieces in this category yet — check back soon.
+              {t('gal.empty')}
             </p>
           )}
         </div>
