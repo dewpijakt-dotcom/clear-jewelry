@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Cormorant_Garamond, Jost, Noto_Serif_Thai, Noto_Sans_Thai, Noto_Serif_SC, Noto_Sans_SC } from 'next/font/google';
+import { Cormorant_Garamond, Jost, Noto_Serif_Thai, Noto_Sans_Thai } from 'next/font/google';
 import { cookies } from 'next/headers';
 import './globals.css';
 import Header from '@/components/Header';
@@ -44,13 +44,6 @@ const notoThaiSans = Noto_Sans_Thai({
   display: 'swap',
 });
 
-const notoSC = Noto_Serif_SC({
-  weight: ['400'],
-  variable: '--font-noto-sc',
-  display: 'swap',
-  preload: false,
-});
-
 const SITE_URL = 'https://clear-jewelry.vercel.app';
 
 export const metadata: Metadata = {
@@ -75,7 +68,6 @@ export const metadata: Metadata = {
     languages: {
       'en': '/',
       'th': '/?lang=th',
-      'zh': '/?lang=zh',
       'x-default': '/',
     },
   },
@@ -85,7 +77,7 @@ export const metadata: Metadata = {
       'An independent Thai high-jewellery house since 1993. Unheated Burmese rubies, royal blue sapphires, fancy diamonds.',
     type: 'website',
     locale: 'en_TH',
-    alternateLocale: ['th_TH', 'zh_CN'],
+    alternateLocale: ['th_TH'],
     siteName: BRAND.name,
     images: [{
       url: '/images/hero/hero-main.jpg',
@@ -131,7 +123,7 @@ const ORGANIZATION_JSONLD = {
     contactType: 'Customer Service',
     url: BRAND.whatsappUrl,
     areaServed: 'TH',
-    availableLanguage: ['English', 'Thai', 'Chinese'],
+    availableLanguage: ['English', 'Thai'],
   }],
   sameAs: [BRAND.instagramUrl, BRAND.lineUrl],
 };
@@ -183,7 +175,7 @@ const JEWELRY_STORE_JSONLD = {
 function readLocaleCookie(): Locale {
   try {
     const v = cookies().get('clear.locale')?.value;
-    return v === 'th' || v === 'zh' ? v : 'en';
+    return v === 'th' ? 'th' : 'en';
   } catch {
     return 'en';
   }
@@ -199,7 +191,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html
       lang={initialLocale}
       translate="no"
-      className={`${cormorant.variable} ${jost.variable} ${notoThai.variable} ${notoThaiSans.variable} ${notoSC.variable} ${notoSCsans.variable} notranslate`}
+      className={`${cormorant.variable} ${jost.variable} ${notoThai.variable} ${notoThaiSans.variable} notranslate`}
     >
       <head>
         {/* Tell Chrome/Edge/Safari not to auto-translate — we have a native

@@ -15,7 +15,13 @@ import { NextResponse, type NextRequest } from 'next/server';
  */
 export function middleware(req: NextRequest) {
   const lang = req.nextUrl.searchParams.get('lang');
-  if (lang !== 'en' && lang !== 'th' && lang !== 'zh') {
+  // ZH dropped from the UX. Forward old ?lang=zh links to EN.
+  if (lang === 'zh') {
+    const url = req.nextUrl.clone();
+    url.searchParams.set('lang', 'en');
+    return NextResponse.redirect(url, 302);
+  }
+  if (lang !== 'en' && lang !== 'th') {
     return NextResponse.next();
   }
   // Patch the incoming request so this same render sees the cookie.

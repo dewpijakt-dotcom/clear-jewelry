@@ -23,14 +23,14 @@ function readCookieLocale(): Locale | null {
   if (typeof document === 'undefined') return null;
   const m = document.cookie.match(/(?:^|;\s*)clear\.locale=([^;]+)/);
   const v = m?.[1];
-  return v === 'en' || v === 'th' || v === 'zh' ? v : null;
+  return v === 'en' || v === 'th' ? v : null;
 }
 
 function readStorageLocale(): Locale | null {
   if (typeof window === 'undefined') return null;
   try {
     const v = window.localStorage.getItem(STORAGE_KEY);
-    return v === 'en' || v === 'th' || v === 'zh' ? v : null;
+    return v === 'en' || v === 'th' ? v : null;
   } catch {
     return null;
   }
@@ -55,7 +55,7 @@ export function LanguageProvider({
     let next: Locale | null = null;
     try {
       const p = new URLSearchParams(window.location.search).get('lang');
-      if (p === 'en' || p === 'th' || p === 'zh') next = p;
+      if (p === 'en' || p === 'th') next = p;
     } catch { /* ignore */ }
     if (!next) next = readStorageLocale() ?? readCookieLocale();
     if (next && next !== locale) setLocaleState(next);

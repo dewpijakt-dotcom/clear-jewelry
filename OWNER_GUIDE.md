@@ -129,25 +129,27 @@ Bookmark it. Sign in with kirbykung168@gmail.com (or invite other editors from *
 
 ---
 
-## Editing in three languages (EN / TH / ZH)
+## Editing in two languages (EN / TH)
 
-Every text field in Studio now has three side-by-side inputs:
+The live site is **English and Thai only**. The language toggle in the
+top-right of the site is an EN ⇄ TH switch.
+
+Every text field in Studio still has three inputs (en, th, zh) but the
+website only reads en and th. The zh fields are preserved from earlier
+translation work — they aren't deleted — but they don't appear on the
+live site. If you want to bring Chinese back later, the developer can
+re-enable it in one commit.
 
 | Field | English (en) | ภาษาไทย (th) | 中文 (zh) |
 |---|---|---|---|
-| Required | yes | optional | optional |
+| Required | yes | optional | not rendered on site |
 
-The English value is the authoritative source. When you leave the Thai or
-Chinese box blank, the live site falls back to the English text — so you
-can ship an empty field without breaking anything.
+The English value is the authoritative source. Leave the Thai blank to
+fall back to English. The site never breaks on an empty translation.
 
-To translate something, just type the Thai or Chinese version next to the
-English one and **Publish**. The change is live in ~60 seconds.
-
-If a translation needs revising later, change the value and Publish again
-— the language switcher (top-right of the site) flips between EN, TH and
-CN reading the same three-field shape.
+To translate something, type the Thai version next to the English one
+and **Publish**. The change is live in ~60 seconds.
 
 > Tip: leave brand-specific words (CLEAR, 1993, the address "Gaysorn
-> Centre, 3rd Floor") in their original spelling across all three
-> languages. Numbers, phone, email and URLs don't need translating.
+> Centre, 3rd Floor") in their original spelling. Numbers, phone, email
+> and URLs don't need translating.

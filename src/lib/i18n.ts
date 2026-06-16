@@ -2,7 +2,9 @@
  * CLEAR JEWELRY — i18n layer (EN · TH · ZH).
  *
  * Single source of truth for the language toggle.
- *  - `Locale`   : supported language codes ('en' | 'th' | 'zh').
+ *  - `Locale`   : supported language codes ('en' | 'th'). ZH was retired
+ *    from the UX; `zh` keys may still appear in COPY data + Sanity docs
+ *    but are never read by the rendering pipeline.
  *  - `LOCALES`  : ordered list powering the EN · TH · CN switcher.
  *  - `COPY`     : every translatable string, keyed, with en/th/zh variants.
  *  - `pickLocalized()` : helper for Sanity content that may be either a plain
@@ -13,13 +15,12 @@
  * never ค่ะ / คะ.
  */
 
-export type Locale = 'en' | 'th' | 'zh';
+export type Locale = 'en' | 'th';
 export const DEFAULT_LOCALE: Locale = 'en';
 
 export const LOCALES: { id: Locale; short: string; label: string }[] = [
   { id: 'en', short: 'EN', label: 'English' },
   { id: 'th', short: 'TH', label: 'ไทย' },
-  { id: 'zh', short: 'CN', label: '中文' },
 ];
 
 /** A single translatable entry. `en` is required; th/zh fall back to en. */
@@ -315,12 +316,12 @@ export type CopyKey = string;
  * site is forward-compatible with a localized Sanity schema without
  * requiring component changes.
  */
-export type Localized = string | { en?: string; th?: string; zh?: string };
+export type Localized = string | { en?: string; th?: string; zh?: string };  // zh kept in shape for back-compat with Sanity data, no longer read
 
 export function pickLocalized(value: Localized | null | undefined, locale: Locale): string {
   if (value == null) return '';
   if (typeof value === 'string') return value;
-  return value[locale] ?? value.en ?? value.th ?? value.zh ?? '';
+  return value[locale] ?? value.en ?? value.th ?? '';
 }
 
 /**
