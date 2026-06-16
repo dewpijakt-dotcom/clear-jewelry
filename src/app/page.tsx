@@ -3,7 +3,7 @@ import Image from 'next/image';
 import { existsSync } from 'fs';
 import { join } from 'path';
 import { BRAND } from '@/lib/brand';
-import { getHomepage } from '@/lib/sanityAdapter';
+import { getHomepage, getTrustSignals } from '@/lib/sanityAdapter';
 import { pickLocalized } from '@/lib/i18n';
 import Reveal from '@/components/Reveal';
 import HeroPlaceholder from '@/components/HeroPlaceholder';
@@ -19,6 +19,7 @@ import L from '@/components/L';
  */
 export default async function HomePage() {
   const cms = await getHomepage();
+  const sanityTrust = await getTrustSignals();
   const heroSrc = cms.hero.src;
   // Server-side EN initial render for image alt — clients re-render in their locale.
   const heroAltEn = pickLocalized(cms.hero.alt, 'en') || 'A CLEAR Jewelry signature piece.';
@@ -129,11 +130,13 @@ export default async function HomePage() {
       <section className="bg-ivory border-y border-[var(--rule-soft)]">
         <div className="mx-auto max-w-[1480px] px-6 lg:px-10 py-10">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
-            {BRAND.trustSignals.map((s) => (
-              <div key={s.label} className="text-center lg:text-left">
-                <p className="display text-2xl text-charcoal">{s.label}</p>
+            {(sanityTrust.length > 0 ? sanityTrust : BRAND.trustSignals.map((b) => ({ label: b.label, detail: b.detail }))).map((s, i) => (
+              <div key={i} className="text-center lg:text-left">
+                <p className="display text-2xl text-charcoal">
+                  <L value={s.label as any} fallback={typeof s.label === 'string' ? s.label : ''} />
+                </p>
                 <p className="font-sans text-[11.5px] tracking-[0.12em] uppercase text-gold-deep mt-2">
-                  {s.detail}
+                  <L value={s.detail as any} fallback={typeof s.detail === 'string' ? s.detail : ''} />
                 </p>
               </div>
             ))}

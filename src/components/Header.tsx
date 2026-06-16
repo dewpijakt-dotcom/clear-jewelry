@@ -120,6 +120,7 @@ export default function Header() {
             type="button"
             aria-label="Open menu"
             aria-expanded={mobileOpen}
+            aria-controls="mobile-drawer"
             onClick={() => setMobileOpen(true)}
             className="lg:hidden flex flex-col items-end gap-[5px] p-2"
           >
@@ -141,6 +142,7 @@ export default function Header() {
 
       {/* Mobile drawer */}
       <div
+        id="mobile-drawer"
         className={clsx(
           'fixed inset-0 z-[60] lg:hidden transition-all duration-700 ease-elegant',
           mobileOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none',

@@ -126,3 +126,28 @@ Still broken? Email kirbykung168@gmail.com.
 **https://clear-jewelry.vercel.app/studio**
 
 Bookmark it. Sign in with kirbykung168@gmail.com (or invite other editors from **Manage members** in Studio settings).
+
+---
+
+## Editing in three languages (EN / TH / ZH)
+
+Every text field in Studio now has three side-by-side inputs:
+
+| Field | English (en) | ภาษาไทย (th) | 中文 (zh) |
+|---|---|---|---|
+| Required | yes | optional | optional |
+
+The English value is the authoritative source. When you leave the Thai or
+Chinese box blank, the live site falls back to the English text — so you
+can ship an empty field without breaking anything.
+
+To translate something, just type the Thai or Chinese version next to the
+English one and **Publish**. The change is live in ~60 seconds.
+
+If a translation needs revising later, change the value and Publish again
+— the language switcher (top-right of the site) flips between EN, TH and
+CN reading the same three-field shape.
+
+> Tip: leave brand-specific words (CLEAR, 1993, the address "Gaysorn
+> Centre, 3rd Floor") in their original spelling across all three
+> languages. Numbers, phone, email and URLs don't need translating.

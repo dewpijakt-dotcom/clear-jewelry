@@ -214,3 +214,20 @@ export async function getSiteSettings() { return fetchSafe<any>(SITE_SETTINGS_QU
 export async function getAboutPage()    { return fetchSafe<any>(ABOUT_QUERY); }
 export async function getInfoPage()     { return fetchSafe<any>(INFO_QUERY); }
 export async function getContactPage()  { return fetchSafe<any>(CONTACT_QUERY); }
+
+/* Fetch only the trust-signals strip — used on the homepage so the
+ * owner-edited values live in Sanity rather than in the hard-coded
+ * BRAND constant. Returns LocalizedTrustSignal[]. */
+export interface LocalizedTrustSignal {
+  label: Localized;
+  detail: Localized;
+}
+export async function getTrustSignals(): Promise<LocalizedTrustSignal[]> {
+  const data = await fetchSafe<{ trustSignals: any[] } | null>(
+    `*[_id == "siteSettings"][0]{ trustSignals }`
+  );
+  return (data?.trustSignals ?? []).map((t) => ({
+    label: loc(t?.label),
+    detail: loc(t?.detail),
+  }));
+}
