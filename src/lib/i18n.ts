@@ -265,6 +265,23 @@ export const COPY: Record<string, Entry> = {
   /* Kept for back-compat with the legacy BookHandoff component */
   'book.opening':       { en: 'Opening LINE.', th: 'กำลังเปิด LINE', zh: '正在打开 LINE。' },
 
+  /* ───── BOOKING SUCCESS / CONFIRMATION (editorial register) ───── */
+  'book.success.thanks':       { en: 'Thank you, {name}.', th: 'ขอบคุณ {name} ครับ' },
+  'book.success.body': {
+    en: 'We have received your request for {date} at {time}. We will confirm on LINE within one business day.',
+    th: 'เราได้รับคำขอนัดของคุณสำหรับวันที่ {date} เวลา {time} เรียบร้อยแล้ว เราจะยืนยันผ่าน LINE ภายในหนึ่งวันทำการ ครับ',
+  },
+  'book.success.detailsHeading': { en: 'Your request', th: 'รายละเอียดคำขอ' },
+  'book.success.detail.name':    { en: 'Name',  th: 'ชื่อ' },
+  'book.success.detail.contact': { en: 'Contact', th: 'ช่องทางติดต่อ' },
+  'book.success.detail.date':    { en: 'Date',  th: 'วันที่' },
+  'book.success.detail.time':    { en: 'Time',  th: 'เวลา' },
+  'book.success.detail.message': { en: 'Message', th: 'ข้อความ' },
+  'book.success.lineCta':        { en: 'Prefer to chat now? Add us on LINE', th: 'อยากคุยทันที? เพิ่มเพื่อน LINE ได้เลย ครับ' },
+  'book.submit.sending':         { en: 'Sending…', th: 'กำลังส่ง…' },
+  'book.error.generic':          { en: 'Could not submit. Please copy your details and message us on LINE.', th: 'ส่งฟอร์มไม่สำเร็จ กรุณาคัดลอกข้อมูลของคุณแล้วส่งข้อความถึงเราใน LINE ครับ' },
+  'book.error.rate':             { en: 'Too many requests. Please try again in an hour, or message us on LINE.', th: 'ส่งคำขอบ่อยเกินไป กรุณาลองใหม่ในอีกหนึ่งชั่วโมง หรือส่งข้อความใน LINE ครับ' },
+
   /* ───── CLOSING / SHARED CTAs ───── */
   'cls.cta.book':    { en: 'Book a private viewing', th: 'นัดชมเป็นการส่วนตัว', zh: '预约私下鉴赏' },
   'cls.cta.contact': { en: 'See all channels', th: 'ดูช่องทางทั้งหมด', zh: '查看所有联络方式' },

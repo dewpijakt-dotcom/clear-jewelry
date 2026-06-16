@@ -1,28 +1,42 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useT, useLocale } from '@/components/LanguageProvider';
 import { BRAND } from '@/lib/brand';
 
 /**
- * Booking form — collects name / phone / LINE / date / time / message,
- * formats them as a single clipboard-friendly block, copies to the
- * clipboard on submit (or via the "Copy" button), then opens LINE so
- * the visitor can paste straight into the chat with @clearjewelry.
+ * Booking form — collects name / phone / email / LINE / date / time / message.
  *
- * Submission policy: we don't run our own backend. LINE IS the booking
- * channel. The form's job is to (a) gather the right details and (b)
- * make pasting into LINE one tap on mobile, two clicks on desktop.
+ * On submit:
+ *  - POSTs to /api/book (validates + dispatches to LINE + Sheets)
+ *  - On 200 ok: replaces the form with an editorial confirmation block
+ *    (Cormorant italic display, gold rule, brief receipt). No toasts, no
+ *    confetti — the page itself becomes the confirmation.
+ *  - On failure: keeps the form, shows a quiet error line, and auto-copies
+ *    the details to the clipboard so the visitor can paste to LINE.
+ *
+ * Also keeps "Copy my details" as an independent affordance + the LINE QR
+ * panel above the form, so a visitor in a hurry can chat now without
+ * filling the form.
  */
 
 const TIME_SLOTS = ['11:00', '12:00', '13:00', '14:00', '15:00'] as const;
 type TimeSlot = (typeof TIME_SLOTS)[number];
 
-// QR generated client-side via api.qrserver.com — no extra dependency.
 const QR_SRC = `https://api.qrserver.com/v1/create-qr-code/?size=320x320&margin=8&data=${encodeURIComponent(
   BRAND.lineUrl,
 )}`;
+
+type Submission = {
+  name: string;
+  phone: string;
+  email: string;
+  line: string;
+  date: string;
+  time: TimeSlot;
+  message: string;
+};
 
 export default function BookingForm() {
   const t = useT();
@@ -35,40 +49,38 @@ export default function BookingForm() {
   const [date, setDate] = useState('');
   const [time, setTime] = useState<TimeSlot>('11:00');
   const [message, setMessage] = useState('');
+  const honeyRef = useRef<HTMLInputElement | null>(null);
+
+  const [sending, setSending] = useState(false);
+  const [confirmed, setConfirmed] = useState<Submission | null>(null);
   const [toast, setToast] = useState<null | { kind: 'ok' | 'err'; text: string }>(null);
   const [qrOpen, setQrOpen] = useState(false);
 
-  // Earliest selectable date = today (YYYY-MM-DD in the user's locale)
   const todayISO = useMemo(() => {
     const d = new Date();
-    const yyyy = d.getFullYear();
-    const mm = String(d.getMonth() + 1).padStart(2, '0');
-    const dd = String(d.getDate()).padStart(2, '0');
-    return `${yyyy}-${mm}-${dd}`;
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
   }, []);
 
-  // Auto-clear toast
   useEffect(() => {
     if (!toast) return;
     const id = setTimeout(() => setToast(null), 5500);
     return () => clearTimeout(id);
   }, [toast]);
 
-  function buildSummary(): string {
-    const lines = [
+  function buildSummary(d: Submission): string {
+    return [
       t('book.summary.heading'),
       '———————————————',
-      `${t('book.name.label')}: ${name || '—'}`,
-      `${t('book.phone.label')}: ${phone || '—'}`,
-      `${t('book.line.label')}: ${line || '—'}`,
-      email ? `${t('book.email.label')}: ${email}` : null,
-      `${t('book.date.label')}: ${date || '—'}`,
-      `${t('book.time.label')}: ${time}`,
+      `${t('book.name.label')}: ${d.name || '—'}`,
+      `${t('book.phone.label')}: ${d.phone || '—'}`,
+      `${t('book.line.label')}: ${d.line || '—'}`,
+      d.email ? `${t('book.email.label')}: ${d.email}` : null,
+      `${t('book.date.label')}: ${d.date || '—'}`,
+      `${t('book.time.label')}: ${d.time}`,
       '',
       `${t('book.message.label')}:`,
-      message || '—',
-    ].filter(Boolean);
-    return lines.join('\n');
+      d.message || '—',
+    ].filter(Boolean).join('\n');
   }
 
   async function copyToClipboard(text: string): Promise<boolean> {
@@ -78,25 +90,22 @@ export default function BookingForm() {
         return true;
       }
     } catch { /* fall through */ }
-    // Legacy fallback (Safari iOS < 13 + non-secure contexts)
     try {
       const ta = document.createElement('textarea');
       ta.value = text;
       ta.style.position = 'fixed';
       ta.style.left = '-9999px';
       document.body.appendChild(ta);
-      ta.focus();
-      ta.select();
+      ta.focus(); ta.select();
       const ok = document.execCommand('copy');
       document.body.removeChild(ta);
       return ok;
-    } catch {
-      return false;
-    }
+    } catch { return false; }
   }
 
   async function handleCopy(): Promise<void> {
-    const ok = await copyToClipboard(buildSummary());
+    const d: Submission = { name, phone, email, line, date, time, message };
+    const ok = await copyToClipboard(buildSummary(d));
     setToast(ok
       ? { kind: 'ok',  text: t('book.copy.confirm') }
       : { kind: 'err', text: t('book.copy.error') });
@@ -104,20 +113,129 @@ export default function BookingForm() {
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    const ok = await copyToClipboard(buildSummary());
-    setToast(ok
-      ? { kind: 'ok',  text: t('book.copy.confirm') }
-      : { kind: 'err', text: t('book.copy.error') });
-    // Auto-open LINE on mobile after a brief delay so the toast is visible.
-    setTimeout(() => {
-      window.open(BRAND.lineUrl, '_blank', 'noopener,noreferrer');
-    }, 1200);
+    if (sending) return;
+    const d: Submission = { name, phone, email, line, date, time, message };
+    setSending(true);
+    // Always copy to clipboard as a safety net — works even if the API
+    // call fails, so the visitor can paste straight into LINE.
+    await copyToClipboard(buildSummary(d));
+    try {
+      const res = await fetch('/api/book', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...d,
+          locale,
+          honeypot: honeyRef.current?.value || '',
+        }),
+      });
+      if (res.status === 429) {
+        setToast({ kind: 'err', text: t('book.error.rate') });
+        setSending(false);
+        return;
+      }
+      const json = await res.json().catch(() => ({ ok: false }));
+      if (!json.ok) {
+        setToast({ kind: 'err', text: t('book.error.generic') });
+        setSending(false);
+        return;
+      }
+      // Success — switch the page to the confirmation block.
+      setConfirmed(d);
+      setSending(false);
+      // Scroll to top of the section for the confirmation reveal.
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } catch {
+      setToast({ kind: 'err', text: t('book.error.generic') });
+      setSending(false);
+    }
   }
 
+  /* ─── Confirmation view ────────────────────────────────────────── */
+  if (confirmed) {
+    const formattedDate = (() => {
+      try {
+        return new Date(confirmed.date + 'T00:00:00').toLocaleDateString(
+          locale === 'th' ? 'th-TH' : 'en-GB',
+          { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }
+        );
+      } catch {
+        return confirmed.date;
+      }
+    })();
+
+    const contactLine = [
+      confirmed.line && `LINE ${confirmed.line}`,
+      confirmed.phone,
+      confirmed.email,
+    ].filter(Boolean).join(' · ');
+
+    const thanks = t('book.success.thanks').replace('{name}', confirmed.name);
+    const body = t('book.success.body')
+      .replace('{date}', formattedDate)
+      .replace('{time}', confirmed.time);
+
+    return (
+      <section className="bg-ivory pt-40 lg:pt-48 pb-32 lg:pb-40" lang={locale}>
+        <div className="mx-auto max-w-[760px] px-6 lg:px-10 text-center">
+          <p className="eyebrow text-gold-deep">{t('book.eyebrow')}</p>
+
+          <h1
+            className="display-italic text-charcoal mt-8 leading-[1.18]"
+            style={{ fontSize: 'clamp(34px, 5.2vw, 64px)' }}
+          >
+            {thanks}
+          </h1>
+
+          <p
+            className="display text-charcoal/80 mt-7 lg:mt-9 leading-[1.55] max-w-[640px] mx-auto"
+            style={{ fontSize: 'clamp(18px, 2.2vw, 24px)' }}
+          >
+            {body}
+          </p>
+
+          <hr className="gold-rule mx-auto mt-10" />
+
+          {/* Quiet receipt */}
+          <dl className="mt-12 lg:mt-14 grid grid-cols-1 sm:grid-cols-2 gap-y-6 gap-x-10 text-left max-w-[520px] mx-auto">
+            <ReceiptRow label={t('book.success.detail.name')} value={confirmed.name} />
+            <ReceiptRow label={t('book.success.detail.date')} value={formattedDate} />
+            {contactLine && (
+              <ReceiptRow label={t('book.success.detail.contact')} value={contactLine} />
+            )}
+            <ReceiptRow label={t('book.success.detail.time')} value={confirmed.time} />
+            {confirmed.message && (
+              <div className="sm:col-span-2">
+                <dt className="font-sans text-[10.5px] uppercase tracking-[0.32em] text-gold-deep mb-2">
+                  {t('book.success.detail.message')}
+                </dt>
+                <dd className="font-sans italic text-[14.5px] tracking-[0.02em] text-charcoal/80 leading-relaxed">
+                  {confirmed.message}
+                </dd>
+              </div>
+            )}
+          </dl>
+
+          <hr className="gold-rule mx-auto mt-12" />
+
+          {/* Quiet secondary affordance */}
+          <a
+            href={BRAND.lineUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="mt-10 inline-flex items-center gap-3 font-sans text-[11px] uppercase tracking-[0.32em] text-charcoal hover:text-gold-deep transition-colors duration-500 border-b border-charcoal/40 pb-1.5"
+          >
+            {t('book.success.lineCta')} <span aria-hidden>→</span>
+          </a>
+        </div>
+      </section>
+    );
+  }
+
+  /* ─── Form view ────────────────────────────────────────────────── */
   return (
     <section className="bg-ivory pt-40 lg:pt-48 pb-32 lg:pb-40" lang={locale}>
       <div className="mx-auto max-w-[1180px] px-6 lg:px-10">
-        {/* Header */}
         <header className="text-center">
           <p className="eyebrow text-gold-deep">{t('book.eyebrow')}</p>
           <h1 className="display mt-5 text-charcoal" style={{ fontSize: 'clamp(40px, 6vw, 76px)', lineHeight: 1.04 }}>
@@ -130,8 +248,6 @@ export default function BookingForm() {
           <hr className="gold-rule mx-auto mt-10" />
         </header>
 
-        {/* LINE-add panel — sits above the form so users add the official
-            account before they even start typing. */}
         <aside
           className="mt-12 lg:mt-16 bg-charcoal text-ivory p-6 lg:p-10 grid lg:grid-cols-[1fr_auto] gap-8 items-center text-center lg:text-left"
           style={{ boxShadow: '0 24px 60px -40px rgba(0,0,0,0.4)' }}
@@ -173,69 +289,36 @@ export default function BookingForm() {
           </button>
         </aside>
 
-        {/* Form */}
         <form
           onSubmit={handleSubmit}
           noValidate
           className="mt-14 lg:mt-20 grid lg:grid-cols-2 gap-x-12 gap-y-10"
         >
+          {/* Honeypot — invisible to humans, bots fill it */}
+          <input
+            ref={honeyRef}
+            type="text"
+            name="company"
+            autoComplete="off"
+            tabIndex={-1}
+            aria-hidden
+            className="absolute opacity-0 pointer-events-none -left-[9999px] h-0 w-0"
+          />
+
           <Field id="bk-name" label={t('book.name.label')} required>
-            <input
-              id="bk-name"
-              type="text"
-              required
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder={t('book.name.ph')}
-              className="field"
-              autoComplete="name"
-            />
+            <input id="bk-name" type="text" required value={name} onChange={(e) => setName(e.target.value)} placeholder={t('book.name.ph')} className="field" autoComplete="name" />
           </Field>
           <Field id="bk-phone" label={t('book.phone.label')} required>
-            <input
-              id="bk-phone"
-              type="tel"
-              required
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              placeholder={t('book.phone.ph')}
-              className="field"
-              autoComplete="tel"
-              inputMode="tel"
-            />
+            <input id="bk-phone" type="tel" required value={phone} onChange={(e) => setPhone(e.target.value)} placeholder={t('book.phone.ph')} className="field" autoComplete="tel" inputMode="tel" />
           </Field>
           <Field id="bk-line" label={t('book.line.label')} required>
-            <input
-              id="bk-line"
-              type="text"
-              required
-              value={line}
-              onChange={(e) => setLine(e.target.value)}
-              placeholder={t('book.line.ph')}
-              className="field"
-            />
+            <input id="bk-line" type="text" required value={line} onChange={(e) => setLine(e.target.value)} placeholder={t('book.line.ph')} className="field" />
           </Field>
           <Field id="bk-email" label={t('book.email.label')}>
-            <input
-              id="bk-email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder={t('book.email.ph')}
-              className="field"
-              autoComplete="email"
-            />
+            <input id="bk-email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder={t('book.email.ph')} className="field" autoComplete="email" />
           </Field>
           <Field id="bk-date" label={t('book.date.label')} required>
-            <input
-              id="bk-date"
-              type="date"
-              required
-              min={todayISO}
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
-              className="field"
-            />
+            <input id="bk-date" type="date" required min={todayISO} value={date} onChange={(e) => setDate(e.target.value)} className="field" />
           </Field>
           <div className="lg:col-span-1">
             <span className="block font-sans text-[10.5px] uppercase tracking-[0.32em] text-gold-deep mb-3">
@@ -268,14 +351,7 @@ export default function BookingForm() {
 
           <div className="lg:col-span-2">
             <Field id="bk-message" label={t('book.message.label')}>
-              <textarea
-                id="bk-message"
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-                placeholder={t('book.message.ph')}
-                className="field min-h-[140px] py-4 resize-y"
-                rows={5}
-              />
+              <textarea id="bk-message" value={message} onChange={(e) => setMessage(e.target.value)} placeholder={t('book.message.ph')} className="field min-h-[140px] py-4 resize-y" rows={5} />
             </Field>
           </div>
 
@@ -286,10 +362,11 @@ export default function BookingForm() {
             <div className="flex flex-col sm:flex-row gap-4 items-stretch justify-center">
               <button
                 type="submit"
-                className="cta-book-primary inline-flex items-center justify-center gap-3 bg-charcoal text-ivory w-full sm:w-auto px-8 sm:px-10 py-[18px] font-sans text-[12px] uppercase tracking-[0.32em] hover:bg-gold hover:text-charcoal transition-all duration-500 ease-elegant"
+                disabled={sending}
+                className="cta-book-primary inline-flex items-center justify-center gap-3 bg-charcoal text-ivory w-full sm:w-auto px-8 sm:px-10 py-[18px] font-sans text-[12px] uppercase tracking-[0.32em] hover:bg-gold hover:text-charcoal transition-all duration-500 ease-elegant disabled:opacity-60 disabled:cursor-not-allowed"
                 style={{ boxShadow: '0 18px 38px -22px rgba(0,0,0,0.55), 0 0 0 1px rgba(216,190,126,0.55)' }}
               >
-                {t('book.submit')} <span>→</span>
+                {sending ? t('book.submit.sending') : t('book.submit')} {!sending && <span>→</span>}
               </button>
               <button
                 type="button"
@@ -303,7 +380,6 @@ export default function BookingForm() {
         </form>
       </div>
 
-      {/* Toast (confirmation / error) */}
       <AnimatePresence>
         {toast && (
           <motion.div
@@ -326,7 +402,6 @@ export default function BookingForm() {
         )}
       </AnimatePresence>
 
-      {/* Enlarged QR modal */}
       <AnimatePresence>
         {qrOpen && (
           <motion.div
@@ -374,16 +449,19 @@ export default function BookingForm() {
   );
 }
 
+function ReceiptRow({ label, value }: { label: string; value: string }) {
+  return (
+    <div>
+      <dt className="font-sans text-[10.5px] uppercase tracking-[0.32em] text-gold-deep mb-2">{label}</dt>
+      <dd className="font-sans text-[14.5px] tracking-[0.02em] text-charcoal/90 leading-relaxed">{value}</dd>
+    </div>
+  );
+}
+
 function Field({
-  id,
-  label,
-  required,
-  children,
+  id, label, required, children,
 }: {
-  id: string;
-  label: string;
-  required?: boolean;
-  children: React.ReactNode;
+  id: string; label: string; required?: boolean; children: React.ReactNode;
 }) {
   return (
     <label htmlFor={id} className="block">
