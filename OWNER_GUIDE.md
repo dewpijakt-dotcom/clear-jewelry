@@ -219,3 +219,21 @@ Send those two values to the developer. They go into Vercel as
 `LINE_CHANNEL_ACCESS_TOKEN` and `LINE_OWNER_USER_ID`. Both stay secret;
 never paste them into chat, email, or commit them to GitHub.
 
+
+### C · Vercel env vars (developer does this once Kirby provides the values)
+
+After Kirby pastes the LINE access token, his user ID, and the Sheets web-app URL, set them in Vercel:
+
+1. https://vercel.com/kirbykung168-arts-projects/clear-jewelry → **Settings** → **Environment Variables**
+2. Add three variables, all environments (Production + Preview + Development):
+
+   | Name | Value source |
+   |---|---|
+   | `LINE_CHANNEL_ACCESS_TOKEN` | the long-lived token from LINE Developers Console |
+   | `LINE_OWNER_USER_ID` | the `U…` user ID from LINE Developers Console → Basic settings |
+   | `GOOGLE_SHEETS_WEBHOOK_URL` | the Apps Script web-app URL from the Sheet |
+
+3. Trigger a redeploy (Deployments → click the latest → **Redeploy**) so the running functions pick up the new env values.
+4. Verify with `curl https://clear-jewelry.vercel.app/api/book/health` — all three should report `set` and `ready: true`.
+
+That's it. From the next /book submission, the LINE OA pings your phone and the row appears in the Google Sheet within ~1 second.
