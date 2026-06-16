@@ -97,6 +97,8 @@ export default function GalleryShowcaseClient({ items }: { items: LocalizedGalle
             ? () => setActiveIndex(activeIndex + 1)
             : undefined
         }
+        prevItem={activeIndex !== null && activeIndex > 0 ? items[activeIndex - 1] : null}
+        nextItem={activeIndex !== null && activeIndex < items.length - 1 ? items[activeIndex + 1] : null}
       />
     </>
   );

@@ -268,6 +268,13 @@ export const COPY: Record<string, Entry> = {
   'cls.cta.book':    { en: 'Book a private viewing', th: 'นัดชมเป็นการส่วนตัว', zh: '预约私下鉴赏' },
   'cls.cta.contact': { en: 'See all channels', th: 'ดูช่องทางทั้งหมด', zh: '查看所有联络方式' },
 
+  /* ───── WHATSAPP — branded QR card on Contact ───── */
+  'wa.eyebrow':    { en: 'WhatsApp', th: 'ว็อตส์แอป', zh: 'WhatsApp' },
+  'wa.name':       { en: 'Fifa · Clear Jewelry', th: 'คุณฟีฟ่า · Clear Jewelry', zh: 'Fifa · Clear Jewelry' },
+  'wa.scan':       { en: 'Scan to chat', th: 'สแกนเพื่อแชท', zh: '扫码联系' },
+  'wa.open':       { en: 'Open WhatsApp', th: 'เปิด WhatsApp', zh: '打开 WhatsApp' },
+  'wa.enlarge':    { en: 'Tap to enlarge', th: 'แตะเพื่อขยาย', zh: '点击放大' },
+
   /* ───── A11Y / GLOBAL CHROME ───── */
   'a11y.skip':          { en: 'Skip to content', th: 'ข้ามไปที่เนื้อหา', zh: '跳至正文' },
 

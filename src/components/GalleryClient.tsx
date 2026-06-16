@@ -186,6 +186,8 @@ export default function GalleryClient({ pieces, categories }: GalleryClientProps
         onClose={() => setActiveIndex(null)}
         onPrev={activeIndex !== null && activeIndex > 0 ? () => setActiveIndex(activeIndex - 1) : undefined}
         onNext={activeIndex !== null && activeIndex < filtered.length - 1 ? () => setActiveIndex(activeIndex + 1) : undefined}
+        prevItem={activeIndex !== null && activeIndex > 0 ? filtered[activeIndex - 1] : null}
+        nextItem={activeIndex !== null && activeIndex < filtered.length - 1 ? filtered[activeIndex + 1] : null}
       />
     </>
   );

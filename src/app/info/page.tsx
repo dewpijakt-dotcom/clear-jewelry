@@ -5,7 +5,7 @@ import Reveal from '@/components/Reveal';
 import OrnateDivider from '@/components/OrnateDivider';
 import SparkleField from '@/components/SparkleField';
 import MagneticButton from '@/components/MagneticButton';
-import MarquiseSealDraw from '@/components/MarquiseSealDraw';
+import Wordmark from '@/components/Wordmark';
 import LetterDropTitle from '@/components/LetterDropTitle';
 import CountUp from '@/components/CountUp';
 import WhisperLine from '@/components/WhisperLine';
@@ -250,8 +250,8 @@ export default function InfoPage() {
         <div className="relative mx-auto max-w-[1180px] px-6 lg:px-10 text-center">
           <Reveal>
             {/* the brandmark signs itself in gold pen */}
-            <div className="relative w-40 h-48 mx-auto mb-8">
-              <MarquiseSealDraw className="w-full h-full" ariaLabel={`${BRAND.name} brandmark`} />
+            <div className="flex justify-center mb-8">
+              <Wordmark size="lg" variant="light" />
             </div>
             <p className="eyebrow text-gold-light">V &nbsp;·&nbsp; {t('foot.atelier')}</p>
             <h2

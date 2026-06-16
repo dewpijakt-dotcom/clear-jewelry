@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Cormorant_Garamond, Jost, Noto_Serif_Thai, Noto_Serif_SC } from 'next/font/google';
+import { Cormorant_Garamond, Jost, Noto_Serif_Thai, Noto_Sans_Thai, Noto_Serif_SC, Noto_Sans_SC } from 'next/font/google';
 import { cookies } from 'next/headers';
 import './globals.css';
 import Header from '@/components/Header';
@@ -32,8 +32,15 @@ const jost = Jost({
 
 const notoThai = Noto_Serif_Thai({
   subsets: ['thai'],
-  weight: ['400'],
+  weight: ['400', '600'],
   variable: '--font-noto-thai',
+  display: 'swap',
+});
+
+const notoThaiSans = Noto_Sans_Thai({
+  subsets: ['thai'],
+  weight: ['300', '400', '500'],
+  variable: '--font-noto-thai-sans',
   display: 'swap',
 });
 
@@ -121,8 +128,8 @@ const ORGANIZATION_JSONLD = {
   founder: { '@type': 'Organization', name: 'CLEAR Family Atelier' },
   contactPoint: [{
     '@type': 'ContactPoint',
-    telephone: BRAND.phoneTel,
     contactType: 'Customer Service',
+    url: BRAND.whatsappUrl,
     areaServed: 'TH',
     availableLanguage: ['English', 'Thai', 'Chinese'],
   }],
@@ -140,7 +147,6 @@ const JEWELRY_STORE_JSONLD = {
   url: SITE_URL,
   logo: `${SITE_URL}/logo.png`,
   image: `${SITE_URL}/images/hero/hero-main.jpg`,
-  telephone: BRAND.phoneTel,
   foundingDate: String(BRAND.establishedYear),
   priceRange: '฿฿฿฿',
   address: {
@@ -193,7 +199,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html
       lang={initialLocale}
       translate="no"
-      className={`${cormorant.variable} ${jost.variable} ${notoThai.variable} ${notoSC.variable} notranslate`}
+      className={`${cormorant.variable} ${jost.variable} ${notoThai.variable} ${notoThaiSans.variable} ${notoSC.variable} ${notoSCsans.variable} notranslate`}
     >
       <head>
         {/* Tell Chrome/Edge/Safari not to auto-translate — we have a native

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
-import MarquiseSealDraw from '@/components/MarquiseSealDraw';
+import Wordmark from '@/components/Wordmark';
 import { useT } from '@/components/LanguageProvider';
 
 interface Props {
@@ -58,8 +58,8 @@ export default function BookHandoff({ lineUrl, lineHandle }: Props) {
           {t('maison.label')}
         </p>
 
-        <div className="relative w-32 h-40 mx-auto mb-10">
-          <MarquiseSealDraw className="w-full h-full" ariaLabel="CLEAR 1993 brandmark" />
+        <div className="flex justify-center mb-10">
+          <Wordmark size="lg" variant="dark" />
         </div>
 
         <hr

@@ -30,7 +30,7 @@ export default function Wordmark({
   size = 'md',
   variant = 'dark',
   iconOnly = false,
-  noIcon = false,
+  noIcon = true,    // glyph removed brand-wide per owner request; pass noIcon={false} to opt in
   className,
 }: WordmarkProps) {
   const s = SIZES[size];

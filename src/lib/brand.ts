@@ -11,14 +11,18 @@ export const BRAND = {
   establishedYear: 1993,
 
   // ---- Contact ----
-  phoneDisplay: '081-311-6666',
-  phoneTel: '+66813116666',
-  // No public email — appointments and enquiries route through LINE.
+  // Public phone number removed at owner's request — bookings + enquiries now
+  // route through WhatsApp (QR on the Contact page) and LINE.
+  phoneDisplay: null as string | null,
+  phoneTel: null as string | null,
+  // No public email — enquiries route through WhatsApp / LINE.
   email: null as string | null,
   lineHandle: '@clearjewelry',
   lineUrl: 'https://line.me/R/ti/p/@clearjewelry',
   instagramHandle: '@clearjewelry',
   instagramUrl: 'https://www.instagram.com/clearjewelry',
+  whatsappUrl: 'https://wa.me/qr/GTYE6MWRH54LK1',
+  whatsappQrPath: '/images/contact/whatsapp-qr.png',
 
   // ---- Location ----
   addressLines: [

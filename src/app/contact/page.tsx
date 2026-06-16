@@ -1,6 +1,8 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
+import { useState } from 'react';
 import Reveal from '@/components/Reveal';
 import OrnateDivider from '@/components/OrnateDivider';
 import GoldCornerFrame from '@/components/GoldCornerFrame';
@@ -14,6 +16,7 @@ import { useT, useLocale } from '@/components/LanguageProvider';
 
 export default function ContactPage() {
   const t = useT();
+  const [qrOpen, setQrOpen] = useState(false);
   const { locale } = useLocale();
   const yearsActive = new Date().getFullYear() - BRAND.establishedYear;
 
@@ -32,14 +35,6 @@ export default function ContactPage() {
     },
     {
       n: 'II',
-      label: { en: 'Direct phone', th: 'โทรตรง', zh: '直拨电话' }[locale],
-      primary: BRAND.phoneDisplay,
-      secondary: t('tag.day'),
-      href: `tel:${BRAND.phoneTel}`,
-      external: false,
-    },
-    {
-      n: 'III',
       label: t('foot.ig'),
       primary: BRAND.instagramHandle,
       secondary: {
@@ -134,6 +129,58 @@ export default function ContactPage() {
             ))}
           </div>
 
+          {/* WhatsApp QR card — branded, ivory paper with gold hairline */}
+          <Reveal delay={0.18}>
+            <aside className="lg:col-span-2">
+              <div className="grid lg:grid-cols-[auto_1fr] gap-8 lg:gap-12 items-center bg-cream p-8 lg:p-12 relative"
+                style={{
+                  background: '#F5EFE4',
+                  boxShadow: '0 4px 28px rgba(20, 16, 12, 0.08)',
+                  border: '1px solid rgba(194, 161, 77, 0.30)',
+                }}
+              >
+                {/* corner ornaments — refined L-frames */}
+                <span aria-hidden className="absolute pointer-events-none" style={{ top: 10, left: 10, width: 24, height: 24, borderTop: '1px solid var(--gold)', borderLeft: '1px solid var(--gold)' }} />
+                <span aria-hidden className="absolute pointer-events-none" style={{ bottom: 10, right: 10, width: 24, height: 24, borderBottom: '1px solid var(--gold)', borderRight: '1px solid var(--gold)' }} />
+
+                <button
+                  type="button"
+                  onClick={() => setQrOpen(true)}
+                  aria-label={t('wa.enlarge')}
+                  className="block bg-ivory p-4 transition-transform duration-500 hover:scale-[1.02]"
+                  style={{ boxShadow: '0 2px 12px rgba(20,16,12,0.06)' }}
+                >
+                  <Image
+                    src={BRAND.whatsappQrPath}
+                    alt={t('wa.eyebrow') + ' QR — ' + BRAND.lineHandle}
+                    width={220}
+                    height={220}
+                    className="block w-[180px] h-[180px] lg:w-[220px] lg:h-[220px]"
+                  />
+                </button>
+
+                <div className="text-charcoal">
+                  <p className="eyebrow text-gold-deep">{t('wa.eyebrow')}</p>
+                  <p className="display-italic mt-3 text-charcoal" style={{ fontSize: 'clamp(20px, 2.4vw, 28px)' }} lang={locale}>
+                    {t('wa.name')}
+                  </p>
+                  <hr className="border-0 h-px bg-gold-light/50 w-16 mt-5" />
+                  <p className="mt-4 font-sans text-[11px] uppercase tracking-[0.32em] text-gold-deep" lang={locale}>
+                    {t('wa.scan')}
+                  </p>
+                  <a
+                    href={BRAND.whatsappUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="btn btn-light mt-6 !text-charcoal !border-charcoal hover:!bg-charcoal hover:!text-ivory"
+                  >
+                    {t('wa.open')} <span className="btn-arrow">→</span>
+                  </a>
+                </div>
+              </div>
+            </aside>
+          </Reveal>
+
           {/* Atelier card */}
           <Reveal delay={0.1}>
             <aside className="relative bg-charcoal text-ivory p-10 lg:p-14 overflow-hidden">
@@ -219,6 +266,46 @@ export default function ContactPage() {
           </div>
         </div>
       </section>
+
+      {/* QR enlarged modal */}
+      {qrOpen && (
+        <div
+          onClick={() => setQrOpen(false)}
+          role="dialog"
+          aria-modal="true"
+          aria-label={t('wa.enlarge')}
+          className="fixed inset-0 z-[95] bg-charcoal/95 backdrop-blur flex items-center justify-center p-6"
+        >
+          <div onClick={(e) => e.stopPropagation()} className="bg-ivory p-6 lg:p-8 max-w-md w-full text-center relative">
+            <Image
+              src={BRAND.whatsappQrPath}
+              alt={t('wa.eyebrow') + ' QR'}
+              width={520}
+              height={520}
+              className="mx-auto w-full max-w-[420px] aspect-square"
+            />
+            <p className="mt-5 font-sans text-[11px] uppercase tracking-[0.32em] text-gold-deep" lang={locale}>
+              {t('wa.scan')}
+            </p>
+            <a
+              href={BRAND.whatsappUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="mt-5 inline-flex items-center justify-center gap-3 bg-charcoal text-ivory px-7 py-3 font-sans text-[12px] uppercase tracking-[0.32em] hover:bg-gold hover:text-charcoal transition-colors duration-500"
+            >
+              {t('wa.open')} →
+            </a>
+            <button
+              type="button"
+              onClick={() => setQrOpen(false)}
+              aria-label="Close"
+              className="absolute top-3 right-3 p-2 text-charcoal/60 hover:text-charcoal text-[11px] uppercase tracking-[0.28em]"
+            >
+              ✕
+            </button>
+          </div>
+        </div>
+      )}
     </>
   );
 }

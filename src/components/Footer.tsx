@@ -3,7 +3,6 @@
 import { BRAND } from '@/lib/brand';
 import Wordmark from './Wordmark';
 import OrnateDivider from './OrnateDivider';
-import MarquiseSealDraw from './MarquiseSealDraw';
 import { useT, useLocale } from './LanguageProvider';
 
 /**
@@ -35,8 +34,8 @@ export default function Footer() {
       <div className="relative mx-auto max-w-[1480px] px-6 lg:px-10">
         {/* Closing flourish — centred seal + whisper */}
         <div className="text-center pb-16 border-b border-[var(--rule-invert)]">
-          <div className="relative w-24 h-32 mx-auto mb-6">
-            <MarquiseSealDraw className="w-full h-full" ariaLabel={`${BRAND.name} brandmark`} />
+          <div className="flex justify-center mb-6">
+            <Wordmark size="md" variant="light" />
           </div>
           <p
             className="font-sans uppercase text-[10px] tracking-[0.6em] text-gold-light/65"
@@ -101,8 +100,8 @@ export default function Footer() {
           <FooterChannel
             label={t('foot.contact')}
             primary={
-              <a href={`tel:${BRAND.phoneTel}`} className="hover:text-gold-light transition-colors">
-                {BRAND.phoneDisplay}
+              <a href={BRAND.whatsappUrl} target="_blank" rel="noreferrer" className="hover:text-gold-light transition-colors">
+                WhatsApp · {t('wa.name')}
               </a>
             }
             secondary={
