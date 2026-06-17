@@ -264,7 +264,9 @@ export async function getTrustSignals(): Promise<LocalizedTrustSignal[]> {
 const DROPPED_LABEL_KEYS = new Set<string>([
   'foot.ig',
   'book.message.ph',
-  'wa.name', // also pinned in LanguageProvider; double-belt-and-braces
+  'wa.name',       // also pinned in LanguageProvider; double-belt-and-braces
+  'con.title.l1', // stale 'Three quiet ways' override; replaced with 'Two quiet ways'
+  'con.title.l2', // matching pair
 ]);
 
 /** Values that contain any of these tokens (case-insensitive in any
