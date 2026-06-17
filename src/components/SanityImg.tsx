@@ -129,18 +129,26 @@ export default function SanityImg({
 
   // Compose styles. LQIP is shown as a soft background under the image
   // until the network swap completes, then fades out.
+  // Always opacity 1. The LQIP backgroundImage sits behind the <img>'s
+  // own pixels: while the real image is still on the wire, the browser
+  // paints nothing for the <img> content and the LQIP shows through. Once
+  // the image bytes arrive, the real pixels paint on top of the LQIP.
+  // Earlier iterations gated visibility on a `loaded` useState flag, but
+  // the flag relied on either the JSX onLoad event firing AFTER React
+  // commit, or a mount-time `img.complete` check — both raced badly with
+  // browser cache hits in production builds and left tiles stuck invisible.
+  // Going opacity-1-always removes the entire race surface.
   const composed: CSSProperties = {
     ...(fill ? { position: 'absolute', inset: 0, width: '100%', height: '100%' } : {}),
     objectFit: 'cover',
-    ...(blurDataURL && !loaded
+    ...(blurDataURL
       ? {
           backgroundImage: `url("${blurDataURL}")`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
         }
       : {}),
-    transition: 'opacity 320ms ease-out',
-    opacity: loaded || !blurDataURL ? 1 : 0.001,
+    opacity: 1,
     ...style,
   };
 

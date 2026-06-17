@@ -143,7 +143,7 @@ export default function Lightbox({ item, onClose, onPrev, onNext, prevItem, next
       role="dialog"
       aria-modal="true"
       aria-label={displayName || t('lb.close')}
-      className="fixed inset-0 z-[80] bg-charcoal/95 backdrop-blur flex items-center justify-center p-6 lg:p-12 lb-fade-in"
+      className="fixed inset-0 z-[80] bg-charcoal/95 backdrop-blur flex items-center justify-center p-6 lg:p-12"
       onClick={onClose}
       onTouchStart={onTouchStart}
       onTouchEnd={onTouchEnd}
@@ -206,7 +206,7 @@ export default function Lightbox({ item, onClose, onPrev, onNext, prevItem, next
         </div>
 
         {/* Caption */}
-        <div key={`cap-${item.id}`} className="text-ivory lb-cap-in">
+        <div key={`cap-${item.id}`} className="text-ivory">
           <p className="font-sans text-[10.5px] uppercase tracking-[0.42em] text-gold-light">
             CLEAR 1993
           </p>
