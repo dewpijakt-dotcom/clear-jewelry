@@ -45,7 +45,7 @@ export default function GalleryClient({ pieces, categories }: GalleryClientProps
   return (
     <>
       {/* Category tab strip */}
-      <section className="bg-ivory border-b border-[var(--rule-soft)] sticky top-[82px] z-30 backdrop-blur-md bg-ivory/90">
+      <section className="bg-ivory border-b border-[var(--rule-soft)] sticky top-[82px] z-30">
         <div className="mx-auto max-w-[1480px] px-6 lg:px-10 py-6">
           <div className="flex items-center justify-between gap-6 mb-4 text-[10.5px] uppercase tracking-[0.48em] text-gold-deep">
             <span>{t('gal.on_view')}</span>
@@ -208,57 +208,45 @@ function PieceCard({
   onClick: () => void;
   priority?: boolean;
 }) {
-  const [hover, setHover] = useState(false);
+  // CSS-only hover — a previous useState('hover') + onMouseEnter/Leave
+  // version caused the gallery to flicker during smooth scroll. As the
+  // cursor crossed tiles, every tile re-rendered and ran a 700ms
+  // transform + box-shadow transition, so the wall visibly twitched as
+  // the page moved past the pointer. group-hover keeps all the work on
+  // the compositor with zero React re-renders. contain:paint isolates
+  // each tile's repaint region so a neighbour's hover can't bleed.
   const aspectClass = 'aspect-square';
   const flat = flattenItem(item, locale);
   const display = flat.name || flat.description;
 
   return (
-    <div className="group flex flex-col">
+    <div className="group flex flex-col" style={{ contain: 'paint' }}>
       <button
         type="button"
         onClick={onClick}
-        onMouseEnter={() => setHover(true)}
-        onMouseLeave={() => setHover(false)}
         className={clsx(
           'relative block w-full overflow-hidden bg-charcoal text-left',
           aspectClass,
-          'transition-transform duration-700 ease-elegant',
-          hover && 'lg:-translate-y-[3px]',
+          'transition-[transform,box-shadow] duration-700 ease-elegant',
+          'shadow-[0_0_0_rgba(0,0,0,0)] lg:group-hover:-translate-y-[3px] group-hover:shadow-[0_18px_38px_-22px_rgba(21,19,15,0.45)]',
         )}
-        style={{
-          boxShadow: hover ? '0 18px 38px -22px rgba(21, 19, 15, 0.45)' : '0 0 0 rgba(0,0,0,0)',
-          transition: 'transform 700ms cubic-bezier(0.22, 0.61, 0.36, 1), box-shadow 700ms cubic-bezier(0.22, 0.61, 0.36, 1)',
-        }}
         aria-label={flat.alt}
       >
         <RemoteOrLocalImage src={item.src} imageSource={item.imageSource} alt={flat.alt} priority={priority} blurDataURL={item.blurDataURL} sizes="(max-width: 768px) 50vw, (max-width: 1280px) 33vw, 25vw" />
 
         <div
-          className={clsx(
-            'absolute pointer-events-none transition-all duration-700 ease-elegant',
-            hover ? 'inset-[10px] opacity-100' : 'inset-0 opacity-0',
-          )}
+          className="absolute pointer-events-none transition-all duration-700 ease-elegant inset-0 opacity-0 group-hover:inset-[10px] group-hover:opacity-100"
           style={{ border: '1px solid rgba(216, 190, 126, 0.7)' }}
         />
 
         <div
-          className={clsx(
-            'absolute inset-0 pointer-events-none transition-opacity duration-700',
-            hover ? 'opacity-100' : 'opacity-0',
-          )}
+          className="absolute inset-0 pointer-events-none transition-opacity duration-700 opacity-0 group-hover:opacity-100"
           style={{
             background: 'linear-gradient(180deg, rgba(10,9,8,0) 0%, rgba(10,9,8,0) 50%, rgba(10,9,8,0.75) 100%)',
           }}
         />
 
-        <div
-          className={clsx(
-            'absolute bottom-0 left-0 right-0 p-5 lg:p-6',
-            'transition-all duration-700 ease-elegant pointer-events-none',
-            hover ? 'translate-y-0 opacity-100' : 'translate-y-2 opacity-0',
-          )}
-        >
+        <div className="absolute bottom-0 left-0 right-0 p-5 lg:p-6 transition-all duration-700 ease-elegant pointer-events-none translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100">
           <p className="font-sans text-[10px] uppercase tracking-[0.42em] text-gold-light">
             Lot {lotNumber}
           </p>
