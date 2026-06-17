@@ -7,7 +7,7 @@ import Footer from '@/components/Footer';
 import SmoothScroll from '@/components/SmoothScroll';
 import LoadingScreen from '@/components/LoadingScreen';
 import ScrollProgress from '@/components/ScrollProgress';
-import PageTransition from '@/components/PageTransition';
+
 import MaisonWatermark from '@/components/MaisonWatermark';
 import AmbientTint from '@/components/AmbientTint';
 import { LanguageProvider } from '@/components/LanguageProvider';
@@ -234,7 +234,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           <SmoothScroll>
             <Header />
             <main id="main">
-              <PageTransition>{children}</PageTransition>
+              {children}
             </main>
             <Footer />
           </SmoothScroll>
