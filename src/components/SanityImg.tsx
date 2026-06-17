@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, type CSSProperties } from 'react';
+import { useEffect, useRef, useState, type CSSProperties } from 'react';
 
 /**
  * SanityImg — native <img> bound directly to the Sanity image CDN.
@@ -19,6 +19,13 @@ import { useState, type CSSProperties } from 'react';
  * LQIP base64 string and paints it as a soft background while the full
  * image loads — same UX as next/image's `placeholder="blur"` with no
  * proxy hop.
+ *
+ * IMPORTANT cached-image race: when the browser already has the image in
+ * cache, the <img>'s `load` event fires DURING parse — before React commits
+ * the onLoad listener. Without a mount-time check, `loaded` would stay
+ * false forever and the image would sit at opacity 0.001 (LQIP visible
+ * but real image hidden). The useEffect below detects this by checking
+ * `img.complete && img.naturalWidth > 0` on mount and flipping `loaded`.
  *
  * Local /public/ assets keep using next/image (hero photo, og.jpg, etc.) —
  * the fix is scoped to Sanity-fed gallery imagery.
@@ -93,6 +100,22 @@ export default function SanityImg({
   onLoad,
 }: SanityImgProps) {
   const [loaded, setLoaded] = useState(false);
+  const imgRef = useRef<HTMLImageElement | null>(null);
+
+  // Race fix: image may already be complete by the time React attaches
+  // the onLoad handler (cache, srcset preconnect, etc.). Detect that
+  // case on mount and flip `loaded` so the image actually becomes visible.
+  useEffect(() => {
+    const img = imgRef.current;
+    if (img && img.complete && img.naturalWidth > 0) {
+      setLoaded(true);
+      onLoad?.();
+    }
+    // We intentionally do not depend on `onLoad` — it's a stable callback
+    // that's called once on cache-hit. Including it would re-run the
+    // effect on every parent render and prematurely re-fire the callback.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   if (!source) return null;
 
@@ -124,6 +147,7 @@ export default function SanityImg({
   return (
     // eslint-disable-next-line @next/next/no-img-element
     <img
+      ref={imgRef}
       src={src}
       srcSet={srcset}
       sizes={sizes}

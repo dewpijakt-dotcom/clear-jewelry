@@ -2,7 +2,6 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import SanityImg from './SanityImg';
-import { AnimatePresence, motion } from 'framer-motion';
 import { useLocale, useT } from './LanguageProvider';
 import { flattenItem } from '@/lib/i18n';
 import useLockBodyScroll from '@/hooks/useLockBodyScroll';
@@ -27,11 +26,13 @@ interface LightboxProps {
  *    swipe-down (>70px in <600ms). Focus moves to ✕ on open and back to
  *    the trigger on close.
  *  - **Background lock**: useLockBodyScroll handles iOS-safe scroll lock.
- *  - **Smooth swap**: image + caption animate together inside a single
- *    AnimatePresence keyed by item._id. Adjacent images are preloaded
- *    so cached pieces swap with no fetch delay. Rapid navigation is
- *    debounced (120ms) and a thin gold hairline shows for far jumps
- *    where the new image is still loading.
+ *  - **Reliable mount**: no framer-motion AnimatePresence around the
+ *    outer dialog — earlier iterations stalled at opacity 0 (entry
+ *    animation never running) and never unmounted on close (exit
+ *    animation hanging). The dialog now mounts/unmounts by simple
+ *    conditional rendering, with a lightweight CSS fade-in driven
+ *    by a one-shot keyframe. Image-swap during prev/next is handled
+ *    by SanityImg's opacity transition, which is robust to cache hits.
  */
 function resolveSrc(src?: string) {
   if (!src) return '';
@@ -134,145 +135,118 @@ export default function Lightbox({ item, onClose, onPrev, onNext, prevItem, next
   const displayName = flat ? (flat.name || flat.description) : '';
   const showSeparate = Boolean(flat?.name && flat?.description);
 
+  if (!item || !flat) return null;
+
   return (
-    <AnimatePresence>
-      {item && flat && (
-        <motion.div
-          key="lightbox"
-          role="dialog"
-          aria-modal="true"
-          aria-label={displayName || t('lb.close')}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.4 }}
-          className="fixed inset-0 z-[80] bg-charcoal/95 backdrop-blur flex items-center justify-center p-6 lg:p-12"
-          onClick={onClose}
-          onTouchStart={onTouchStart}
-          onTouchEnd={onTouchEnd}
+    <div
+      key="lightbox"
+      role="dialog"
+      aria-modal="true"
+      aria-label={displayName || t('lb.close')}
+      className="fixed inset-0 z-[80] bg-charcoal/95 backdrop-blur flex items-center justify-center p-6 lg:p-12 lb-fade-in"
+      onClick={onClose}
+      onTouchStart={onTouchStart}
+      onTouchEnd={onTouchEnd}
+    >
+      {/* Close button — large, persistent, top-right */}
+      <button
+        ref={closeBtnRef}
+        type="button"
+        aria-label={t('lb.close')}
+        onClick={(e) => { e.stopPropagation(); onClose(); }}
+        className="absolute top-4 right-4 lg:top-6 lg:right-6 z-10 inline-flex items-center justify-center w-12 h-12 lg:w-14 lg:h-14 rounded-full bg-charcoal/70 border border-gold-light/60 text-ivory hover:bg-gold hover:text-charcoal hover:border-gold transition-colors duration-300"
+        style={{ boxShadow: '0 8px 28px -12px rgba(0,0,0,0.6)' }}
+      >
+        <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round">
+          <path d="M6 6 L18 18" />
+          <path d="M18 6 L6 18" />
+        </svg>
+      </button>
+
+      {/* Inner panel — clicks do NOT bubble to backdrop */}
+      <div
+        className="relative max-w-[1100px] w-full grid lg:grid-cols-[1.4fr_1fr] gap-8 items-center"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Image area — keyed by item.id so the inner img instance is
+            recreated on prev/next, re-running the SanityImg mount-time
+            "is the cached image already complete?" check. */}
+        <div className="relative aspect-[4/5] lg:aspect-[3/4] bg-charcoal overflow-hidden" key={`img-${item.id}`}>
+          {(item.imageSource || (item.src && item.src.startsWith('http'))) ? (
+            <SanityImg
+              source={item.imageSource ?? item.src!}
+              alt={flat.alt}
+              sizes="(max-width: 1024px) 100vw, 60vw"
+              priority
+              blurDataURL={item.blurDataURL}
+              className="object-contain"
+              style={{ objectFit: 'contain' }}
+              maxWidth={2000}
+              onLoad={() => setImageLoaded(true)}
+            />
+          ) : item.src ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={`/images/gallery/${item.src}`}
+              alt={flat.alt}
+              decoding="async"
+              style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'contain' }}
+              onLoad={() => setImageLoaded(true)}
+            />
+          ) : null}
+
+          {/* Thin gold loading hairline — only visible while the new
+              image is fetching */}
+          {!imageLoaded && (
+            <div
+              className="absolute bottom-0 left-0 h-px bg-gold-light w-full lb-hairline"
+              aria-hidden
+            />
+          )}
+        </div>
+
+        {/* Caption */}
+        <div key={`cap-${item.id}`} className="text-ivory lb-cap-in">
+          <p className="font-sans text-[10.5px] uppercase tracking-[0.42em] text-gold-light">
+            CLEAR 1993
+          </p>
+          <h2 className="display text-3xl lg:text-4xl leading-snug mt-3">
+            {displayName}
+          </h2>
+          {showSeparate && (
+            <p className="font-sans italic text-[15.5px] text-ivory/95 mt-5 leading-relaxed">
+              {flat.description}
+            </p>
+          )}
+          <hr className="border-0 h-px bg-gold-light/40 w-20 mt-7" />
+          {item.categories && item.categories.length > 0 && (
+            <p className="mt-6 font-sans text-[11px] uppercase tracking-[0.32em] text-gold-light">
+              {item.categories.join(' · ')}
+            </p>
+          )}
+        </div>
+      </div>
+
+      {onPrev && (
+        <button
+          type="button"
+          onClick={(e) => { e.stopPropagation(); safeNav(onPrev); }}
+          aria-label={t('lb.prev')}
+          className="absolute left-4 lg:left-8 top-1/2 -translate-y-1/2 inline-flex items-center justify-center w-12 h-12 text-ivory hover:text-gold-light text-3xl"
         >
-          {/* Close button — large, persistent, top-right */}
-          <button
-            ref={closeBtnRef}
-            type="button"
-            aria-label={t('lb.close')}
-            onClick={(e) => { e.stopPropagation(); onClose(); }}
-            className="absolute top-4 right-4 lg:top-6 lg:right-6 z-10 inline-flex items-center justify-center w-12 h-12 lg:w-14 lg:h-14 rounded-full bg-charcoal/70 border border-gold-light/60 text-ivory hover:bg-gold hover:text-charcoal hover:border-gold transition-colors duration-300"
-            style={{ boxShadow: '0 8px 28px -12px rgba(0,0,0,0.6)' }}
-          >
-            <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round">
-              <path d="M6 6 L18 18" />
-              <path d="M18 6 L6 18" />
-            </svg>
-          </button>
-
-          {/* Inner panel — clicks do NOT bubble to backdrop */}
-          <div
-            className="relative max-w-[1100px] w-full grid lg:grid-cols-[1.4fr_1fr] gap-8 items-center"
-            onClick={(e) => e.stopPropagation()}
-          >
-            {/* Image area — keyed by item.id so image + caption fade together */}
-            <div className="relative aspect-[4/5] lg:aspect-[3/4] bg-charcoal overflow-hidden">
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={item.id}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.18, ease: 'easeOut' }}
-                  className="absolute inset-0"
-                >
-                  {(item.imageSource || (item.src && item.src.startsWith('http'))) ? (
-                    <SanityImg
-                      source={item.imageSource ?? item.src!}
-                      alt={flat.alt}
-                      sizes="(max-width: 1024px) 100vw, 60vw"
-                      priority
-                      blurDataURL={item.blurDataURL}
-                      className="object-contain"
-                      style={{ objectFit: 'contain' }}
-                      maxWidth={2000}
-                      onLoad={() => setImageLoaded(true)}
-                    />
-                  ) : item.src ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
-                      src={`/images/gallery/${item.src}`}
-                      alt={flat.alt}
-                      decoding="async"
-                      style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'contain' }}
-                      onLoad={() => setImageLoaded(true)}
-                    />
-                  ) : null}
-                </motion.div>
-              </AnimatePresence>
-
-              {/* Thin gold loading hairline — only visible while the new
-                  image is fetching */}
-              {!imageLoaded && (
-                <motion.div
-                  initial={{ scaleX: 0.05 }}
-                  animate={{ scaleX: 0.9 }}
-                  transition={{ duration: 1.4, ease: 'easeOut' }}
-                  className="absolute bottom-0 left-0 h-px origin-left bg-gold-light w-full"
-                  aria-hidden
-                />
-              )}
-            </div>
-
-            {/* Caption — also keyed by item.id so it fades together */}
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={`cap-${item.id}`}
-                initial={{ opacity: 0, y: 4 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -4 }}
-                transition={{ duration: 0.18, ease: 'easeOut' }}
-                className="text-ivory"
-              >
-                <p className="font-sans text-[10.5px] uppercase tracking-[0.42em] text-gold-light">
-                  CLEAR 1993
-                </p>
-                <h2 className="display text-3xl lg:text-4xl leading-snug mt-3">
-                  {displayName}
-                </h2>
-                {showSeparate && (
-                  <p className="font-sans italic text-[15.5px] text-ivory/95 mt-5 leading-relaxed">
-                    {flat.description}
-                  </p>
-                )}
-                <hr className="border-0 h-px bg-gold-light/40 w-20 mt-7" />
-                {item.categories && item.categories.length > 0 && (
-                  <p className="mt-6 font-sans text-[11px] uppercase tracking-[0.32em] text-gold-light">
-                    {item.categories.join(' · ')}
-                  </p>
-                )}
-              </motion.div>
-            </AnimatePresence>
-          </div>
-
-          {onPrev && (
-            <button
-              type="button"
-              onClick={(e) => { e.stopPropagation(); safeNav(onPrev); }}
-              aria-label={t('lb.prev')}
-              className="absolute left-4 lg:left-8 top-1/2 -translate-y-1/2 inline-flex items-center justify-center w-12 h-12 text-ivory hover:text-gold-light text-3xl"
-            >
-              ←
-            </button>
-          )}
-          {onNext && (
-            <button
-              type="button"
-              onClick={(e) => { e.stopPropagation(); safeNav(onNext); }}
-              aria-label={t('lb.next')}
-              className="absolute right-4 lg:right-8 top-1/2 -translate-y-1/2 inline-flex items-center justify-center w-12 h-12 text-ivory hover:text-gold-light text-3xl"
-            >
-              →
-            </button>
-          )}
-        </motion.div>
+          ←
+        </button>
       )}
-    </AnimatePresence>
+      {onNext && (
+        <button
+          type="button"
+          onClick={(e) => { e.stopPropagation(); safeNav(onNext); }}
+          aria-label={t('lb.next')}
+          className="absolute right-4 lg:right-8 top-1/2 -translate-y-1/2 inline-flex items-center justify-center w-12 h-12 text-ivory hover:text-gold-light text-3xl"
+        >
+          →
+        </button>
+      )}
+    </div>
   );
 }

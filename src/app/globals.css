@@ -489,3 +489,38 @@ body {
   /* iOS safe-area padding so content can never sit under the home indicator */
   padding-bottom: env(safe-area-inset-bottom, 0px);
 }
+
+/* ============================== LIGHTBOX FADE-IN ============================== */
+/* These keyframes replace framer-motion's AnimatePresence + motion.div on the
+   gallery lightbox. The prior implementation stalled at opacity 0 on entry and
+   never unmounted on exit (both AnimatePresence lifecycle quirks reproducible
+   on the production build but not in local dev), leaving the dialog invisible
+   yet still blocking interaction.
+   Pure CSS animations are unambiguous: keyframes run once on mount, the
+   element is unmounted on close with no animation needed (the React parent
+   sets the state to null and the dialog disappears immediately). */
+@keyframes lbFadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+.lb-fade-in {
+  animation: lbFadeIn 220ms ease-out both;
+}
+
+@keyframes lbCapIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.lb-cap-in {
+  animation: lbCapIn 220ms ease-out both;
+  animation-delay: 60ms;
+}
+
+@keyframes lbHairline {
+  from { transform: scaleX(0.05); transform-origin: left; }
+  to   { transform: scaleX(0.9);  transform-origin: left; }
+}
+.lb-hairline {
+  animation: lbHairline 1.4s ease-out forwards;
+  transform-origin: left;
+}
