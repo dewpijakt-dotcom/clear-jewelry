@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import SanityImg from './SanityImg';
 import clsx from 'clsx';
 import dynamic from 'next/dynamic';
@@ -148,33 +148,27 @@ export default function GalleryClient({ pieces, categories }: GalleryClientProps
       {/* MOSAIC GRID */}
       <section className="bg-ivory pb-24 lg:pb-32 pt-8">
         <div className="mx-auto max-w-[1480px] px-6 lg:px-10">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={filter}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.45, ease: [0.22, 0.61, 0.36, 1] }}
-              className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4 lg:gap-5 [grid-auto-flow:dense]"
-            >
-              {rest.map((item, i) => {
-                const original = i + 2;
-                const isAboveFold = i < 4;
-                const aspect = item.aspect ?? 'square';
-                return (
-                  <PieceCard
-                    key={item.id ?? i}
-                    item={item}
-                    locale={locale}
-                    lotNumber={pad(original)}
-                    aspect={aspect}
-                    priority={isAboveFold}
-                    onClick={() => setActiveIndex(i + 1)}
-                  />
-                );
-              })}
-            </motion.div>
-          </AnimatePresence>
+          <div
+            key={filter}
+            className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4 lg:gap-5 [grid-auto-flow:dense]"
+          >
+            {rest.map((item, i) => {
+              const original = i + 2;
+              const isAboveFold = i < 4;
+              const aspect = item.aspect ?? 'square';
+              return (
+                <PieceCard
+                  key={item.id ?? i}
+                  item={item}
+                  locale={locale}
+                  lotNumber={pad(original)}
+                  aspect={aspect}
+                  priority={isAboveFold}
+                  onClick={() => setActiveIndex(i + 1)}
+                />
+              );
+            })}
+          </div>
 
           {filtered.length === 0 && (
             <p className="text-center font-sans italic text-[15px] text-charcoal/55 py-24">
