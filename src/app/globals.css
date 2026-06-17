@@ -490,32 +490,69 @@ body {
   padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
-/* ============================== LIGHTBOX FADE-IN ============================== */
-/* These keyframes replace framer-motion's AnimatePresence + motion.div on the
-   gallery lightbox. The prior implementation stalled at opacity 0 on entry and
-   never unmounted on exit (both AnimatePresence lifecycle quirks reproducible
-   on the production build but not in local dev), leaving the dialog invisible
-   yet still blocking interaction.
-   Pure CSS animations are unambiguous: keyframes run once on mount, the
-   element is unmounted on close with no animation needed (the React parent
-   sets the state to null and the dialog disappears immediately). */
-@keyframes lbFadeIn {
-  from { opacity: 0; }
-  to   { opacity: 1; }
+/* ============================== LIGHTBOX LUXURY TRANSITIONS ============================== */
+/* Pure CSS keyframes. We do NOT use framer-motion / AnimatePresence on the
+   outer dialog — earlier iterations stalled at opacity 0 on entry and never
+   unmounted on exit. The Lightbox component flips an internal `closing`
+   state on user request, applies the *-out classes, then unmounts via
+   conditional render after a setTimeout. `animation-fill-mode: forwards`
+   keeps the final state painted even if onAnimationEnd doesn't fire.
+   Easing — cubic-bezier(0.16, 1, 0.3, 1) — is a slow-out "editorial"
+   curve. Quick start, long graceful settle. The opposite of an Apple
+   spring; closer to a Harry Winston brochure page turn. */
+
+/* Backdrop — 320ms editorial fade */
+@keyframes lbBackdropIn  { from { opacity: 0; } to { opacity: 1; } }
+@keyframes lbBackdropOut { from { opacity: 1; } to { opacity: 0; } }
+.lb-backdrop-in {
+  animation: lbBackdropIn 320ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
-.lb-fade-in {
-  animation: lbFadeIn 220ms ease-out both;
+.lb-backdrop-out {
+  animation: lbBackdropOut 320ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  pointer-events: none;
 }
 
-@keyframes lbCapIn {
-  from { opacity: 0; transform: translateY(4px); }
+/* Image — scale-in from 0.96 to 1.0 + fade. Delayed 120ms so the
+   backdrop establishes first and the photograph rises into focus. */
+@keyframes lbImageIn {
+  from { opacity: 0; transform: scale(0.96); }
+  to   { opacity: 1; transform: scale(1); }
+}
+@keyframes lbImageOut {
+  from { opacity: 1; transform: scale(1); }
+  to   { opacity: 0; transform: scale(0.97); }
+}
+.lb-image-in {
+  opacity: 0;
+  transform: scale(0.96);
+  animation: lbImageIn 480ms cubic-bezier(0.16, 1, 0.3, 1) 120ms forwards;
+  will-change: transform, opacity;
+}
+.lb-image-out {
+  animation: lbImageOut 280ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  will-change: transform, opacity;
+}
+
+/* Caption — fade + 8px rise. Delayed 240ms so the text settles after
+   the image has begun to expand. */
+@keyframes lbCaptionIn {
+  from { opacity: 0; transform: translateY(8px); }
   to   { opacity: 1; transform: translateY(0); }
 }
-.lb-cap-in {
-  animation: lbCapIn 220ms ease-out both;
-  animation-delay: 60ms;
+@keyframes lbCaptionOut {
+  from { opacity: 1; transform: translateY(0); }
+  to   { opacity: 0; transform: translateY(6px); }
+}
+.lb-caption-in {
+  opacity: 0;
+  transform: translateY(8px);
+  animation: lbCaptionIn 360ms cubic-bezier(0.16, 1, 0.3, 1) 240ms forwards;
+}
+.lb-caption-out {
+  animation: lbCaptionOut 240ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
+/* Hairline — preserves the in-progress loader behaviour */
 @keyframes lbHairline {
   from { transform: scaleX(0.05); transform-origin: left; }
   to   { transform: scaleX(0.9);  transform-origin: left; }
@@ -523,6 +560,23 @@ body {
 .lb-hairline {
   animation: lbHairline 1.4s ease-out forwards;
   transform-origin: left;
+}
+
+/* Reduced motion — snap on, snap off. */
+@media (prefers-reduced-motion: reduce) {
+  .lb-backdrop-in,
+  .lb-backdrop-out,
+  .lb-image-in,
+  .lb-image-out,
+  .lb-caption-in,
+  .lb-caption-out {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  .lb-backdrop-out { opacity: 0 !important; }
+  .lb-image-out    { opacity: 0 !important; }
+  .lb-caption-out  { opacity: 0 !important; }
 }
 
 /* ============================== LOADING REVEAL FADE-OUT ============================== */
