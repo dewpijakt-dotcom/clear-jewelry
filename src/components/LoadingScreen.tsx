@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
 import { BRAND } from '@/lib/brand';
 
 /**
@@ -56,17 +56,20 @@ export default function LoadingScreen() {
     animate: { opacity: 1, y: 0 },
   };
 
+  // Outer wrapper is a plain conditional render — the previous
+  // AnimatePresence + motion.div exit animation hung on production
+  // (overlay stuck at opacity 1 forever even after show flipped to
+  // false), leaving the page blank under a full-screen ivory cover.
+  // A plain unmount is reliable. The brand reveal is still animated
+  // — the letter motion.span elements below play their entry-only
+  // staggers on mount, no exit dependency.
+  if (!show) return null;
+
   return (
-    <AnimatePresence>
-      {show && (
-        <motion.div
-          key="loading"
-          initial={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.3, ease: easing }}
-          className="fixed inset-0 z-[120] flex items-center justify-center bg-ivory"
-          aria-hidden
-        >
+    <div
+      className="fixed inset-0 z-[120] flex items-center justify-center bg-ivory"
+      aria-hidden
+    >
           {/* Warm radial sheen — quiet paper depth */}
           <div
             className="absolute inset-0 pointer-events-none"
@@ -153,8 +156,6 @@ export default function LoadingScreen() {
               }
             />
           </div>
-        </motion.div>
-      )}
-    </AnimatePresence>
+    </div>
   );
 }
