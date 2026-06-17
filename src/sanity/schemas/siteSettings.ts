@@ -16,8 +16,6 @@ export default defineType({
     defineField({ name: 'phoneTel',         title: 'Phone (dial-able)',   type: 'string', description: 'In international format, e.g. +66813116666.' }),
     defineField({ name: 'lineHandle',       title: 'LINE handle',         type: 'string' }),
     defineField({ name: 'lineUrl',          title: 'LINE URL',            type: 'url' }),
-    defineField({ name: 'instagramHandle',  title: 'Instagram handle',    type: 'string' }),
-    defineField({ name: 'instagramUrl',     title: 'Instagram URL',       type: 'url' }),
     defineField({
       name: 'addressLines',
       title: 'Address (lines)',

@@ -17,10 +17,10 @@ export const BRAND = {
   phoneTel: null as string | null,
   // No public email — enquiries route through WhatsApp / LINE.
   email: null as string | null,
-  lineHandle: '@clearjewelry',
+  lineHandle: 'clearjewelry',
   lineUrl: 'https://line.me/R/ti/p/@clearjewelry',
-  instagramHandle: '@clearjewelry',
-  instagramUrl: 'https://www.instagram.com/clearjewelry',
+  // Instagram removed at owner's request — WhatsApp is the primary
+  // contact channel; LINE is the secondary fallback.
   whatsappUrl: 'https://wa.me/qr/GTYE6MWRH54LK1',
   whatsappQrPath: '/images/contact/whatsapp-qr.png',
 

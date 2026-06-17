@@ -126,7 +126,7 @@ const ORGANIZATION_JSONLD = {
     areaServed: 'TH',
     availableLanguage: ['English', 'Thai'],
   }],
-  sameAs: [BRAND.instagramUrl, BRAND.lineUrl],
+  sameAs: [BRAND.lineUrl],
 };
 
 /* Schema.org JewelryStore — the physical local-business node. */
@@ -163,7 +163,7 @@ const JEWELRY_STORE_JSONLD = {
       closes: '19:00',
     },
   ],
-  sameAs: [BRAND.instagramUrl, BRAND.lineUrl],
+  sameAs: [BRAND.lineUrl],
   makesOffer: [
     { '@type': 'Offer', itemOffered: { '@type': 'Product', name: 'Unheated Burmese ruby jewellery' } },
     { '@type': 'Offer', itemOffered: { '@type': 'Product', name: 'Royal blue Ceylon sapphire jewellery' } },

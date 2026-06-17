@@ -62,7 +62,6 @@ export const COPY: Record<string, Entry> = {
   'foot.hours':   { en: 'Hours',   th: 'เวลาทำการ',    zh: '营业时间' },
   'foot.contact': { en: 'Contact', th: 'ติดต่อ',        zh: '联系方式' },
   'foot.line':    { en: 'LINE Official', th: 'LINE ออฟฟิเชียล', zh: 'LINE 官方账号' },
-  'foot.ig':      { en: 'Instagram', th: 'อินสตาแกรม', zh: 'Instagram' },
   'foot.cta': {
     en: 'Enquire via LINE',
     th: 'สอบถามผ่าน LINE ได้เลยครับ',
@@ -220,9 +219,9 @@ export const COPY: Record<string, Entry> = {
   'book.time.note':     { en: 'One-hour slots. Last appointment begins at 15:00.', th: 'แต่ละช่วงหนึ่งชั่วโมง รอบสุดท้ายเริ่ม 15:00 น.', zh: '每节一小时。最后一节 15:00 开始。' },
   'book.message.label': { en: 'How can we help you?', th: 'เราช่วยอะไรคุณได้บ้าง', zh: '我们如何为您效劳？' },
   'book.message.ph': {
-    en: 'A stone you have in mind, an heirloom to redesign, a piece you saw on Instagram — anything we should know before we meet.',
-    th: 'อัญมณีที่อยู่ในใจ ของในครอบครัวที่อยากออกแบบใหม่ หรือผลงานที่เห็นใน Instagram — เล่าให้เราฟังก่อนนัดได้เลย ครับ',
-    zh: '心仪的宝石、欲重新设计的家传珍品、或在 Instagram 看到的作品 — 见面前的任何细节都欢迎告知。',
+    en: 'A stone you have in mind, an heirloom to redesign, anything we should know before we meet.',
+    th: 'อัญมณีที่อยู่ในใจ ของในครอบครัวที่อยากออกแบบใหม่ — เล่าให้เราฟังก่อนนัดได้เลย ครับ',
+    zh: '心仪的宝石、欲重新设计的家传珍品 — 见面前的任何细节都欢迎告知。',
   },
   'book.line.required.title': {
     en: 'Please add our LINE Official first',
@@ -288,10 +287,20 @@ export const COPY: Record<string, Entry> = {
 
   /* ───── WHATSAPP — branded QR card on Contact ───── */
   'wa.eyebrow':    { en: 'WhatsApp', th: 'ว็อตส์แอป', zh: 'WhatsApp' },
-  'wa.name':       { en: 'Fifa · Clear Jewelry', th: 'คุณฟีฟ่า · Clear Jewelry', zh: 'Fifa · Clear Jewelry' },
+  'wa.name':       { en: 'Clear Jewellery', th: 'Clear Jewellery', zh: 'Clear Jewellery' },
   'wa.scan':       { en: 'Scan to chat', th: 'สแกนเพื่อแชท', zh: '扫码联系' },
   'wa.open':       { en: 'Open WhatsApp', th: 'เปิด WhatsApp', zh: '打开 WhatsApp' },
   'wa.enlarge':    { en: 'Tap to enlarge', th: 'แตะเพื่อขยาย', zh: '点击放大' },
+  'wa.primary.eyebrow': { en: 'Primary channel · By appointment', th: 'ช่องทางหลัก · เปิดให้บริการตามนัด', zh: '主要联络方式 · 预约制' },
+  'wa.primary.body':    { en: 'Scan the code or tap below to chat with us. We reply within one business day.', th: 'สแกนรหัสหรือแตะปุ่มด้านล่างเพื่อแชทกับเรา ยินดีตอบกลับภายในหนึ่งวันทำการ', zh: '扫描二维码或点击下方按钮与我们联络。一个工作日内回复。' },
+  'wa.primary.cta':     { en: 'Chat on WhatsApp', th: 'แชทบน WhatsApp', zh: '在 WhatsApp 上联络' },
+  'line.secondary.eyebrow': { en: 'Also on LINE', th: 'หรือทาง LINE', zh: '亦可使用 LINE' },
+  'line.secondary.body':    { en: 'Prefer LINE? Scan the code or tap below to add us as a friend.', th: 'สะดวก LINE มากกว่า สแกนรหัสหรือแตะปุ่มด้านล่างเพื่อเพิ่มเพื่อน', zh: '若您更习惯使用 LINE，请扫码或点按下方加我们为好友。' },
+  'line.secondary.cta':     { en: 'Add us on LINE', th: 'เพิ่มเพื่อน LINE', zh: '在 LINE 加为好友' },
+  'book.page.eyebrow':  { en: 'By appointment', th: 'เปิดให้บริการตามนัด', zh: '预约制' },
+  'book.page.title.l1': { en: 'Reach the', th: 'ติดต่อ', zh: '联络' },
+  'book.page.title.l2': { en: 'atelier.', th: 'แอตเทอลิเย่', zh: '工坊' },
+  'book.page.lede':     { en: "We'll confirm your appointment within one business day.", th: 'เรายืนยันการนัดหมายภายในหนึ่งวันทำการ', zh: '一个工作日内回复您的预约。' },
 
   /* ───── A11Y / GLOBAL CHROME ───── */
   'a11y.skip':          { en: 'Skip to content', th: 'ข้ามไปที่เนื้อหา', zh: '跳至正文' },

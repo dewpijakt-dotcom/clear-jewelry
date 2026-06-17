@@ -85,7 +85,7 @@ The new tab appears immediately on the Gallery page. To assign existing pieces t
 ## Updating contact details
 
 1. Click **Site settings**.
-2. Edit phone, LINE, Instagram, address, hours.
+2. Edit phone, LINE, WhatsApp, address, hours.
 3. **Publish**.
 
 These show up everywhere on the site: footer, contact page, social-share previews.
@@ -179,65 +179,10 @@ If a translation is left blank, the live site falls back to the built-in default
 
 The /book form already submits successfully without any setup — entries are saved to Vercel server logs even if nothing else is configured. To get bookings into a Google Sheet **and** a notification to your admin LINE Group, complete A + B below.
 
-### A · Google Sheets (Sheet + Apps Script Web App)
+### A · /book is contact-only now
 
-1. Open https://sheets.new and create a blank spreadsheet. Title it **Clear Jewelry — Bookings**.
-2. Click **Extensions → Apps Script**. A new editor tab opens.
-3. Delete the placeholder `Code.gs` content and paste the script from `scripts/google-apps-script.js` in this repo. Save (⌘S / Ctrl+S).
-4. Click **Deploy → New deployment**.
-   - Type: **Web app**
-   - Description: "Clear Jewelry bookings"
-   - Execute as: **Me** (your Google account)
-   - Who has access: **Anyone**
-   - Click **Deploy**.
-5. Authorise the script when prompted.
-6. Copy the **Web app URL**. Paste it to the developer — it goes into Vercel as `GOOGLE_SHEETS_WEBHOOK_URL`.
+The in-page booking form was removed in June 2026. /book is now two contact panels (WhatsApp primary, LINE secondary) — no Apps Script, no `/api/book`, no Sheets/LINE-token env vars to manage.
 
-### B · LINE Group notification (admin group)
-
-The site pushes a card-style text message to your admin LINE Group every time a booking arrives. Setup is a one-time, three-step flow:
-
-#### B.1 — Issue the Channel Access Token
-
-1. https://developers.line.biz/console
-2. Select your provider → channel **2010419323**
-3. **Messaging API** tab → scroll to **Channel access token (long-lived)** → click **Issue** (or **Reissue**)
-4. Copy the long token (~170 characters)
-5. Send it to the developer. It goes into Vercel as `LINE_CHANNEL_ACCESS_TOKEN`.
-
-Different from the **Channel Secret** (32 hex chars on the Basic Settings tab) — the secret is only used to validate webhook signatures (see B.3).
-
-#### B.2 — Create the admin group and capture its Group ID
-
-1. On your phone, open LINE. Create a new group called **Clear Jewelry Bookings**. Invite your admins.
-2. Invite your LINE Official Account (the OA — search by `@clearjewelry`) into the group. The OA must be a member to receive pushes.
-3. In LINE Developers Console → channel 2010419323 → **Messaging API** tab → **Webhook URL** → paste:
-   `https://clear-jewelry.vercel.app/api/line-webhook`
-4. Toggle **Use webhook** ON, then click **Verify** (should succeed).
-5. Send any message in the group (e.g. "hi"). The webhook fires.
-6. Open Vercel → **Functions** → `/api/line-webhook` → look for a log line:
-   `[LINE-WEBHOOK] captured groupId=C…………………` (33 chars starting with `C`)
-7. Copy that groupId. It goes into Vercel as `LINE_GROUP_ID`.
-8. After capture, you can leave the webhook on (no harm) or toggle it off — we don't actively use it post-setup.
-
-#### B.3 — (Optional) set the Channel Secret for webhook hygiene
-
-Copy the **Channel secret** from Basic Settings (32 hex chars) and have the developer add it as `LINE_CHANNEL_SECRET`. The webhook will then verify every incoming event's signature. Without it the webhook still works but accepts any caller.
-
-### C · Vercel env vars (developer does this once Kirby provides the values)
-
-1. https://vercel.com/kirbykung168-arts-projects/clear-jewelry → **Settings** → **Environment Variables**
-2. Add three (four with the optional secret), all environments:
-
-   | Name | From |
-   |---|---|
-   | `GOOGLE_SHEETS_WEBHOOK_URL` | Apps Script web-app URL (A.6) |
-   | `LINE_CHANNEL_ACCESS_TOKEN` | LINE Developers Console (B.1) |
-   | `LINE_GROUP_ID` | captured via webhook log (B.2.7) |
-   | `LINE_CHANNEL_SECRET` *(optional)* | LINE Basic Settings (B.3) |
-
-3. Trigger a redeploy: Deployments → click the latest → **Redeploy**.
-4. Verify with `curl https://clear-jewelry.vercel.app/api/book/health` — all three (or four) should report `set` and `ready: true`.
 
 ## How the booking flow works (post-setup)
 

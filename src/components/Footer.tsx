@@ -80,19 +80,7 @@ export default function Footer() {
             >
               {t('foot.cta')} <span className="btn-arrow">→</span>
             </a>
-            <a
-              href={BRAND.instagramUrl}
-              target="_blank"
-              rel="noreferrer"
-              aria-label="Instagram"
-              className="text-gold-light hover:text-ivory transition-colors duration-500 inline-flex items-center justify-center w-11 h-11"
-            >
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4">
-                <rect x="3" y="3" width="18" height="18" rx="5" />
-                <circle cx="12" cy="12" r="4.2" />
-                <circle cx="17.5" cy="6.5" r="0.8" fill="currentColor" />
-              </svg>
-            </a>
+
           </div>
         </div>
 
@@ -129,16 +117,6 @@ export default function Footer() {
                 className="inline-flex items-center justify-center lg:justify-start min-h-[44px] hover:text-gold-light transition-colors"
               >
                 LINE · {BRAND.lineHandle}
-              </a>
-            }
-            tertiary={
-              <a
-                href={BRAND.instagramUrl}
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex items-center justify-center lg:justify-start min-h-[44px] hover:text-gold-light transition-colors"
-              >
-                IG · {BRAND.instagramHandle}
               </a>
             }
           />

@@ -17,7 +17,7 @@ export const SITE_SETTINGS_QUERY = `*[_id == "siteSettings"][0]{
   tagline,
   establishedYear,
   phoneDisplay, phoneTel,
-  lineHandle, lineUrl, instagramHandle, instagramUrl,
+  lineHandle, lineUrl,
   addressLines, addressOneLine, hours, transitNote,
   googleMapEmbedUrl,
   trustSignals,

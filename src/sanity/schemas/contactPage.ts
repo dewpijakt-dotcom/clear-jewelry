@@ -11,7 +11,7 @@ export default defineType({
       name: 'channels',
       title: 'Contact channels',
       type: 'array',
-      description: 'The four contact tiles (LINE, Phone, Instagram, Address). Drag to reorder.',
+      description: 'Contact tiles (WhatsApp, LINE, Address). Drag to reorder.',
       of: [{
         type: 'object',
         fields: [
