@@ -524,3 +524,23 @@ body {
   animation: lbHairline 1.4s ease-out forwards;
   transform-origin: left;
 }
+
+/* ============================== LOADING REVEAL FADE-OUT ============================== */
+/* Drives the LoadingScreen's exit fade. The component flips `fading` true
+   after the display window, applies `.lr-fade-out`, then unmounts via
+   plain conditional render after FADE_MS. animation-fill-mode: forwards
+   so the final opacity-0 state holds even if onAnimationEnd doesn't
+   fire (the reason we don't use framer-motion AnimatePresence here:
+   that exit hangs in production and leaves the overlay covering the
+   site forever). */
+@keyframes lrFadeOut {
+  from { opacity: 1; }
+  to   { opacity: 0; }
+}
+.lr-fade-out {
+  animation-name: lrFadeOut;
+  animation-duration: 600ms;
+  animation-timing-function: cubic-bezier(0.22, 0.61, 0.36, 1);
+  animation-fill-mode: forwards;
+  pointer-events: none;
+}
