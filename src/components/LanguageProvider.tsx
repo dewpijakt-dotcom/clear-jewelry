@@ -87,8 +87,16 @@ export function LanguageProvider({
     locale,
     setLocale,
     t: (key) => {
-      // Sanity-edited UI label wins when present + non-empty.
-      if (labels && labels[key] != null) {
+      // Code-pinned keys ALWAYS use the in-source COPY dict, ignoring any
+      // Sanity uiLabels override. Use this for strings that have just been
+      // rewritten in code and where stale Sanity drafts would shadow the
+      // change. (Removed Sanity entries can linger in the uiLabels doc
+      // for weeks until the owner clears them; this guarantees the new
+      // copy ships immediately.)
+      const PINNED = new Set<string>([
+        'wa.name',
+      ]);
+      if (!PINNED.has(key) && labels && labels[key] != null) {
         const v = pickLocalized(labels[key], locale);
         if (v) return v;
       }
