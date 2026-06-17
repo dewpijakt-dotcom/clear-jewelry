@@ -18,7 +18,17 @@ import { BRAND } from '@/lib/brand';
  */
 export default function LoadingScreen() {
   const prefersReduced = useReducedMotion();
-  const [show, setShow] = useState(true);
+  // Show only on the very first visit of a browser session. After that the
+  // brand reveal would just be a 2-3 second blank-page tax on every page
+  // navigation, which reads as 'the page isn't loading' to a real user.
+  const [show, setShow] = useState(() => {
+    if (typeof window === 'undefined') return true;
+    try {
+      return !window.sessionStorage.getItem('clear.seenReveal');
+    } catch {
+      return true;
+    }
+  });
 
   const wordmark = BRAND.wordmark || 'CLEAR';
   const subtitle = `${BRAND.wordmarkSubtitle || 'JEWELRY'} · Est. ${BRAND.establishedYear || 1993}`;
@@ -28,12 +38,16 @@ export default function LoadingScreen() {
   const subtitleChars = useMemo(() => subtitle.split(''), [subtitle]);
 
   // Total reveal time: 5 chars × 90ms + 0.5s anim + 0.6s rule + 0.3s hold = ~1.8s
-  const TOTAL_MS = prefersReduced ? 700 : 2400;
+  const TOTAL_MS = prefersReduced ? 300 : 900;
 
   useEffect(() => {
-    const id = window.setTimeout(() => setShow(false), TOTAL_MS);
+    if (!show) return;
+    const id = window.setTimeout(() => {
+      setShow(false);
+      try { window.sessionStorage.setItem('clear.seenReveal', '1'); } catch {}
+    }, TOTAL_MS);
     return () => window.clearTimeout(id);
-  }, [TOTAL_MS]);
+  }, [TOTAL_MS, show]);
 
   const easing = [0.22, 0.61, 0.36, 1] as const;
 
@@ -49,7 +63,7 @@ export default function LoadingScreen() {
           key="loading"
           initial={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.6, ease: easing }}
+          transition={{ duration: 0.3, ease: easing }}
           className="fixed inset-0 z-[120] flex items-center justify-center bg-ivory"
           aria-hidden
         >
