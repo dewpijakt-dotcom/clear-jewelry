@@ -29,7 +29,8 @@ export const SITE_SETTINGS_QUERY = `*[_id == "siteSettings"][0]{
 /* ───────────── Homepage singleton + featured pieces ───────────── */
 export const HOMEPAGE_QUERY = `{
   "homepage": *[_id == "homepage"][0]{
-    heroImage, heroImageMobile,
+    "heroImage": heroImage{ ..., asset->{ url, metadata } },
+    "heroImageMobile": heroImageMobile{ ..., asset->{ url, metadata } },
     heroImageAlt,
     heroEyebrow, heroTitle, heroItalic, heroLede,
     ctaPrimaryLabel, ctaPrimaryHref,
@@ -37,17 +38,17 @@ export const HOMEPAGE_QUERY = `{
     ctaPlateEyebrow,
     signatureEyebrow, signatureTitle, signatureBody,
     storyEyebrow, storyTitle, storyBody,
-    storyImage, storyImageAlt,
+    "storyImage": storyImage{ ..., asset->{ url, metadata } }, storyImageAlt,
     closingTitle, closingBody
   },
   "featured": *[_id == "homepageGallery"][0].featuredPieces[]->{
     _id, name, alt, description,
-    image, aspect,
+    "image": image{ ..., asset->{ url, metadata } }, aspect,
     "categories": categories[]->{ _id, title, "slug": slug.current }
   },
   "allHero": *[_type == "galleryPiece" && hero == true]|order(order asc){
     _id, name, alt, description,
-    image, aspect,
+    "image": image{ ..., asset->{ url, metadata } }, aspect,
     "categories": categories[]->{ _id, title, "slug": slug.current }
   }
 }`;
@@ -56,7 +57,7 @@ export const HOMEPAGE_QUERY = `{
 export const GALLERY_QUERY = `{
   "pieces": *[_type == "galleryPiece"]|order(order asc, _createdAt asc){
     _id, name, alt, description,
-    image, aspect, hero, order,
+    "image": image{ ..., asset->{ url, metadata } }, aspect, hero, order,
     "categories": categories[]->{ _id, title, "slug": slug.current }
   },
   "categories": *[_type == "category"]|order(order asc){

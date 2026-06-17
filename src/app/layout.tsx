@@ -198,6 +198,11 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       className={`${cormorant.variable} ${jost.variable} ${notoThai.variable} ${notoThaiSans.variable} notranslate`}
     >
       <head>
+        {/* Preconnect to the Sanity image CDN so the TLS+DNS handshake
+            happens in parallel with the document parse, not after a tile is
+            scrolled into view. */}
+        <link rel="preconnect" href="https://cdn.sanity.io" crossOrigin="" />
+        <link rel="dns-prefetch" href="https://cdn.sanity.io" />
         {/* Tell Chrome/Edge/Safari not to auto-translate — we have a native
             EN/TH/ZH toggle, so browser auto-translate confuses things. */}
         <meta name="google" content="notranslate" />

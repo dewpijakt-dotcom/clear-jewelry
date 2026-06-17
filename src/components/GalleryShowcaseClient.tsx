@@ -1,9 +1,10 @@
 'use client';
 
 import { useState } from 'react';
-import Image from 'next/image';
+import SanityImg from './SanityImg';
 import clsx from 'clsx';
-import Lightbox from './Lightbox';
+import dynamic from 'next/dynamic';
+const Lightbox = dynamic(() => import('./Lightbox'), { ssr: false });
 import { useLocale } from './LanguageProvider';
 import { flattenItem } from '@/lib/i18n';
 import type { LocalizedGalleryItem } from '@/lib/sanityAdapter';
@@ -37,19 +38,33 @@ export default function GalleryShowcaseClient({ items }: { items: LocalizedGalle
               className="group relative block w-full aspect-square overflow-hidden bg-charcoal text-left"
               aria-label={flat.alt}
             >
-              {item.src && (
-                <Image
-                  src={(item.src && item.src.startsWith("http")) ? item.src : ("/images/gallery/" + item.src)}
+              {(item.imageSource || (item.src && item.src.startsWith("http"))) ? (
+                <SanityImg
+                  source={item.imageSource ?? item.src!}
                   alt={flat.alt}
-                  priority={isAboveFold}
-                  fill
                   sizes="(max-width: 768px) 50vw, (max-width: 1280px) 33vw, 25vw"
+                  priority={isAboveFold}
+                  blurDataURL={item.blurDataURL}
                   className={clsx(
                     'object-cover transition-transform duration-[1600ms] ease-out',
                     isHover ? 'scale-[1.05]' : 'scale-100',
                   )}
                 />
-              )}
+              ) : item.src ? (
+                // Legacy manifest fallback (local /public/images/gallery)
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={`/images/gallery/${item.src}`}
+                  alt={flat.alt}
+                  loading={isAboveFold ? 'eager' : 'lazy'}
+                  decoding="async"
+                  style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }}
+                  className={clsx(
+                    'transition-transform duration-[1600ms] ease-out',
+                    isHover ? 'scale-[1.05]' : 'scale-100',
+                  )}
+                />
+              ) : null}
 
               {/* hover veil */}
               <div

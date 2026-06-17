@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import Image from 'next/image';
+import SanityImg from './SanityImg';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useLocale, useT } from './LanguageProvider';
 import { flattenItem } from '@/lib/i18n';
@@ -190,6 +190,7 @@ export default function Lightbox({ item, onClose, onPrev, onNext, prevItem, next
                       sizes="(max-width: 1024px) 100vw, 60vw"
                       className="object-contain"
                       priority
+                      {...(item.blurDataURL ? { placeholder: 'blur' as const, blurDataURL: item.blurDataURL } : {})}
                       onLoadingComplete={() => setImageLoaded(true)}
                     />
                   )}

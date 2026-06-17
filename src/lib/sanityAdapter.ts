@@ -14,6 +14,8 @@ import { Localized } from './i18n';
 
 type SanityPiece = {
   _id: string;
+  // when fetched with `image{ asset->{ url, metadata } }`, image.asset.metadata.lqip is present
+  // (and `image.asset.url` so we have a non-CDN-builder fallback)
   name?: Localized;
   alt?: Localized;
   description?: Localized;
@@ -44,9 +46,16 @@ function loc(v: any): Localized {
 
 function toItem(p: SanityPiece): LocalizedGalleryItem {
   const url = sanityImageUrl(p.image, 1200) ?? '';
+  const meta = (p.image as any)?.asset?.metadata;
+  const lqip: string | undefined = meta?.lqip;
+  const dims = meta?.dimensions;
   return {
     id: p._id,
     src: url,
+    imageSource: p.image,
+    blurDataURL: lqip,
+    width: dims?.width,
+    height: dims?.height,
     alt: loc(p.alt),
     description: loc(p.description),
     name: loc(p.name),
@@ -62,12 +71,18 @@ function toItem(p: SanityPiece): LocalizedGalleryItem {
 export interface LocalizedGalleryItem {
   id: string;
   src: string;
+  blurDataURL?: string;
+  width?: number;
+  height?: number;
   alt: Localized;
   name: Localized;
   description: Localized;
   aspect: 'portrait' | 'square' | 'wide';
   hero?: boolean;
   order?: number;
+  /** Raw Sanity image source (image object with _ref) so the renderer can
+   *  generate its own srcset via urlFor() — avoids next/image proxy entirely. */
+  imageSource?: any;
   /** Category slugs the item belongs to. */
   categories: string[];
 }

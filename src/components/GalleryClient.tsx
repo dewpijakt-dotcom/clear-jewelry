@@ -2,9 +2,10 @@
 
 import { useMemo, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import Image from 'next/image';
+import SanityImg from './SanityImg';
 import clsx from 'clsx';
-import Lightbox from './Lightbox';
+import dynamic from 'next/dynamic';
+const Lightbox = dynamic(() => import('./Lightbox'), { ssr: false });
 import { useLocale, useT } from './LanguageProvider';
 import { flattenItem, pickLocalized, Locale, Localized } from '@/lib/i18n';
 import type { LocalizedGalleryItem } from '@/lib/sanityAdapter';
@@ -93,7 +94,7 @@ export default function GalleryClient({ pieces, categories }: GalleryClientProps
                   className="group relative block w-full aspect-square overflow-hidden bg-charcoal"
                   aria-label={salonFlat.alt}
                 >
-                  <RemoteOrLocalImage src={salon.src} alt={salonFlat.alt} priority sizes="(max-width: 1024px) 100vw, 56vw" />
+                  <RemoteOrLocalImage src={salon.src} imageSource={salon.imageSource} alt={salonFlat.alt} priority blurDataURL={salon.blurDataURL} sizes="(max-width: 1024px) 100vw, 56vw" />
                   <span className="absolute pointer-events-none transition-opacity duration-700 opacity-0 group-hover:opacity-100" style={{ top: 18, left: 18, width: 28, height: 28, borderTop: '1px solid var(--gold-light)', borderLeft: '1px solid var(--gold-light)' }} />
                   <span className="absolute pointer-events-none transition-opacity duration-700 opacity-0 group-hover:opacity-100" style={{ top: 18, right: 18, width: 28, height: 28, borderTop: '1px solid var(--gold-light)', borderRight: '1px solid var(--gold-light)' }} />
                   <span className="absolute pointer-events-none transition-opacity duration-700 opacity-0 group-hover:opacity-100" style={{ bottom: 18, left: 18, width: 28, height: 28, borderBottom: '1px solid var(--gold-light)', borderLeft: '1px solid var(--gold-light)' }} />
@@ -237,7 +238,7 @@ function PieceCard({
         }}
         aria-label={flat.alt}
       >
-        <RemoteOrLocalImage src={item.src} alt={flat.alt} priority={priority} sizes="(max-width: 768px) 50vw, (max-width: 1280px) 33vw, 25vw" />
+        <RemoteOrLocalImage src={item.src} imageSource={item.imageSource} alt={flat.alt} priority={priority} blurDataURL={item.blurDataURL} sizes="(max-width: 768px) 50vw, (max-width: 1280px) 33vw, 25vw" />
 
         <div
           className={clsx(
@@ -285,28 +286,52 @@ function PieceCard({
   );
 }
 
-/* Image that handles both Sanity CDN URLs and local /images/gallery/ filenames */
+/* Image that handles both Sanity CDN URLs and local /images/gallery/ filenames.
+ *
+ * For Sanity-hosted images (URLs starting with http or the raw image source
+ * object), it renders SanityImg which produces a srcset bound directly to
+ * cdn.sanity.io — no /_next/image proxy hop. For local manifest fallback
+ * filenames it renders a native <img> with the same shape.
+ */
 function RemoteOrLocalImage({
   src,
+  imageSource,
   alt,
   priority,
   sizes,
+  blurDataURL,
 }: {
   src: string | undefined;
+  imageSource?: any;
   alt: string;
   priority?: boolean;
   sizes: string;
+  blurDataURL?: string;
 }) {
-  if (!src) return null;
-  const url = src.startsWith('http') ? src : `/images/gallery/${src}`;
+  if (!src && !imageSource) return null;
+  if (imageSource || (src && src.startsWith('http'))) {
+    return (
+      <SanityImg
+        source={imageSource ?? src!}
+        alt={alt}
+        sizes={sizes}
+        priority={priority}
+        blurDataURL={blurDataURL}
+        className="object-cover transition-transform duration-[1800ms] ease-elegant group-hover:scale-[1.04]"
+      />
+    );
+  }
+  // Legacy manifest fallback — /public/images/gallery/<file>.jpg
+  // eslint-disable-next-line @next/next/no-img-element
   return (
-    <Image
-      src={url}
+    <img
+      src={`/images/gallery/${src}`}
       alt={alt}
-      fill
       sizes={sizes}
-      priority={priority}
-      className="object-cover transition-transform duration-[1800ms] ease-elegant group-hover:scale-[1.04]"
+      loading={priority ? 'eager' : 'lazy'}
+      decoding="async"
+      style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }}
+      className="transition-transform duration-[1800ms] ease-elegant group-hover:scale-[1.04]"
     />
   );
 }
