@@ -256,6 +256,30 @@ export async function getTrustSignals(): Promise<LocalizedTrustSignal[]> {
  * Returns null when the doc doesn't exist yet (first deploy) or when Sanity
  * is unreachable — that's safe because t() falls back to COPY.
  */
+/** Keys to drop from the Sanity uiLabels payload regardless of what
+ * the Studio still has stored. The previous brand voice / feature set
+ * (Instagram, the booking form, the "Fifa · Clear Jewelry" handle) left
+ * stale overrides that we never want to ship again. The owner can still
+ * edit any other key freely in the Studio. */
+const DROPPED_LABEL_KEYS = new Set<string>([
+  'foot.ig',
+  'book.message.ph',
+  'wa.name', // also pinned in LanguageProvider; double-belt-and-braces
+]);
+
+/** Values that contain any of these tokens (case-insensitive in any
+ * locale) are also dropped — catches stale Sanity entries that mention
+ * Instagram inside other keys. */
+const DROPPED_VALUE_PATTERNS: RegExp[] = [/instagram/i];
+
+function shouldDropLabel(key: string, value: Localized): boolean {
+  if (DROPPED_LABEL_KEYS.has(key)) return true;
+  for (const v of Object.values(value)) {
+    if (typeof v === 'string' && DROPPED_VALUE_PATTERNS.some((p) => p.test(v))) return true;
+  }
+  return false;
+}
+
 export async function getUILabels(): Promise<Record<string, Localized> | null> {
   const data = await fetchSafe<{ labels: any[] } | null>(
     `*[_id == "uiLabels"][0]{ labels[]{ key, value } }`
@@ -263,7 +287,10 @@ export async function getUILabels(): Promise<Record<string, Localized> | null> {
   if (!data?.labels) return null;
   const out: Record<string, Localized> = {};
   for (const row of data.labels) {
-    if (row?.key) out[row.key] = loc(row.value);
+    if (!row?.key) continue;
+    const v = loc(row.value);
+    if (shouldDropLabel(row.key, v)) continue;
+    out[row.key] = v;
   }
   return out;
 }
