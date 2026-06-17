@@ -182,18 +182,28 @@ export default function Lightbox({ item, onClose, onPrev, onNext, prevItem, next
                   transition={{ duration: 0.18, ease: 'easeOut' }}
                   className="absolute inset-0"
                 >
-                  {item.src && (
-                    <Image
-                      src={resolveSrc(item.src)}
+                  {(item.imageSource || (item.src && item.src.startsWith('http'))) ? (
+                    <SanityImg
+                      source={item.imageSource ?? item.src!}
                       alt={flat.alt}
-                      fill
                       sizes="(max-width: 1024px) 100vw, 60vw"
-                      className="object-contain"
                       priority
-                      {...(item.blurDataURL ? { placeholder: 'blur' as const, blurDataURL: item.blurDataURL } : {})}
-                      onLoadingComplete={() => setImageLoaded(true)}
+                      blurDataURL={item.blurDataURL}
+                      className="object-contain"
+                      style={{ objectFit: 'contain' }}
+                      maxWidth={2000}
+                      onLoad={() => setImageLoaded(true)}
                     />
-                  )}
+                  ) : item.src ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={`/images/gallery/${item.src}`}
+                      alt={flat.alt}
+                      decoding="async"
+                      style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'contain' }}
+                      onLoad={() => setImageLoaded(true)}
+                    />
+                  ) : null}
                 </motion.div>
               </AnimatePresence>
 
