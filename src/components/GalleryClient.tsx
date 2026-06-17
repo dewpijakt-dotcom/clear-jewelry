@@ -158,6 +158,7 @@ export default function GalleryClient({ pieces, categories }: GalleryClientProps
             >
               {rest.map((item, i) => {
                 const original = i + 2;
+                const isAboveFold = i < 4;
                 const aspect = item.aspect ?? 'square';
                 return (
                   <PieceCard
@@ -166,6 +167,7 @@ export default function GalleryClient({ pieces, categories }: GalleryClientProps
                     locale={locale}
                     lotNumber={pad(original)}
                     aspect={aspect}
+                    priority={isAboveFold}
                     onClick={() => setActiveIndex(i + 1)}
                   />
                 );
@@ -202,12 +204,14 @@ function PieceCard({
   lotNumber,
   aspect,
   onClick,
+  priority,
 }: {
   item: LocalizedGalleryItem;
   locale: Locale;
   lotNumber: string;
   aspect: 'portrait' | 'square' | 'wide';
   onClick: () => void;
+  priority?: boolean;
 }) {
   const [hover, setHover] = useState(false);
   const aspectClass = 'aspect-square';
@@ -233,7 +237,7 @@ function PieceCard({
         }}
         aria-label={flat.alt}
       >
-        <RemoteOrLocalImage src={item.src} alt={flat.alt} sizes="(max-width: 768px) 50vw, (max-width: 1280px) 33vw, 25vw" />
+        <RemoteOrLocalImage src={item.src} alt={flat.alt} priority={priority} sizes="(max-width: 768px) 50vw, (max-width: 1280px) 33vw, 25vw" />
 
         <div
           className={clsx(

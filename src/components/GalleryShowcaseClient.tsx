@@ -23,6 +23,7 @@ export default function GalleryShowcaseClient({ items }: { items: LocalizedGalle
     <>
       <div className="mt-14 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-[3px] md:gap-1">
         {items.map((item, i) => {
+          const isAboveFold = i < 4;
           const flat = flattenItem(item, locale);
           const isHover = hoverIndex === i;
           const displayName = flat.name || flat.description;
@@ -40,6 +41,7 @@ export default function GalleryShowcaseClient({ items }: { items: LocalizedGalle
                 <Image
                   src={(item.src && item.src.startsWith("http")) ? item.src : ("/images/gallery/" + item.src)}
                   alt={flat.alt}
+                  priority={isAboveFold}
                   fill
                   sizes="(max-width: 768px) 50vw, (max-width: 1280px) 33vw, 25vw"
                   className={clsx(

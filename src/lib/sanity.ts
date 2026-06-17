@@ -25,7 +25,7 @@ export function urlFor(source: SanityImageSource) {
 export function sanityImageUrl(source: SanityImageSource | undefined | null, w = 1600): string | null {
   if (!source) return null;
   try {
-    return urlFor(source).width(w).auto('format').url();
+    return urlFor(source).width(w).quality(80).auto('format').url();
   } catch {
     return null;
   }

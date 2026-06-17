@@ -43,7 +43,7 @@ function loc(v: any): Localized {
 }
 
 function toItem(p: SanityPiece): LocalizedGalleryItem {
-  const url = sanityImageUrl(p.image, 1600) ?? '';
+  const url = sanityImageUrl(p.image, 1200) ?? '';
   return {
     id: p._id,
     src: url,
