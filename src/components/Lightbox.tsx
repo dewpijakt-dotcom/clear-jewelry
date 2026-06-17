@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import SanityImg from './SanityImg';
 import { useLocale, useT } from './LanguageProvider';
 import { flattenItem } from '@/lib/i18n';
@@ -137,7 +138,13 @@ export default function Lightbox({ item, onClose, onPrev, onNext, prevItem, next
 
   if (!item || !flat) return null;
 
-  return (
+  // Portal into document.body so the dialog escapes any ancestor that
+  // creates a containing block (will-change: transform/opacity on the
+  // LoadingReveal motion wrapper was sizing this dialog to the document
+  // height instead of the viewport, sending the centered image
+  // ~half-a-document below the fold and effectively hiding it).
+  if (typeof document === 'undefined') return null;
+  return createPortal(
     <div
       key="lightbox"
       role="dialog"
@@ -247,6 +254,7 @@ export default function Lightbox({ item, onClose, onPrev, onNext, prevItem, next
           →
         </button>
       )}
-    </div>
+    </div>,
+    document.body,
   );
 }

@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { useState } from 'react';
+import { createPortal } from 'react-dom';
 import Reveal from '@/components/Reveal';
 import OrnateDivider from '@/components/OrnateDivider';
 import GoldCornerFrame from '@/components/GoldCornerFrame';
@@ -267,8 +268,12 @@ export default function ContactPage() {
         </div>
       </section>
 
-      {/* QR enlarged modal */}
-      {qrOpen && (
+      {/* QR enlarged modal — portaled into document.body so that the
+          fixed-positioned overlay is sized against the viewport and not
+          against the LoadingReveal motion wrapper's will-change-induced
+          containing block (would otherwise stretch to document height
+          and push the QR off-screen). */}
+      {qrOpen && typeof document !== 'undefined' && createPortal(
         <div
           onClick={() => setQrOpen(false)}
           role="dialog"
@@ -304,7 +309,8 @@ export default function ContactPage() {
               ✕
             </button>
           </div>
-        </div>
+        </div>,
+        document.body,
       )}
     </>
   );
