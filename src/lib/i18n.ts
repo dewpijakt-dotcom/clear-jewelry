@@ -178,7 +178,7 @@ export const COPY: Record<string, Entry> = {
 
   /* ───── CONTACT PAGE ───── */
   'con.eyebrow':   { en: 'In conversation', th: 'พูดคุยกับเรา', zh: '与我们对话' },
-  'con.title.l1':  { en: 'Three quiet ways', th: 'สามช่องทางเรียบง่าย', zh: '三种轻盈方式' },
+  'con.title.l1':  { en: 'Two quiet ways', th: 'สองช่องทางเรียบง่าย', zh: '两种轻盈方式' },
   'con.title.l2':  { en: 'to reach us.', th: 'ที่จะติดต่อเรา', zh: '与我们联络。' },
 
   /* ───── GALLERY PAGE ───── */

@@ -95,6 +95,8 @@ export function LanguageProvider({
       // copy ships immediately.)
       const PINNED = new Set<string>([
         'wa.name',
+        'con.title.l1',
+        'con.title.l2',
       ]);
       if (!PINNED.has(key) && labels && labels[key] != null) {
         const v = pickLocalized(labels[key], locale);
