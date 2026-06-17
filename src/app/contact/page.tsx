@@ -300,7 +300,7 @@ function WhatsAppPanel({
           href={BRAND.whatsappUrl}
           target="_blank"
           rel="noreferrer"
-          className="mt-8 inline-flex items-center gap-3 px-8 py-4 font-sans text-[12px] uppercase tracking-[0.34em] transition-colors duration-500"
+          className="mt-8 inline-flex items-center gap-3 px-8 py-4 font-sans text-[12px] uppercase tracking-[0.34em] transition-colors duration-500 min-h-[48px]"
           style={{ background: 'var(--gold)', color: 'var(--charcoal)', border: '1px solid var(--gold)' }}
         >
           {cta} <span aria-hidden>→</span>
@@ -363,7 +363,7 @@ function LinePanel({
           href={BRAND.lineUrl}
           target="_blank"
           rel="noreferrer"
-          className="mt-6 inline-flex items-center gap-3 px-6 py-3 font-sans text-[11px] uppercase tracking-[0.32em] transition-colors duration-500 hover:bg-charcoal hover:text-ivory"
+          className="mt-6 inline-flex items-center gap-3 px-6 py-3 font-sans text-[11px] uppercase tracking-[0.32em] transition-colors duration-500 hover:bg-charcoal hover:text-ivory min-h-[48px]"
           style={{ background: 'transparent', color: 'var(--charcoal)', border: '1px solid var(--charcoal)' }}
         >
           {cta} <span aria-hidden>→</span>
