@@ -190,3 +190,15 @@ The in-page booking form was removed in June 2026. /book is now two contact pane
 2. The site appends a row to your Google Sheet **and** pushes a card to the **Clear Jewelry Bookings** LINE Group within ~2 seconds. Either failure is non-fatal — Sheets is the canonical record, LINE is the live notification.
 3. Admins in the group see the notification with name, contact, date, time, and message.
 4. Reply directly via LINE/WhatsApp from there. Mark the row in the Sheet when handled.
+
+
+## Mobile overflow self-test
+
+After any visual change that touches hero text, big numerals, or display-size headings, run:
+
+```bash
+npm i -D playwright
+node scripts/audit-mobile-overflow.mjs
+```
+
+The script walks every public route in a 390×844 iPhone-class Playwright session and fails if any element renders past the right edge or if the document scrollWidth exceeds 390px. Pass `BASE=http://localhost:3000` to check a local dev server instead of production.

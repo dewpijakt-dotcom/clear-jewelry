@@ -598,3 +598,26 @@ body {
   animation-fill-mode: forwards;
   pointer-events: none;
 }
+
+/* ============================== MOBILE OVERFLOW GUARD ============================== */
+/* Belt-and-braces against horizontal scroll / clipping bugs on phone-sized
+   viewports. A regression we shipped (Aug 2026): the hero `xl` Wordmark
+   used fixed 104px font + 0.5em letter-spacing, which overflowed a 390px
+   iPhone viewport by ~150px and clipped 'JEWELRY · EST. 1993'. This block
+   guarantees no future display-sized element can do that silently:
+   - Page can never gain horizontal scroll on phone (html/body clip).
+   - Large editorial text wraps rather than overflows.
+   - Decorative ghost numerals (already pointer-events: none) are capped
+     so they can't extend past the viewport even when right-positioned.
+   See scripts/audit-mobile-overflow.mjs for the automated regression test. */
+html, body { overflow-x: clip; }
+
+@media (max-width: 768px) {
+  .display,
+  h1, h2, h3 {
+    overflow-wrap: anywhere;
+  }
+  .ghost-numeral {
+    max-width: 100vw;
+  }
+}
