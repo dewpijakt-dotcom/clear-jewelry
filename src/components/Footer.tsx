@@ -37,20 +37,14 @@ export default function Footer() {
       </span>
 
       <div className="relative mx-auto max-w-[1480px] px-6 lg:px-10">
-        {/* Closing flourish */}
-        <div className="text-center pb-12 lg:pb-16 border-b border-[var(--rule-invert)]">
-          <div className="flex justify-center mb-5">
-            <Wordmark size="md" variant="light" />
-          </div>
-          <p
-            className="font-sans uppercase text-[9.5px] lg:text-[10px] tracking-[0.5em] lg:tracking-[0.6em] text-gold-light/65"
-            lang={locale}
-          >
-            {t('foot.madein')}
-          </p>
-        </div>
-
-        {/* Brand block + LINE CTA — stacks vertically on mobile */}
+        {/* Brand block + LINE CTA — stacks vertically on mobile.
+            (A duplicate 'Closing flourish' wordmark used to sit above
+            this block — removed because seeing the CLEAR / JEWELRY
+            lockup twice on the same footer read as repetitive and
+            slightly unprofessional. The main brand block below is the
+            canonical footer lockup; the 'Crafted in Bangkok' line that
+            accompanied the duplicate is preserved in the legal stripe
+            at the foot of the page.) */}
         <div className="grid lg:grid-cols-[2fr_1fr] gap-10 lg:gap-12 py-12 lg:py-16 border-b border-[var(--rule-invert)] text-center lg:text-left">
           <div className="lg:max-w-md mx-auto lg:mx-0">
             <div className="flex justify-center lg:justify-start">
