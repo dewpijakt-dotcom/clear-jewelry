@@ -249,10 +249,9 @@ export default function InfoPage() {
         <SparkleField count={6} tone="gold" />
         <div className="relative mx-auto max-w-[1180px] px-6 lg:px-10 text-center">
           <Reveal>
-            {/* the brandmark signs itself in gold pen */}
-            <div className="flex justify-center mb-8">
-              <Wordmark size="lg" variant="light" />
-            </div>
+            {/* Wordmark lockup removed — the Footer below already shows
+                the canonical CLEAR / JEWELRY brand mark; rendering one
+                in this CTA too read as 'the logo twice at the bottom.' */}
             <p className="eyebrow text-gold-light">V &nbsp;·&nbsp; {t('foot.atelier')}</p>
             <h2
               className="display leading-tight mt-6"

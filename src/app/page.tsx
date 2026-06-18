@@ -211,9 +211,11 @@ export default async function HomePage() {
       {/* ============================== CLOSING CTA ============================== */}
       <section className="bg-ivory py-32 lg:py-40">
         <div className="mx-auto max-w-[1180px] px-6 lg:px-10 text-center">
-          <Reveal>
-            <Wordmark size="xl" />
-          </Reveal>
+          {/* Wordmark lockup removed — the Footer below this section
+              already carries the canonical CLEAR / JEWELRY brand mark,
+              so showing a second one here read as 'the logo twice at
+              the bottom.' Closing title + body + CTAs now sign off
+              the page on their own. */}
           <Reveal delay={0.15}>
             <h2 className="display text-[clamp(36px,5vw,68px)] leading-[1.05] mt-10">
               <L value={cms.closingTitle} fallback="" />
