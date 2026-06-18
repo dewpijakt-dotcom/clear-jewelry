@@ -280,6 +280,91 @@ export default function InfoPage() {
           </Reveal>
         </div>
       </section>
+
+      {/* ============================== DIRECTIONS ============================== */}
+      <section className="bg-ivory py-24 lg:py-32 relative overflow-hidden">
+        <div
+          className="absolute inset-0 opacity-15 pointer-events-none"
+          style={{
+            background:
+              'radial-gradient(900px 600px at 50% 0%, rgba(194,161,77,0.28) 0%, rgba(194,161,77,0.04) 45%, transparent 75%)',
+          }}
+        />
+        <div className="relative mx-auto max-w-[1180px] px-6 lg:px-10">
+          <Reveal>
+            <header className="text-center mb-10 lg:mb-14">
+              <p className="eyebrow text-gold-deep" lang={locale}>
+                VI &nbsp;·&nbsp; {t('info.directions.eyebrow')}
+              </p>
+              <h2
+                className="display-italic leading-tight mt-4 text-charcoal"
+                style={{ fontSize: 'clamp(28px, 4vw, 56px)' }}
+                lang={locale}
+              >
+                {t('info.directions.title')}
+              </h2>
+              <hr className="border-0 h-px bg-gold-light/60 w-20 mt-6 mx-auto" />
+              <p
+                className="font-sans text-[14.5px] tracking-[0.02em] text-charcoal/80 leading-[1.85] max-w-[58ch] mx-auto mt-6"
+                lang={locale}
+              >
+                {t('info.directions.body')}
+              </p>
+            </header>
+
+            <div
+              className="relative p-4 lg:p-6 bg-ivory"
+              style={{
+                border: '1px solid rgba(194, 161, 77, 0.40)',
+                boxShadow: '0 14px 44px -20px rgba(20, 16, 12, 0.22), 0 2px 14px rgba(20, 16, 12, 0.06)',
+              }}
+            >
+              {/* corner ornaments */}
+              <span aria-hidden className="absolute pointer-events-none" style={{ top: 10, left: 10, width: 22, height: 22, borderTop: '1px solid var(--gold)', borderLeft: '1px solid var(--gold)' }} />
+              <span aria-hidden className="absolute pointer-events-none" style={{ top: 10, right: 10, width: 22, height: 22, borderTop: '1px solid var(--gold)', borderRight: '1px solid var(--gold)' }} />
+              <span aria-hidden className="absolute pointer-events-none" style={{ bottom: 10, left: 10, width: 22, height: 22, borderBottom: '1px solid var(--gold)', borderLeft: '1px solid var(--gold)' }} />
+              <span aria-hidden className="absolute pointer-events-none" style={{ bottom: 10, right: 10, width: 22, height: 22, borderBottom: '1px solid var(--gold)', borderRight: '1px solid var(--gold)' }} />
+
+              <div className="relative w-full overflow-hidden bg-charcoal/5">
+                {/* Google Maps embed — no API key required for the simple
+                    output=embed format. Loads the actual Maps tile UI,
+                    fully interactive (pan / zoom / Streetview link). */}
+                <iframe
+                  title="Gaysorn Centre · Bangkok"
+                  src="https://maps.google.com/maps?q=Gaysorn+Centre+Bangkok&z=16&output=embed"
+                  className="block w-full h-[280px] lg:h-[420px]"
+                  style={{ border: 0 }}
+                  loading="lazy"
+                  allowFullScreen
+                  referrerPolicy="no-referrer-when-downgrade"
+                />
+              </div>
+
+              {/* Below-embed link row */}
+              <div className="mt-5 lg:mt-6 flex flex-col sm:flex-row gap-3 sm:gap-6 items-center justify-center">
+                <a
+                  href="https://www.google.com/maps?q=Gaysorn+Centre+Bangkok"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 px-5 py-3 min-h-[44px] font-sans text-[11px] uppercase tracking-[0.32em] text-charcoal hover:text-gold-deep transition-colors duration-500 border-b border-charcoal/40 hover:border-gold-deep"
+                  lang={locale}
+                >
+                  {t('info.directions.openInMaps')} <span aria-hidden>↗</span>
+                </a>
+                <a
+                  href="https://www.google.com/maps/dir/?api=1&destination=Gaysorn+Centre+Bangkok"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 px-5 py-3 min-h-[44px] font-sans text-[11px] uppercase tracking-[0.32em] text-charcoal hover:text-gold-deep transition-colors duration-500 border-b border-charcoal/40 hover:border-gold-deep"
+                  lang={locale}
+                >
+                  {t('info.directions.getDirections')} <span aria-hidden>↗</span>
+                </a>
+              </div>
+            </div>
+          </Reveal>
+        </div>
+      </section>
     </>
   );
 }
