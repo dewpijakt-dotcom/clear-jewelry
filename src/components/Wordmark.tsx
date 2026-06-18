@@ -26,6 +26,21 @@ const SIZES = {
   xl: { glyph: 128, clear: 104, sub: 24, spacing: 0.5,  gap: 30 },
 } as const;
 
+// Responsive overrides for the oversize `xl` hero wordmark. The fixed
+// 104px + 0.24em + 24px + 0.5em sizes overflowed mobile viewports
+// (the 'JEWELRY · Est. 1993' line wrapped past the right edge on a
+// 390px iPhone). These clamp() pairs scale down gracefully on narrow
+// viewports while keeping the desktop presence intact (clamp upper
+// bounds match the original SIZES.xl numbers exactly).
+const XL_RESPONSIVE = {
+  clearFontSize: 'clamp(46px, 11vw, 104px)',
+  // Subtitle tracking was the worst offender; relaxes from 0.32em on
+  // small screens to the original 0.5em from ~640px and up.
+  subFontSize: 'clamp(11px, 2.4vw, 24px)',
+  clearLetterSpacing: 'clamp(0.14em, 0.24em, 0.24em)',
+  subLetterSpacing: 'clamp(0.28em, 0.5em, 0.5em)',
+} as const;
+
 export default function Wordmark({
   size = 'md',
   variant = 'dark',
@@ -90,8 +105,8 @@ export default function Wordmark({
           <span
             className={clsx('display', ink)}
             style={{
-              fontSize: s.clear,
-              letterSpacing: '0.24em',
+              fontSize: size === 'xl' ? XL_RESPONSIVE.clearFontSize : s.clear,
+              letterSpacing: size === 'xl' ? XL_RESPONSIVE.clearLetterSpacing : '0.24em',
               fontWeight: 500,
               lineHeight: 1,
               textShadow,
@@ -102,11 +117,12 @@ export default function Wordmark({
           <span
             className={clsx('font-sans uppercase', subTone)}
             style={{
-              fontSize: s.sub,
-              letterSpacing: `${s.spacing}em`,
+              fontSize: size === 'xl' ? XL_RESPONSIVE.subFontSize : s.sub,
+              letterSpacing: size === 'xl' ? XL_RESPONSIVE.subLetterSpacing : `${s.spacing}em`,
               fontWeight: 400,
               lineHeight: 1,
               textShadow,
+              whiteSpace: 'nowrap',
             }}
           >
             {BRAND.wordmarkSubtitle} · Est. {BRAND.establishedYear}
