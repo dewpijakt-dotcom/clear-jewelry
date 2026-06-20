@@ -202,3 +202,46 @@ node scripts/audit-mobile-overflow.mjs
 ```
 
 The script walks every public route in a 390×844 iPhone-class Playwright session and fails if any element renders past the right edge or if the document scrollWidth exceeds 390px. Pass `BASE=http://localhost:3000` to check a local dev server instead of production.
+
+
+## Editable copy in Sanity Studio
+
+Every short piece of UI text is editable in **Studio → UI Labels**:
+
+- **Navigation**: `nav.*` keys
+- **Footer**: `foot.*`
+- **Hero / brand body**: `her.*`
+- **Home page sections**: `home.*`
+- **Gallery page**: `gal.*` + `lb.*` (lightbox aria-labels)
+- **About page**: `about.*`
+- **Information page**: `inf.*` (4 sections) + `info.directions.*` (Directions card + map links)
+- **Book page**: `book.page.*` (eyebrow / title / promise line) + `wa.primary.*` (WhatsApp panel) + `line.secondary.*` (LINE panel)
+- **Contact page**: `con.*` + the same `wa.primary.*` / `line.secondary.*` keys (shared with /book)
+- **404 page**: `nf.*` (eyebrow / title / body / 3 link CTAs)
+- **Aria / accessibility**: `aria.*`
+
+### Adding new editable strings (developer)
+
+When you add new visible text in code, add a row to the in-source `COPY`
+dict in `src/lib/i18n.ts`, then push the dict to Sanity so the owner
+can edit it:
+
+```bash
+export SANITY_AUTH_TOKEN="sk..."     # editor-level token from sanity.io/manage
+node scripts/migrate-ui-labels.mjs
+```
+
+The script is idempotent — it diffs `i18n.ts` against the Sanity
+`uiLabels` document and upserts any new keys. Existing owner edits are
+preserved. Run it whenever you ship new copy.
+
+### A note on pinned keys
+
+A small `PINNED` set in `src/components/LanguageProvider.tsx` forces a
+handful of strings to ignore Sanity overrides and always render from
+the in-source COPY (currently `wa.name`, `con.title.l1`, `con.title.l2`).
+These were pinned because Sanity carried stale values ("Fifa · Clear
+Jewelry", "Three quiet ways") from a previous brand pass. After you
+re-run the migration script, the Sanity values match the code — you
+can safely empty the `PINNED` set if you want full Studio control over
+those keys too.

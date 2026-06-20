@@ -251,7 +251,7 @@ function LinePanel({
       <button
         type="button"
         onClick={onEnlarge}
-        aria-label="Tap to enlarge"
+        aria-label={t('aria.tapToEnlarge')}
         className="block bg-ivory p-3 lg:p-4 transition-transform duration-500 hover:scale-[1.02]"
         style={{ border: '1px solid rgba(194, 161, 77, 0.18)' }}
       >
@@ -337,7 +337,7 @@ function QrModal({
         <button
           type="button"
           onClick={onClose}
-          aria-label="Close"
+          aria-label={t('aria.close')}
           className="absolute top-3 right-3 p-2 text-charcoal/60 hover:text-charcoal text-[11px] uppercase tracking-[0.28em]"
         >
           ✕

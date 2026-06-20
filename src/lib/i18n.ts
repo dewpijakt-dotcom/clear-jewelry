@@ -300,6 +300,21 @@ export const COPY: Record<string, Entry> = {
   },
   'info.directions.openInMaps':    { en: 'Open in Google Maps', th: 'เปิดใน Google Maps', zh: '在 Google Maps 中打开' },
   'info.directions.getDirections': { en: 'Get directions', th: 'ขอเส้นทาง', zh: '获取路线' },
+  /* 404 — branded not-found page */
+  'nf.eyebrow':       { en: '404 · Private atelier', th: '404 · แอตเทอลิเย่ส่วนตัว', zh: '404 · 私人工坊' },
+  'nf.title.l1':      { en: 'This piece', th: 'ผลงานนี้', zh: '此作品' },
+  'nf.title.l2':      { en: "isn't in the safe.", th: 'ไม่ได้อยู่ในเซฟ', zh: '不在保险柜中。' },
+  'nf.body': {
+    en: 'The page you were looking for has moved or was never here. Browse the gallery to see what we are currently exhibiting, or book a private viewing at the Bangkok atelier.',
+    th: 'หน้าที่คุณกำลังมองหาอาจถูกย้ายหรือไม่เคยอยู่ที่นี่ ลองชมแกลเลอรีเพื่อดูผลงานที่จัดแสดงอยู่ตอนนี้ หรือนัดหมายเข้าชมที่แอตเทอลิเย่ของเราที่กรุงเทพฯ ครับ',
+    zh: '您所寻找的页面已迁移或从未存在。可浏览画廊查看现展作品，或预约莅临曼谷工坊。',
+  },
+  'nf.cta.gallery':   { en: 'View the Gallery', th: 'ชมแกลเลอรี', zh: '浏览画廊' },
+  'nf.cta.book':      { en: 'Book an appointment', th: 'นัดหมายเข้าชม', zh: '预约莅临' },
+  'nf.cta.home':      { en: '← Home', th: '← หน้าแรก', zh: '← 首页' },
+  /* Universal aria-labels used in QR modals etc. */
+  'aria.tapToEnlarge': { en: 'Tap to enlarge', th: 'แตะเพื่อขยาย', zh: '点击放大' },
+  'aria.close':        { en: 'Close', th: 'ปิด', zh: '关闭' },
   'wa.primary.eyebrow': { en: 'Primary channel · By appointment', th: 'ช่องทางหลัก · เปิดให้บริการตามนัด', zh: '主要联络方式 · 预约制' },
   'wa.primary.body':    { en: 'Scan the code or tap below to chat with us. We reply within one business day.', th: 'สแกนรหัสหรือแตะปุ่มด้านล่างเพื่อแชทกับเรา ยินดีตอบกลับภายในหนึ่งวันทำการ', zh: '扫描二维码或点击下方按钮与我们联络。一个工作日内回复。' },
   'wa.primary.cta':     { en: 'Chat on WhatsApp', th: 'แชทบน WhatsApp', zh: '在 WhatsApp 上联络' },
